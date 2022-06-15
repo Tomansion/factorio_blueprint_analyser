@@ -3,10 +3,16 @@
 import json
 import sys
 
-from src import utils, options
+from src import utils, options, blueprint
 
 if __name__ == "__main__":
+    # Read and check the user parameters
     options.read_options()
+
+    # Read the input blueprint
+    bp = blueprint.load_blueprint(options.input)
+    print(bp)
+    print(bp.entities)
 
     # # ==== Decoding ====
 

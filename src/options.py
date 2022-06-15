@@ -2,9 +2,13 @@ import io
 import argparse
 import sys
 import os
-import shutil
 
 from src import utils
+
+# -----------------------------------------------------------
+# Read the user input and check the options
+# The options are stored in the global variables
+# -----------------------------------------------------------
 
 silent = False
 input = ""
@@ -28,13 +32,13 @@ def read_options():
                         help="Stop verbose output on STDERR", default=False),
 
     parser.add_argument("-i", "--input", nargs="?", dest="input",
-                        help="Blueprint book file path", default="./example_blueprint_books/general")
+                        help="Blueprint JSON or encoded file path", default="./examples/beltFac.json")
 
     parser.add_argument("-o", "--output", nargs="?", dest="output",
-                        help="Folder output for the json", default="blueprint_book_json")
+                        help="JSON File output for the analysed blueprint", default="analysed_blueprint.json")
 
     parser.add_argument("-f", "--force", action="store_true", dest="force",
-                        help="Force overwrite of existing output folder", default=False)
+                        help="Force overwrite of existing result file", default=False)
 
     opt = parser.parse_args()
 
@@ -50,22 +54,10 @@ def read_options():
         print(f"Input file '{opt.input}' does not exist")
         sys.exit(1)
 
-    # Add trailing slash to output folder if not present
-    if not opt.output.endswith("/"):
-        opt.output += "/"
-
-    # Check if the output folder exists
-    if os.path.exists(opt.output):
-        if not opt.force:
-            print(f"Output folder '{opt.output}' already exists")
-            print("Use --force or -f to overwrite it")
-            sys.exit(1)
-        else:
-            shutil.rmtree(opt.output)
-            os.mkdir(opt.output)
-    else:
-        os.mkdir(opt.output)
+    # Check if the output file exists
+    if os.path.exists(opt.output) and not force:
+        print(f"Output file '{opt.output}' already exists")
+        print("Use --force or -f to overwrite it")
+        sys.exit(1)
 
     utils.verbose(f"file: {opt.input}")
-
-    utils.verbose(silent, input, output, force)

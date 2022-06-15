@@ -1,6 +1,6 @@
 ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
-☐ Read a blueprint @started(22-06-15 11:16)
-☐ Decode the blueprint if it is encoded
+✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)
+✔ Decode the blueprint if it is encoded @done(22-06-15 12:04)
 
 Create a node network from the blueprint:
     ☐ Create a node network from the blueprint
