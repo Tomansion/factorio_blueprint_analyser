@@ -41,9 +41,11 @@ def load_blueprint(file):
         print("Invalid blueprint, no 'blueprint' key found")
         sys.exit(1)
 
-    blueprint_label = "blueprint"
+    blueprint_label = "No label"
     if "label" in bp_json["blueprint"]:
         blueprint_label = bp_json["blueprint"]["label"]
+
+    utils.verbose(f"Blueprint {blueprint_label} loaded successfully")
 
     # Return the blueprint
     return Blueprint(blueprint_label, bp_json["blueprint"]["entities"])
