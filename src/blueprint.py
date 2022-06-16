@@ -1,5 +1,6 @@
 import json
 import sys
+from importlib_metadata import NullFinder
 
 from matplotlib.pyplot import cla
 from src import utils
@@ -10,17 +11,51 @@ from src import utils
 # -----------------------------------------------------------
 
 
+class Entity:
+    def __init__(self, dictionary_entity):
+
+        # Input example:
+        # {
+        #     'entity_number': 18,
+        #     'name': 'inserter',
+        #     'position': {'x': 10, 'y': -90},
+        #     'direction': 6
+        # }
+
+        self.number = dictionary_entity["entity_number"]
+        self.name = dictionary_entity["name"]
+        self.original_position = dictionary_entity["position"]
+        self.position = {
+            "x": int(dictionary_entity["position"]["x"] + 0.5),
+            "y": int(dictionary_entity["position"]["y"] + 0.5),
+        }
+        if "direction" in dictionary_entity:
+            self.direction = dictionary_entity["direction"]
+        else:
+            self.direction = None
+
+    def __str__(self):
+        return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] [{self.original_position['x']}, {self.original_position['y']}]"
+
+
 class Blueprint:
     entities = []
     label = ""
 
     def __init__(self, label, entities):
         self.label = label
-        self.entities = entities
+
+        for entity in entities:
+            self.entities.append(Entity(entity))
+
+    def display(self):
+        utils.verbose(f"{len(self.entities)} entities")
+        utils.verbose("")
+        for entity in self.entities:
+            utils.verbose("  " + str(entity))
 
 
 def load_blueprint(file):
-
     # Read the file
     if file.endswith(".json"):
         # No need to decode the json
@@ -28,6 +63,7 @@ def load_blueprint(file):
             bp_json = json.load(f)
 
     else:
+
         with open(file, 'r') as f:
             bp_encoded = f.read()
         bp_json = utils.decode(bp_encoded)

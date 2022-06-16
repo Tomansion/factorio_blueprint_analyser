@@ -1,0 +1,302 @@
+{
+    "blueprint": {
+        "icons": [
+            {
+                "signal": {
+                    "type": "item",
+                    "name": "pipe-to-ground"
+                },
+                "index": 1
+            }
+        ],
+        "entities": [
+            {
+                "entity_number": 1,
+                "name": "assembling-machine-1",
+                "position": {
+                    "x": -4,
+                    "y": -3
+                },
+                "recipe": "pipe-to-ground"
+            },
+            {
+                "entity_number": 2,
+                "name": "assembling-machine-2",
+                "position": {
+                    "x": 0,
+                    "y": -3
+                },
+                "recipe": "pipe"
+            },
+            {
+                "entity_number": 3,
+                "name": "assembling-machine-1",
+                "position": {
+                    "x": 3,
+                    "y": -3
+                },
+                "recipe": "pipe"
+            },
+            {
+                "entity_number": 4,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -2,
+                    "y": -2
+                },
+                "direction": 2
+            },
+            {
+                "entity_number": 5,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -5,
+                    "y": -1
+                }
+            },
+            {
+                "entity_number": 6,
+                "name": "iron-chest",
+                "position": {
+                    "x": -5,
+                    "y": 0
+                },
+                "bar": 1
+            },
+            {
+                "entity_number": 7,
+                "name": "transport-belt",
+                "position": {
+                    "x": -3,
+                    "y": 0
+                },
+                "direction": 6
+            },
+            {
+                "entity_number": 8,
+                "name": "fast-underground-belt",
+                "position": {
+                    "x": -4,
+                    "y": 0
+                },
+                "direction": 6,
+                "type": "output"
+            },
+            {
+                "entity_number": 9,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -4,
+                    "y": -1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 10,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -3,
+                    "y": -1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 11,
+                "name": "medium-electric-pole",
+                "position": {
+                    "x": -2,
+                    "y": -1
+                }
+            },
+            {
+                "entity_number": 12,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -1,
+                    "y": -1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 13,
+                "name": "transport-belt",
+                "position": {
+                    "x": -2,
+                    "y": 0
+                },
+                "direction": 6
+            },
+            {
+                "entity_number": 14,
+                "name": "transport-belt",
+                "position": {
+                    "x": -1,
+                    "y": 0
+                },
+                "direction": 6
+            },
+            {
+                "entity_number": 15,
+                "name": "underground-belt",
+                "position": {
+                    "x": 0,
+                    "y": 0
+                },
+                "direction": 6,
+                "type": "output"
+            },
+            {
+                "entity_number": 16,
+                "name": "medium-electric-pole",
+                "position": {
+                    "x": 3,
+                    "y": -1
+                }
+            },
+            {
+                "entity_number": 17,
+                "name": "fast-inserter",
+                "position": {
+                    "x": 2,
+                    "y": -1
+                }
+            },
+            {
+                "entity_number": 18,
+                "name": "underground-belt",
+                "position": {
+                    "x": 3,
+                    "y": 0
+                },
+                "direction": 6,
+                "type": "input"
+            },
+            {
+                "entity_number": 19,
+                "name": "fast-underground-belt",
+                "position": {
+                    "x": 2,
+                    "y": 0
+                },
+                "direction": 6,
+                "type": "input"
+            },
+            {
+                "entity_number": 20,
+                "name": "transport-belt",
+                "position": {
+                    "x": 5,
+                    "y": 0
+                },
+                "direction": 6
+            },
+            {
+                "entity_number": 21,
+                "name": "fast-inserter",
+                "position": {
+                    "x": 4,
+                    "y": -1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 22,
+                "name": "transport-belt",
+                "position": {
+                    "x": 4,
+                    "y": 0
+                },
+                "direction": 6
+            },
+            {
+                "entity_number": 23,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -5,
+                    "y": 1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 24,
+                "name": "assembling-machine-1",
+                "position": {
+                    "x": -4,
+                    "y": 3
+                },
+                "recipe": "pipe-to-ground"
+            },
+            {
+                "entity_number": 25,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -4,
+                    "y": 1
+                }
+            },
+            {
+                "entity_number": 26,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -3,
+                    "y": 1
+                }
+            },
+            {
+                "entity_number": 27,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -2,
+                    "y": 2
+                },
+                "direction": 2
+            },
+            {
+                "entity_number": 28,
+                "name": "fast-inserter",
+                "position": {
+                    "x": -1,
+                    "y": 1
+                }
+            },
+            {
+                "entity_number": 29,
+                "name": "assembling-machine-2",
+                "position": {
+                    "x": 0,
+                    "y": 3
+                },
+                "recipe": "pipe"
+            },
+            {
+                "entity_number": 30,
+                "name": "fast-inserter",
+                "position": {
+                    "x": 2,
+                    "y": 1
+                },
+                "direction": 4
+            },
+            {
+                "entity_number": 31,
+                "name": "assembling-machine-1",
+                "position": {
+                    "x": 3,
+                    "y": 3
+                },
+                "recipe": "pipe"
+            },
+            {
+                "entity_number": 32,
+                "name": "fast-inserter",
+                "position": {
+                    "x": 4,
+                    "y": 1
+                }
+            }
+        ],
+        "item": "blueprint",
+        "label": "Pipe-to-Gnd v1 (1/s)",
+        "version": 64425885696
+    }
+}

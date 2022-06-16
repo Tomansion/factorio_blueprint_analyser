@@ -11,8 +11,7 @@ if __name__ == "__main__":
 
     # Read the input blueprint
     bp = blueprint.load_blueprint(options.input)
-    print(bp)
-    print(bp.entities)
+    bp.display()
 
     # # ==== Decoding ====
 
