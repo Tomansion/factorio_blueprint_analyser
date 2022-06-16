@@ -41,6 +41,8 @@ class Entity:
 class Blueprint:
     entities = []
     label = ""
+    heigth = 0
+    width = 0
 
     def __init__(self, label, entities):
         self.label = label
@@ -48,9 +50,20 @@ class Blueprint:
         for entity in entities:
             self.entities.append(Entity(entity))
 
+        # Set the blueprint origin to [0, 0]
+        lowest_x = min(entity.position["x"] for entity in self.entities)
+        lowest_y = min(entity.position["y"] for entity in self.entities)
+
+        for entity in self.entities:
+            entity.position["x"] -= lowest_x
+            entity.position["y"] -= lowest_y
+
+        self.width = max(entity.position["x"] for entity in self.entities) + 1
+        self.heigth = max(entity.position["y"] for entity in self.entities) + 1
+
     def display(self):
-        utils.verbose(f"{len(self.entities)} entities")
-        utils.verbose("")
+        utils.verbose(
+            f"\n{self.label}, width: {self.width}, heigth: {self.heigth}, {len(self.entities)} entities:")
         for entity in self.entities:
             utils.verbose("  " + str(entity))
 
