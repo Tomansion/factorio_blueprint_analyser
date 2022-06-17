@@ -36,23 +36,22 @@ class NetworkCreator:
         # Iterate over the blueprint entities
         for i in range(self.blueprint.heigth):
             for j in range(self.blueprint.width):
-                self.create_node(i, j)
+                self.node_map[i][j] = self.create_node(j, i)
 
-        network = Network(self.blueprint)
-        # network.create_nodes()
-        # network.create_edges()
-        return network
+        return Network(self.blueprint, self.node_map)
 
-    def create_node(self, i, j):
+    def create_node(self, x, y):
         # Returns a node object or None
-        print("creating node at", i, j)
 
         # Check if the cell hasn't been filled yet
-        if self.node_map[i][j] is not None:
-            return self.node_map[i][j]
+        if x < 0 or x >= self.blueprint.width or y < 0 or y >= self.blueprint.heigth:
+            return None
 
-        # Get the entity at the current position
-        entity = self.blueprint.array[i][j]
+        if self.node_map[y][x] is not None:
+            return self.node_map[y][x]
+
+        # Get the entity at the given position
+        entity = self.blueprint.array[y][x]
 
         if entity is None:
             return None
@@ -63,59 +62,63 @@ class NetworkCreator:
             # Set the entity in front as the node's child
             tile_in_front_offset = entity.get_tile_in_front_offset()
 
-            target_x = i + tile_in_front_offset[0]
-            target_y = j + tile_in_front_offset[1]
+            target_x = x + tile_in_front_offset[0]
+            target_y = y + tile_in_front_offset[1]
 
-            if not (target_x < 0 or target_x >= self.blueprint.heigth or
-                    target_y < 0 or target_y >= self.blueprint.width):
-                node_child = self.create_node(target_x, target_y)
+            child_node = self.create_node(target_x, target_y)
 
-                if node_child is not None:
-                    print("child node found at", target_x, target_y)
-                    node.childs.append(node_child)
+            if child_node is not None and entity.can_connect_to(child_node.entity):
+                node.childs.append(child_node)
+                child_node.parents.append(node)
+
+            return node
 
         # if entity.data["type"] == "assembling-machine":
 
 
 class Network:
-    def __init__(self, blueprint):
+    def __init__(self, blueprint, nodes_array):
         self.blueprint = blueprint
+        self.nodes_array = nodes_array
+
         self.nodes = []
-        self.edges = []
 
-    def create_nodes(self):
-        for entity in self.blueprint.entities:
-            self.nodes.append(Node(entity))
+        for row in self.nodes_array:
+            for node in row:
+                if node is not None:
+                    self.nodes.append(node)
 
-    def create_edges(self):
+    def get_root_nodes(self):
         for node in self.nodes:
-            for neighbour in node.neighbours:
-                self.edges.append(Edge(node, neighbour))
+            if len(node.parents) == 0:
+                return node
+
+    def get_leef_nodes(self):
+        for node in self.nodes:
+            if len(node.childs) == 0:
+                return node
 
     def display(self):
         for node in self.nodes:
             print(node)
-        for edge in self.edges:
-            print(edge)
+
+        print("Root nodes:")
+        print(self.get_root_nodes())
+        print("Leef nodes:")
+        print(self.get_leef_nodes())
+        # for edge in self.edges:
+        #     print(edge)
 
 
 class Node:
     def __init__(self, entity):
         self.entity = entity
         self.childs = []
+        self.parents = []
         self.type = entity.data["type"]
-        # self.position = entity.position
-        # self.name = entity.data["name"]
-        # print(entity)
-        # self.direction = entity.data["direction"]
-        # self.offsets = entity.offsets
-        # self.connections = entity.connections
-        # self.connections_count = len(self.connections)
-        # self.connections_count_str = str(self.connections_count)
-        # self.connections_count_str_len = len(self.connections_count_str)
 
     def __str__(self):
-        return f"Node: {self.entity.data['name']}"
+        return f"Node: {self.entity}"
 
 
 # class Edge:

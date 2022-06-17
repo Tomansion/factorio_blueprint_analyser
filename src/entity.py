@@ -93,6 +93,11 @@ class LargeEntity(Entity):
     def to_char(self, coords=[0, 0]):
         return '?'
 
+    def can_connect_to(self, entity):
+        # Check if the entity can be connected to this entity
+        # For example, a belt can be connected to an other belt
+        return False
+
 
 class TransportBelt (Entity):
     def __init__(self, dictionary_entity, entity_data):
@@ -130,6 +135,29 @@ class TransportBelt (Entity):
             return [-1, 0]
         else:
             return [0, 1]
+
+    def can_connect_to(self, entity):
+        if entity.data["type"] == "transport-belt":
+            # A belt can be connected to another belt
+            # except if they are in the oposite direction
+            if self.direction == 2 and entity.direction == 6:
+                return False
+            elif self.direction == 4 and entity.direction == 2:
+                return False
+            elif self.direction == 6 and entity.direction == 4:
+                return False
+            elif self.direction == 8 and entity.direction == 8:
+                return False
+
+            return True
+
+        elif entity.data["type"] == "underground-belt":
+            # A belt can be connected to an underground belt
+            # if they are in the same direction
+
+            return self.direction == entity.direction
+
+        return False
 
 
 class Inserter (Entity):
