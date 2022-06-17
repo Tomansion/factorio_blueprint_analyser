@@ -34,9 +34,13 @@ class NetworkCreator:
             self.node_map += [[None for _ in range(self.blueprint.width)]]
 
         # Iterate over the blueprint entities
-        for i in range(self.blueprint.heigth):
-            for j in range(self.blueprint.width):
-                self.node_map[i][j] = self.create_node(j, i)
+        # to create each nodes recursively
+        for y in range(self.blueprint.heigth):
+            for x in range(self.blueprint.width):
+                self.create_node(x, y)
+
+        # Optimize the network
+        # TODO
 
         return Network(self.blueprint, self.node_map)
 
@@ -59,9 +63,10 @@ class NetworkCreator:
         node = Node(entity)
 
         if node.type == "transport-belt":
+            self.node_map[y][x] = node
+
             # Set the entity in front as the node's child
             tile_in_front_offset = entity.get_tile_in_front_offset()
-
             target_x = x + tile_in_front_offset[0]
             target_y = y + tile_in_front_offset[1]
 
@@ -72,6 +77,8 @@ class NetworkCreator:
                 child_node.parents.append(node)
 
             return node
+
+        return None
 
         # if entity.data["type"] == "assembling-machine":
 
@@ -89,25 +96,29 @@ class Network:
                     self.nodes.append(node)
 
     def get_root_nodes(self):
+        roots = []
         for node in self.nodes:
             if len(node.parents) == 0:
-                return node
+                roots.append(node)
+        return roots
 
     def get_leef_nodes(self):
+        leafs = []
         for node in self.nodes:
             if len(node.childs) == 0:
-                return node
+                leafs.append(node)
+        return leafs
 
     def display(self):
         for node in self.nodes:
             print(node)
 
         print("Root nodes:")
-        print(self.get_root_nodes())
+        for node in self.get_root_nodes():
+            print(node)
         print("Leef nodes:")
-        print(self.get_leef_nodes())
-        # for edge in self.edges:
-        #     print(edge)
+        for node in self.get_leef_nodes():
+            print(node)
 
 
 class Node:
@@ -118,7 +129,7 @@ class Node:
         self.type = entity.data["type"]
 
     def __str__(self):
-        return f"Node: {self.entity}"
+        return f"Node: {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)}"
 
 
 # class Edge:

@@ -119,8 +119,10 @@ class TransportBelt (Entity):
             return colored("↓", color)
         elif self.direction == 6:
             return colored("←", color)
-        else:
+        elif self.direction is None:
             return colored("↑", color)
+
+        return colored("?", color)
 
     def get_tile_in_front_offset(self):
         # Returns an offset of the tile
@@ -130,23 +132,21 @@ class TransportBelt (Entity):
         if self.direction == 2:
             return [1, 0]
         elif self.direction == 4:
-            return [0, -1]
+            return [0, 1]
         elif self.direction == 6:
             return [-1, 0]
-        else:
-            return [0, 1]
+        elif self.direction is None:
+            return [0, -1]
 
     def can_connect_to(self, entity):
         if entity.data["type"] == "transport-belt":
             # A belt can be connected to another belt
-            # except if they are in the oposite direction
-            if self.direction == 2 and entity.direction == 6:
+            # except if they are facing each other
+            if self.direction == 2 and entity.direction == 6 or \
+                    self.direction == 6 and entity.direction == 2:
                 return False
-            elif self.direction == 4 and entity.direction == 2:
-                return False
-            elif self.direction == 6 and entity.direction == 4:
-                return False
-            elif self.direction == 8 and entity.direction == 8:
+            elif self.direction == 4 and entity.direction is None or \
+                    self.direction is None and entity.direction == 4:
                 return False
 
             return True

@@ -11,6 +11,9 @@ Convert blueprint to 2D array:
     ☐ better unsuported items display
 
 Create a node network from the blueprint:
-    ☐ Create a node network from the blueprint @started(22-06-17 12:06)
+    ✔ Converyor belts @started(22-06-17 12:06): @done(22-06-17 16:44) @lasted(4h38m25s)
+    ☐ Arms
+    ☐ Conveyor belts
+    ☐ Assembly machines
+
     ☐ Display with networkx
-    ☐ Test on all the blueprints
