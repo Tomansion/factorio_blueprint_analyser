@@ -2,7 +2,15 @@
 ✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)
 ✔ Decode the blueprint if it is encoded @done(22-06-15 12:04)
 
+Convert blueprint to 2D array:
+    ✔ Belts @done(22-06-17 11:51)
+    ✔ inserters @done(22-06-17 11:51)
+    ✔ assembly machines @done(22-06-17 11:52)
+    ✔ storage machines @started(22-06-17 11:52) @done(22-06-17 11:59) @lasted(7m57s)
+    ✔ underground belts @started(22-06-17 11:59) @done(22-06-17 12:05) @lasted(6m59s)
+    ☐ better unsuported items display
+
 Create a node network from the blueprint:
-    ☐ Create a node network from the blueprint
+    ☐ Create a node network from the blueprint @started(22-06-17 12:06)
     ☐ Display with networkx
     ☐ Test on all the blueprints

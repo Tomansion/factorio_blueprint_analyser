@@ -12,4 +12,4 @@ if __name__ == "__main__":
 
     # Read the input blueprint
     bp = blueprint.load_blueprint(options.input)
-    # bp.display()
+    bp.display()

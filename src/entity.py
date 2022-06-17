@@ -35,11 +35,19 @@ def create_entity(entity_in_blueprint):
     if entity_data["type"] == "transport-belt":
         return TransportBelt(entity_in_blueprint, entity_data)
 
-    if entity_data["type"] == "assembling-machine":
+    elif entity_data["type"] == "assembling-machine":
         return AssemblingMachine(entity_in_blueprint, entity_data)
 
-    if entity_data["type"] == "inserter":
+    elif entity_data["type"] == "inserter":
         return Inserter(entity_in_blueprint, entity_data)
+
+    elif entity_data["type"] == "container":
+        return Container(entity_in_blueprint, entity_data)
+
+    elif entity_data["type"] == "underground-belt":
+        return UndergroundBelt(entity_in_blueprint, entity_data)
+
+    print(f"Warning: entity {entity_in_blueprint['name']} not supported")
 
 
 class Entity:
@@ -166,8 +174,39 @@ class AssemblingMachine (Entity):
         else:
             return colored("│", color)
 
+
+class Container (Entity):
+    def __init__(self, dictionary_entity, entity_data):
+        super().__init__(dictionary_entity, entity_data)
+
+    def to_char(self, offset=[0, 0]):
+        return "⧈"
+
+
+class UndergroundBelt (Entity):
+    def __init__(self, dictionary_entity, entity_data):
+        super().__init__(dictionary_entity, entity_data)
+
+    def to_char(self):
+        color = "white"
+        if self.name == "underground-belt":
+            color = "yellow"
+        if self.name == "fast-underground-belt":
+            color = "red"
+        if self.name == "express-underground-belt":
+            color = "blue"
+
+        # ⇦ ⇨ ⇧
+        if self.direction == 2:
+            return colored("⇨", color)
+        elif self.direction == 4:
+            return colored("⇩", color)
+        elif self.direction == 6:
+            return colored("⇦", color)
+        else:
+            return colored("⇧", color)
+
 # ↕ ↔
-# ⇦ ⇨ ⇧ ⇩
 # ╔═╗
 # ║ ║
 # ╚═╝
