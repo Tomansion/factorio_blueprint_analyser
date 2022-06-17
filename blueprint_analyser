@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
+from src import (
+    factorio,
+    utils,
+    options,
+    blueprint,
+    network
+)
 
-from src import factorio, utils, options, blueprint
 
 if __name__ == "__main__":
     # Read and check the user parameters
@@ -13,3 +19,7 @@ if __name__ == "__main__":
     # Read the input blueprint
     bp = blueprint.load_blueprint(options.input)
     bp.display()
+
+    # Creade a node network from the blueprint
+    nw = network.create_network(bp)
+    nw.display()

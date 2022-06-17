@@ -3,6 +3,12 @@ from termcolor import colored
 
 from src import utils, factorio
 
+# -----------------------------------------------------------
+# Base class for all entities
+# The create_entity function will return an entity instance
+# corresponding to the givenentity_in_blueprint
+# -----------------------------------------------------------
+
 
 def create_entity(entity_in_blueprint):
     # entity_in_blueprint examples:
@@ -55,6 +61,7 @@ class Entity:
         self.data = entity_data
         self.number = entity_in_blueprint["entity_number"]
         self.name = entity_in_blueprint["name"]
+        self.large = False
 
         # Correc position
         self.original_position = entity_in_blueprint["position"]
@@ -73,6 +80,17 @@ class Entity:
         return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] [{self.original_position['x']}, {self.original_position['y']}]" + " " + self.to_char()
 
     def to_char(self):
+        return '?'
+
+
+class LargeEntity(Entity):
+    # Assembling machines, splitters, furnace, etc.
+    def __init__(self, entity_in_blueprint, entity_data):
+        super().__init__(entity_in_blueprint, entity_data)
+        self.large = True
+        self.offsets = []
+
+    def to_char(self, coords=[0, 0]):
         return '?'
 
 
@@ -99,6 +117,20 @@ class TransportBelt (Entity):
         else:
             return colored("↑", color)
 
+    def get_tile_in_front_offset(self):
+        # Returns an offset of the tile
+        # in front of the conveyor belt
+        #   example: [1, 0] if the conveyor is facing the right
+
+        if self.direction == 2:
+            return [1, 0]
+        elif self.direction == 4:
+            return [0, -1]
+        elif self.direction == 6:
+            return [-1, 0]
+        else:
+            return [0, 1]
+
 
 class Inserter (Entity):
     def __init__(self, dictionary_entity, entity_data):
@@ -124,7 +156,7 @@ class Inserter (Entity):
             return colored("▼", color)
 
 
-class AssemblingMachine (Entity):
+class AssemblingMachine (LargeEntity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
         self.recipe = dictionary_entity["recipe"]
@@ -142,13 +174,16 @@ class AssemblingMachine (Entity):
             [-1, -1],
         ]
 
-    def to_char(self, offset=[0, 0]):
+    def to_char(self, coords=[0, 0]):
+        offset = [coords[0] - self.position["x"],
+                  coords[1] - self.position["y"]]
         # The entity_offset is used to tell witch part
         # of the assembling machine we want to display
         # For example, if the entity is an assembling machine (3x3 size),
         # the offset will be [0, 0] for the center, [1, 1] for the top-right,
         # [1, -1] for the bottom-right and so on.
 
+        # print(offset, coords, self.position)
         color = "white"
         if self.name == "assembling-machine-2":
             color = "blue"

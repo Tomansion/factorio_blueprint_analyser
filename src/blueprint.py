@@ -43,11 +43,11 @@ class Blueprint:
         self.array = []
 
         for _ in range(self.heigth):
-            self.array.append([" "] * self.width)
+            self.array.append([None] * self.width)
 
         for entity in self.entities:
-            if entity.data["type"] == "assembling-machine":
-                # Because the assembling machine is a 3x3 block,
+            if entity.large:
+                # Because entites like the assembling machine is a 3x3 block,
                 # we need to store it in the array 9 times
                 for offset in entity.offsets:
                     offset_coord_x = offset[0] + entity.position["x"]
@@ -60,13 +60,10 @@ class Blueprint:
                     if offset_coord_y >= self.heigth or offset_coord_y < 0:
                         continue
 
-                    self.array[offset_coord_y][offset_coord_x] = entity.to_char(
-                        offset)
+                    self.array[offset_coord_y][offset_coord_x] = entity
 
-                # self.array[entity.position["y"]][entity.position["x"]] = "T"
             else:
-                self.array[entity.position["y"]
-                           ][entity.position["x"]] = entity.to_char()
+                self.array[entity.position["y"]][entity.position["x"]] = entity
 
     def display(self):
         utils.verbose(
@@ -77,10 +74,18 @@ class Blueprint:
     def display_array(self):
         if not options.silent:
             print("")
-            for row in self.array:
+            for (y, row) in enumerate(self.array):
                 print("   ", end=" ")
-                for cell in row:
-                    print(cell, end=" ")
+                for (x, entity) in enumerate(row):
+                    if entity is None:
+                        print(" ", end=" ")
+                    else:
+                        # print([x, y])
+                        # print("")
+                        if entity.large:
+                            print(entity.to_char([x, y]), end=" ")
+                        else:
+                            print(entity.to_char(), end=" ")
                 print("")
             print("")
 

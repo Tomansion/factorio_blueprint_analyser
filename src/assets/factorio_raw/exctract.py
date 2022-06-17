@@ -1,21 +1,28 @@
 import ujson as json
 
+# -----------------------------------------------------------
+# Treat the big factorio_raw Json file,
+# select the relevant data and store it in a new Json file
+#
+# It's easier to work with a more readable Json file
+# -----------------------------------------------------------
+
 data_file_path = "src/assets/factorio_raw/factorio_raw.json"
 data_file_export_path = "src/assets/factorio_raw/factorio_raw_min.json"
 
 key_to_keep = [
     "recipe",
-    "splitter",
+    # "splitter",
     # "item-group",
     "underground-belt",
-    "infinity-container",
+    # "infinity-container",
     "item",
     "container",
     "transport-belt",
-    "logistic-container",
+    # "logistic-container",
     "recipe-category",
     "assembling-machine",
-    "furnace",
+    # "furnace",
     "inserter"
 ]
 
