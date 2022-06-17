@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 
-from src import utils, options, blueprint
+from src import factorio, utils, options, blueprint
 
 if __name__ == "__main__":
+    # Load the Factorio data
+    factorio.load_data()
+
     # Read and check the user parameters
     options.read_options()
 
