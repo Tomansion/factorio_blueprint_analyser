@@ -1,5 +1,5 @@
 from math import floor
-import sys
+from termcolor import colored
 
 from src import utils, factorio
 
@@ -73,15 +73,23 @@ class TransportBelt (Entity):
         super().__init__(dictionary_entity, entity_data)
 
     def to_char(self):
+        color = "white"
+        if self.name == "transport-belt":
+            color = "yellow"
+        if self.name == "fast-transport-belt":
+            color = "red"
+        if self.name == "express-transport-belt":
+            color = "blue"
+
         # ← ↑ → ↓
         if self.direction == 2:
-            return "→"
+            return colored("→", color)
         elif self.direction == 4:
-            return "↓"
+            return colored("↓", color)
         elif self.direction == 6:
-            return "←"
+            return colored("←", color)
         else:
-            return "↑"
+            return colored("↑", color)
 
 
 class Inserter (Entity):
@@ -89,15 +97,23 @@ class Inserter (Entity):
         super().__init__(dictionary_entity, entity_data)
 
     def to_char(self):
+        color = "white"
+        if self.name == "inserter":
+            color = "yellow"
+        if self.name == "long-handed-inserter":
+            color = "red"
+        if self.name == "fast-inserter":
+            color = "blue"
+
         # ► ▼ ▲ ◄
         if self.direction == 2:
-            return "◄"
+            return colored("◄", color)
         elif self.direction == 4:
-            return "▲"
+            return colored("▲", color)
         elif self.direction == 6:
-            return "►"
+            return colored("►", color)
         else:
-            return "▼"
+            return colored("▼", color)
 
 
 class AssemblingMachine (Entity):
@@ -125,23 +141,30 @@ class AssemblingMachine (Entity):
         # the offset will be [0, 0] for the center, [1, 1] for the top-right,
         # [1, -1] for the bottom-right and so on.
 
+        color = "white"
+        if self.name == "assembling-machine-2":
+            color = "blue"
+        if self.name == "assembling-machine-3":
+            color = "yellow"
+
         # ┌─┐
         # │A│
         # └─┘
+
         if offset == [0, 0]:
-            return self.recipe[0] or "?"
+            return colored(self.recipe[0] or "?", color)
         elif offset == [1, 1]:
-            return "┘"
+            return colored("┘", color)
         elif offset == [1, -1]:
-            return "┐"
+            return colored("┐", color)
         elif offset == [-1, 1]:
-            return "└"
+            return colored("└", color)
         elif offset == [-1, -1]:
-            return "┌"
+            return colored("┌", color)
         elif offset == [0, 1] or offset == [0, -1]:
-            return "─"
+            return colored("─", color)
         else:
-            return "│"
+            return colored("│", color)
 
 # ↕ ↔
 # ⇦ ⇨ ⇧ ⇩
