@@ -64,5 +64,6 @@ def load_data():
 
 
 def entity_exist(entity):
-    # TODO
+    #TODO
     pass
+

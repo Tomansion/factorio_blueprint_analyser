@@ -1,42 +1,12 @@
 import json
 import sys
-from importlib_metadata import NullFinder
 
-from matplotlib.pyplot import cla
-from pandas import array
-from src import utils
+from src import utils, entity
 
 # -----------------------------------------------------------
 # Read the blueprint from the given file in the options
 # If the file is an encoded json, it will be decoded
 # -----------------------------------------------------------
-
-
-class Entity:
-    def __init__(self, dictionary_entity):
-
-        # Input example:
-        # {
-        #     'entity_number': 18,
-        #     'name': 'inserter',
-        #     'position': {'x': 10, 'y': -90},
-        #     'direction': 6
-        # }
-
-        self.number = dictionary_entity["entity_number"]
-        self.name = dictionary_entity["name"]
-        self.original_position = dictionary_entity["position"]
-        self.position = {
-            "x": int(dictionary_entity["position"]["x"] + 0.5),
-            "y": int(dictionary_entity["position"]["y"] + 0.5),
-        }
-        if "direction" in dictionary_entity:
-            self.direction = dictionary_entity["direction"]
-        else:
-            self.direction = None
-
-    def __str__(self):
-        return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] [{self.original_position['x']}, {self.original_position['y']}]"
 
 
 class Blueprint:
@@ -49,16 +19,16 @@ class Blueprint:
     def __init__(self, label, entities):
         self.label = label
 
-        for entity in entities:
-            self.entities.append(Entity(entity))
+        for entity_dic in entities:
+            self.entities.append(entity.Entity(entity_dic))
 
         # Set the blueprint origin to [0, 0]
         lowest_x = min(entity.position["x"] for entity in self.entities)
         lowest_y = min(entity.position["y"] for entity in self.entities)
 
-        for entity in self.entities:
-            entity.position["x"] -= lowest_x
-            entity.position["y"] -= lowest_y
+        for entity_obj in self.entities:
+            entity_obj.position["x"] -= lowest_x
+            entity_obj.position["y"] -= lowest_y
 
         self.width = max(entity.position["x"] for entity in self.entities) + 1
         self.heigth = max(entity.position["y"] for entity in self.entities) + 1
@@ -75,7 +45,7 @@ class Blueprint:
 
         for entity in self.entities:
             self.array[entity.position["y"]
-                       ][entity.position["x"]] = entity.name[0]
+                       ][entity.position["x"]] = entity.to_char()
 
     def display(self):
         utils.verbose(
