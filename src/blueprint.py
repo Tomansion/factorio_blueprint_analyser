@@ -3,6 +3,7 @@ import sys
 from importlib_metadata import NullFinder
 
 from matplotlib.pyplot import cla
+from pandas import array
 from src import utils
 
 # -----------------------------------------------------------
@@ -43,6 +44,7 @@ class Blueprint:
     label = ""
     heigth = 0
     width = 0
+    array = []
 
     def __init__(self, label, entities):
         self.label = label
@@ -61,11 +63,31 @@ class Blueprint:
         self.width = max(entity.position["x"] for entity in self.entities) + 1
         self.heigth = max(entity.position["y"] for entity in self.entities) + 1
 
+        self.store_in_array()
+        self.display_array()
+
+    def store_in_array(self):
+        # store the entities list to a 2D array
+        self.array = []
+
+        for _ in range(self.heigth):
+            self.array.append([" "] * self.width)
+
+        for entity in self.entities:
+            self.array[entity.position["y"]
+                       ][entity.position["x"]] = entity.name[0]
+
     def display(self):
         utils.verbose(
             f"\n{self.label}, width: {self.width}, heigth: {self.heigth}, {len(self.entities)} entities:")
         for entity in self.entities:
             utils.verbose("  " + str(entity))
+
+    def display_array(self):
+        for row in self.array:
+            for cell in row:
+                print(cell, end="")
+            print("")
 
 
 def load_blueprint(file):

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import json
-import sys
 
 from src import utils, options, blueprint
 
@@ -12,57 +10,3 @@ if __name__ == "__main__":
     # Read the input blueprint
     bp = blueprint.load_blueprint(options.input)
     bp.display()
-
-    # # ==== Decoding ====
-
-    # # import the blueprint book:
-    # with open(opt.input, 'r') as f:
-    #     original_bp_string = f.read()
-
-    # # decode the blueprint book:
-    # bp_json = utils.decode(original_bp_string)
-    # utils.verbose("file decoded successfully")
-
-    # # ==== Writing ====
-
-    # # Writing the json file:
-    # with open(f'{opt.output}book.json', 'w') as f:
-    #     json.dump(bp_json, f)
-    #     utils.verbose(f'Saved book.json at {opt.output}')
-
-    # # Checking each blueprint:
-    # if "blueprint_book" not in bp_json:
-    #     print("Invalid blueprint book, no 'blueprint_book' key found")
-    #     sys.exit(1)
-
-    # bp_json = bp_json["blueprint_book"]
-
-    # if "blueprints" not in bp_json:
-    #     print("Invalid blueprint book, no 'blueprint_book.blueprints' key found")
-    #     sys.exit(1)
-
-    # blueprints = bp_json["blueprints"]
-
-    # if not len(blueprints):
-    #     print("No blueprints found in the blueprint book")
-    #     sys.exit(1)
-
-    # # Display the blueprints:
-
-    # if not opt.silent:
-    #     utils.verbose(f"\nThe book has {len(blueprints)} blueprints:\n")
-    #     for bp in blueprints:
-    #         blueprint = bp["blueprint"]
-    #         utils.verbose(" - " + blueprint["label"])
-    #     utils.verbose("")
-
-    # # Save each blueprint:
-    # os.mkdir(f'{opt.output}blueprints')
-    # for bp in blueprints:
-    #     blueprint = bp["blueprint"]
-    #     with open(f'{opt.output}blueprints/{blueprint["label"]}.json', 'w') as f:
-    #         json.dump(bp, f)
-    #     with open(f'{opt.output}blueprints/{blueprint["label"]}', 'w') as f:
-    #         f.write(utils.encode(bp))
-
-    # utils.verbose(f"Saved blueprints at {opt.output}blueprints")
