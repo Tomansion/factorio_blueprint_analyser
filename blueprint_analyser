@@ -4,11 +4,11 @@
 from src import factorio, utils, options, blueprint
 
 if __name__ == "__main__":
-    # Load the Factorio data
-    factorio.load_data()
-
     # Read and check the user parameters
     options.read_options()
+
+    # Load the Factorio data
+    factorio.load_data()
 
     # Read the input blueprint
     bp = blueprint.load_blueprint(options.input)

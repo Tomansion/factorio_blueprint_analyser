@@ -60,10 +60,21 @@ def load_data():
                 for entity in data[key]:
                     entities[entity] = data[key][entity]
 
+        # ==== process the entities ====
+        # Find the entity size size fron the selection_box data
+        #    Expected results:
+        #    [1,1] for the belts and arms,
+        #    [3,3] for the assembling machines
+
+        # for entity in entities:
+        #     if "selection_box" not in entities[entity]:
+        #         print(f"WARNING: no selection_box found in {entity} entity")
+        #         entity["size"] = [1, 1]
+        #         continue
+
         utils.verbose(f"Factorio data loaded")
 
 
 def entity_exist(entity):
-    #TODO
+    # TODO
     pass
-

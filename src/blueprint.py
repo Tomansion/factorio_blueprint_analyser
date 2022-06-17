@@ -1,7 +1,7 @@
 import json
 import sys
 
-from src import utils, entity
+from src import utils, entity, options
 
 # -----------------------------------------------------------
 # Read the blueprint from the given file in the options
@@ -20,7 +20,9 @@ class Blueprint:
         self.label = label
 
         for entity_dic in entities:
-            self.entities.append(entity.Entity(entity_dic))
+            new_entity = entity.create_entity(entity_dic)
+            if new_entity is not None:
+                self.entities.append(new_entity)
 
         # Set the blueprint origin to [0, 0]
         lowest_x = min(entity.position["x"] for entity in self.entities)
@@ -44,8 +46,27 @@ class Blueprint:
             self.array.append([" "] * self.width)
 
         for entity in self.entities:
-            self.array[entity.position["y"]
-                       ][entity.position["x"]] = entity.to_char()
+            if entity.data["type"] == "assembling-machine":
+                # Because the assembling machine is a 3x3 block,
+                # we need to store it in the array 9 times
+                for offset in entity.offsets:
+                    offset_coord_x = offset[0] + entity.position["x"]
+                    offset_coord_y = offset[1] + entity.position["y"]
+
+                    # check that the offset is in the bondaries
+                    if offset_coord_x >= self.width or offset_coord_x < 0:
+                        continue
+
+                    if offset_coord_y >= self.heigth or offset_coord_y < 0:
+                        continue
+
+                    self.array[offset_coord_y][offset_coord_x] = entity.to_char(
+                        offset)
+
+                # self.array[entity.position["y"]][entity.position["x"]] = "T"
+            else:
+                self.array[entity.position["y"]
+                           ][entity.position["x"]] = entity.to_char()
 
     def display(self):
         utils.verbose(
@@ -54,9 +75,13 @@ class Blueprint:
             utils.verbose("  " + str(entity))
 
     def display_array(self):
-        for row in self.array:
-            for cell in row:
-                print(cell, end="")
+        if not options.silent:
+            print("")
+            for row in self.array:
+                print("   ", end=" ")
+                for cell in row:
+                    print(cell, end=" ")
+                print("")
             print("")
 
 
