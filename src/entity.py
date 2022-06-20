@@ -153,7 +153,8 @@ class TransportBelt (Entity):
 
             return True
 
-        elif entity.data["type"] == "underground-belt":
+        elif entity.data["type"] == "underground-belt" and \
+                entity.belt_type == "input":
             # A belt can be connected to an underground belt
             # if they are in the same direction
 

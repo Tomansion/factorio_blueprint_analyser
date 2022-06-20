@@ -1,4 +1,10 @@
+from turtle import color
+
+from matplotlib import image
 from src import utils
+import networkx as nx
+import json
+from pyvis.network import Network as NetworkDisplay
 
 # -----------------------------------------------------------
 # Create a node network from a blueprint
@@ -148,7 +154,7 @@ class NetworkCreator:
                         possible_coord["x"], possible_coord["y"])
 
                     if child_node is not None and \
-                            child_node.type == "underground-belt" and \
+                            child_node.entity.name == node.entity.name and \
                             child_node.entity.belt_type == "output":
 
                         node.childs.append(child_node)
@@ -208,6 +214,57 @@ class Network:
         for node in self.get_leef_nodes():
             print(node)
 
+        # net = NetworkDisplay(directed=True)
+        # # net.add_node(1, label="Node 1")  # node id = 1 and label = Node 1
+        # # net.add_node(2)  # node id and label = 2
+        # net.add_nodes([1, 2, 3], value=[10, 100, 400],
+        #               title=['I am node 1', 'node 2 here', 'and im node 3'],
+        #               x=[21.4, 54.2, 11.2],
+        #               y=[100.2, 23.54, 32.1],
+        #               label=['NODE 1', 'NODE 2', 'NODE 3'],
+        #               color=['#00ff1e', '#162347', '#dd4b39'])
+
+        # Import items colors
+        item_colors = {}
+        with open("src/assets/factorio_item_colors.json") as f:
+            item_colors = json.load(f)
+
+        net = NetworkDisplay(directed=True, height=1000, width=1000)
+
+        for node in self.nodes:
+            # Define node color
+            node_color = "#000000"
+            if node.entity.name in item_colors:
+                node_color = item_colors[node.entity.name]
+
+            # Define node size
+            node_size = 10
+            if node.type == "transport-belt":
+                node_size = 3
+            if node.type == "underground-belt":
+                node_size = 4
+            if node.type == "container":
+                node_size = 5
+            if node.type == "assembling-machine":
+                node_size = 6
+            if node.type == "inserter":
+                node_size = 4
+
+            net.add_node(node.entity.number,
+                         label=node.entity.data["name"],
+                         color=node_color,
+                         value=node_size,
+                         shape="image",
+                         image=f"https://wiki.factorio.com/images/{node.entity.data['name'].capitalize().replace('-', '_')}.png",
+                         brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
+
+        for node in self.nodes:
+            for child in node.childs:
+                net.add_edge(node.entity.number, child.entity.number)
+
+        # Display the graph
+        net.show("graph.html")
+
 
 class Node:
     def __init__(self, entity):
@@ -218,18 +275,3 @@ class Node:
 
     def __str__(self):
         return f"Node: {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)}"
-
-
-# class Edge:
-#     def __init__(self, node1, node2):
-#         self.node1 = node1
-#         self.node2 = node2
-#         # self.type = "edge"
-#         # self.weight = 1
-#         # self.direction = "none"
-#         # self.distance = 0
-#         # self.distance_str = ""
-#         # self.distance_str_len = 0
-
-#     def __str__(self):
-#         return f"{self.node1.name} -> {self.node2.name}"
