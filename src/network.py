@@ -1,12 +1,9 @@
+from src import utils
 
 # -----------------------------------------------------------
 # Create a node network from a blueprint
-# Provide calculations methods for the network
+# Provide calculations methods
 # -----------------------------------------------------------
-
-from platform import node
-
-from responses import target
 
 
 def create_network(blueprint):
@@ -15,7 +12,6 @@ def create_network(blueprint):
 
 
 class NetworkCreator:
-
     blueprint = {}
     node_map = []
 
@@ -25,8 +21,9 @@ class NetworkCreator:
     def create_network(self):
         # Create a 2D array that will contain all nodes,
         # the same way as the blueprint array
-        # The nodes will then be exctarcted from the 2D array in a list
         # Knowing where the nodes are located from each other will be useful
+
+        # The nodes will then be exctracted from the 2D array in a list
 
         self.node_map = []
 
@@ -51,6 +48,7 @@ class NetworkCreator:
         if x < 0 or x >= self.blueprint.width or y < 0 or y >= self.blueprint.heigth:
             return None
 
+        # Check if a node already exists in the cell
         if self.node_map[y][x] is not None:
             return self.node_map[y][x]
 
@@ -60,16 +58,22 @@ class NetworkCreator:
         if entity is None:
             return None
 
+        # We can now create the node
         node = Node(entity)
 
+        # Each game entity interacts with the other nodes in there own way
+        # The requiered nodes will be created recursively
         if node.type == "transport-belt":
+            # The node is inserted in the map to avoid infinit recursion
             self.node_map[y][x] = node
 
-            # Set the entity in front as the node's child
+            # We want to set the entity in front of the belt as the node's child
+            # We get the coordinates of the entity in front of the belt:
             tile_in_front_offset = entity.get_tile_in_front_offset()
             target_x = x + tile_in_front_offset[0]
             target_y = y + tile_in_front_offset[1]
 
+            # We get the node in front of the belt or create a new one
             child_node = self.create_node(target_x, target_y)
 
             if child_node is not None and entity.can_connect_to(child_node.entity):
@@ -78,7 +82,8 @@ class NetworkCreator:
 
             return node
 
-        if node.type == "inserter":
+        elif node.type == "inserter":
+            # The node is inserted in the map to avoid infinit recursion
             self.node_map[y][x] = node
 
             # Set the entity where items are droped as the node's child
@@ -105,7 +110,9 @@ class NetworkCreator:
 
             return node
 
-        if node.type == "assembling-machine":
+        elif node.type == "assembling-machine":
+            # We will create 9 nodes for the 9 tiles of the assembling machine
+            # All the cells are the same object, they share their parents and childs
             for offset in node.entity.offsets:
                 target_x = node.entity.position["x"] + offset[0]
                 target_y = node.entity.position["y"] + offset[1]
@@ -117,12 +124,12 @@ class NetworkCreator:
                 self.node_map[target_y][target_x] = node
             return node
 
-        if node.type == "container":
-            # Those entities does not interact with other entities
+        elif node.type == "container":
+            # Those entities does not interact with others
             self.node_map[y][x] = node
             return node
 
-        print(f"Unsupported entity type: {entity.data['type']}")
+        utils.verbose(f"Unsupported entity type: {entity.data['type']}")
         return None
 
 
