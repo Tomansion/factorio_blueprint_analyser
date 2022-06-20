@@ -1,4 +1,5 @@
 from math import floor
+from cv2 import sepFilter2D
 from matplotlib.style import available
 from termcolor import colored
 
@@ -299,9 +300,27 @@ class Container (Entity):
         return "⧈"
 
 
-class UndergroundBelt (Entity):
+class UndergroundBelt (TransportBelt):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
+
+        self.belt_type = dictionary_entity["type"]  # "input" or "output"
+
+        self.max_distance = entity_data["max_distance"]
+
+    def get_possible_output_coords(self):
+        start_coord = self.position
+        possible_coords = []
+
+        for _ in range(self.max_distance):
+            start_coord = {
+                "x": start_coord["x"] + self.get_tile_in_front_offset()[0],
+                "y": start_coord["y"] + self.get_tile_in_front_offset()[1]
+            }
+
+            possible_coords.append(start_coord)
+
+        return possible_coords
 
     def to_char(self):
         color = "white"

@@ -1,7 +1,7 @@
 
 Create some new Blueprints:
     ☐ Recursive arms with and without chests
-    ☐ Underground belts test sets
+    ☐ Underground belts test sets (belts too far appart, ...)
     ☐ Belts mess
 
 ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
@@ -21,7 +21,7 @@ Create a node network from the blueprint:
     ✔ Arms @started(22-06-20 10:07) @done(22-06-20 10:32) @lasted(25m41s)
     ✔ Containers @done(22-06-20 10:32)
     ✔ Assembly machines @started(22-06-20 10:45) @done(22-06-20 12:11) @lasted(1h26m1s)
-    ☐ Underground belts
+    ✔ Underground belts @done(22-06-20 15:28)
 
     ☐ Display with networkx
 

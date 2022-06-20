@@ -124,6 +124,41 @@ class NetworkCreator:
                 self.node_map[target_y][target_x] = node
             return node
 
+        elif node.type == "underground-belt":
+            self.node_map[y][x] = node
+
+            if entity.belt_type == "output":
+                # Set the entity where items are droped as the node's child
+                # Exactly the same as for the transport belt
+                tile_in_front_offset = entity.get_tile_in_front_offset()
+                target_x = x + tile_in_front_offset[0]
+                target_y = y + tile_in_front_offset[1]
+
+                # We get the node in front of the belt or create a new one
+                child_node = self.create_node(target_x, target_y)
+
+                if child_node is not None and entity.can_connect_to(child_node.entity):
+                    node.childs.append(child_node)
+                    child_node.parents.append(node)
+            else:
+                # We try to connect to the output belt
+                possible_output_coords = entity.get_possible_output_coords()
+                for possible_coord in possible_output_coords:
+                    child_node = self.create_node(
+                        possible_coord["x"], possible_coord["y"])
+
+                    if child_node is not None and \
+                            child_node.type == "underground-belt" and \
+                            child_node.entity.belt_type == "output":
+
+                        node.childs.append(child_node)
+                        child_node.parents.append(node)
+                        break
+
+                    # No output belt found, print warning?
+
+            return node
+
         elif node.type == "container":
             # Those entities does not interact with others
             self.node_map[y][x] = node
