@@ -1,4 +1,5 @@
 from math import floor
+from matplotlib.style import available
 from termcolor import colored
 
 from src import utils, factorio
@@ -163,6 +164,54 @@ class TransportBelt (Entity):
 class Inserter (Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
+
+    def get_drop_tile_offset(self):
+        # Returns an offset of the tile in front of the arm
+        #   example: [1, 0] if the arm is facing the right
+        if self.direction == 2:
+            return [-1, 0]
+        elif self.direction == 4:
+            return [0, 1]
+        elif self.direction == 6:
+            return [1, 0]
+        else:
+            return [0, -1]
+
+        # For some reason, the inserter is facing
+        # the oposite direction compared to the belts
+
+    def get_pickup_tile_offset(self):
+        # Returns the offset of the tile in front of the arm
+        return [
+            -self.get_drop_tile_offset()[0],
+            -self.get_drop_tile_offset()[1]
+        ]
+
+    def can_move_to(self, entity):
+        # The arm can move items to belts,
+        # underground belts, chests or assembling machines
+        available_types = ["transport-belt",
+                           "underground-belt",
+                           "container",
+                           "assembling-machine"]
+
+        if entity.data["type"] in available_types:
+            return True
+
+        return False
+
+    def can_move_from(self, entity):
+        # The arm can move items from belts,
+        # underground belts, chests or assembling machines
+        available_types = ["transport-belt",
+                           "underground-belt",
+                           "container",
+                           "assembling-machine"]
+
+        if entity.data["type"] in available_types:
+            return True
+
+        return False
 
     def to_char(self):
         color = "white"

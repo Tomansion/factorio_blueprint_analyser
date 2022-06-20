@@ -20,6 +20,11 @@ class Blueprint:
         self.label = label
 
         for entity_dic in entities:
+
+            # Replace infinit chests with a normal chest
+            if entity_dic["name"] == "infinity-chest":
+                entity_dic["name"] = "iron-chest"
+
             new_entity = entity.create_entity(entity_dic)
             if new_entity is not None:
                 self.entities.append(new_entity)

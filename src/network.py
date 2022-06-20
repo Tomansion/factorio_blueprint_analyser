@@ -78,6 +78,39 @@ class NetworkCreator:
 
             return node
 
+        if node.type == "inserter":
+            self.node_map[y][x] = node
+
+            # Set the entity where items are droped as the node's child
+            tile_drop_offset = entity.get_drop_tile_offset()
+            target_drop_x = x + tile_drop_offset[0]
+            target_drop_y = y + tile_drop_offset[1]
+
+            drop_child_node = self.create_node(target_drop_x, target_drop_y)
+
+            if drop_child_node is not None and entity.can_move_to(drop_child_node.entity):
+                node.childs.append(drop_child_node)
+                drop_child_node.parents.append(node)
+
+            # Set the entity where items are picked up as the node's parent
+            tile_pickup_offset = entity.get_pickup_tile_offset()
+            target_pickup_x = x + tile_pickup_offset[0]
+            target_pickup_y = y + tile_pickup_offset[1]
+
+            pickup_node = self.create_node(target_pickup_x, target_pickup_y)
+
+            if pickup_node is not None and entity.can_move_from(pickup_node.entity):
+                node.parents.append(pickup_node)
+                pickup_node.childs.append(node)
+
+            return node
+
+        if node.type == "container":
+            # Nothing to do here
+            self.node_map[y][x] = node
+            return node
+
+        print(f"Unsupported entity type: {entity.data['type']}")
         return None
 
         # if entity.data["type"] == "assembling-machine":
@@ -113,7 +146,7 @@ class Network:
         for node in self.nodes:
             print(node)
 
-        print("Root nodes:")
+        print("\nRoot nodes:")
         for node in self.get_root_nodes():
             print(node)
         print("Leef nodes:")

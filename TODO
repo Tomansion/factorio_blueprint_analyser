@@ -12,8 +12,25 @@ Convert blueprint to 2D array:
 
 Create a node network from the blueprint:
     ✔ Converyor belts @started(22-06-17 12:06): @done(22-06-17 16:44) @lasted(4h38m25s)
-    ☐ Arms
-    ☐ Conveyor belts
+    ✔ Arms @started(22-06-20 10:07) @done(22-06-20 10:32) @lasted(25m41s)
+    ✔ Containers @done(22-06-20 10:32)
     ☐ Assembly machines
+    ☐ Underground belts
+
 
     ☐ Display with networkx
+
+    ☐ Red arms
+    ☐ splitters
+
+Optimisation:
+    ☐ Assembly recipes
+    Filters:
+        ☐ Chests
+        ☐ Arms
+        ☐ Splitters
+
+Create some new Blueprints:
+    ☐ Recursive arms with and without chests
+    ☐ Underground belts test sets
+    ☐ Belts mess

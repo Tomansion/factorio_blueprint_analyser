@@ -2,7 +2,6 @@
 
 from src import (
     factorio,
-    utils,
     options,
     blueprint,
     network
