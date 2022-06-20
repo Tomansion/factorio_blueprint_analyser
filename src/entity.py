@@ -171,11 +171,11 @@ class Inserter (Entity):
         if self.direction == 2:
             return [-1, 0]
         elif self.direction == 4:
-            return [0, 1]
+            return [0, -1]
         elif self.direction == 6:
             return [1, 0]
         else:
-            return [0, -1]
+            return [0, 1]
 
         # For some reason, the inserter is facing
         # the oposite direction compared to the belts
@@ -251,27 +251,31 @@ class AssemblingMachine (LargeEntity):
             [-1, -1],
         ]
 
-    def to_char(self, coords=[0, 0]):
-        offset = [coords[0] - self.position["x"],
-                  coords[1] - self.position["y"]]
-        # The entity_offset is used to tell witch part
-        # of the assembling machine we want to display
-        # For example, if the entity is an assembling machine (3x3 size),
-        # the offset will be [0, 0] for the center, [1, 1] for the top-right,
-        # [1, -1] for the bottom-right and so on.
+    def to_char(self, coords=None):
 
-        # print(offset, coords, self.position)
         color = "white"
         if self.name == "assembling-machine-2":
             color = "blue"
         if self.name == "assembling-machine-3":
             color = "yellow"
 
+        if coords is None:
+            return colored(self.recipe[0] or "?", color)
+
+        offset = [coords[0] - self.position["x"],
+                  coords[1] - self.position["y"]]
+
+        # The entity_offset is used to tell witch part
+        # of the assembling machine we want to display
+        # For example, if the entity is an assembling machine (3x3 size),
+        # the offset will be [0, 0] for the center, [1, 1] for the top-right,
+        # [1, -1] for the bottom-right and so on.
+
         # ┌─┐
         # │A│
         # └─┘
 
-        if offset == [0, 0]:
+        if offset == [0, 0] or coords is None:
             return colored(self.recipe[0] or "?", color)
         elif offset == [1, 1]:
             return colored("┘", color)

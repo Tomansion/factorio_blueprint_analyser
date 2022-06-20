@@ -1,3 +1,9 @@
+
+Create some new Blueprints:
+    ☐ Recursive arms with and without chests
+    ☐ Underground belts test sets
+    ☐ Belts mess
+
 ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
 ✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)
 ✔ Decode the blueprint if it is encoded @done(22-06-15 12:04)
@@ -14,9 +20,8 @@ Create a node network from the blueprint:
     ✔ Converyor belts @started(22-06-17 12:06): @done(22-06-17 16:44) @lasted(4h38m25s)
     ✔ Arms @started(22-06-20 10:07) @done(22-06-20 10:32) @lasted(25m41s)
     ✔ Containers @done(22-06-20 10:32)
-    ☐ Assembly machines
+    ✔ Assembly machines @started(22-06-20 10:45) @done(22-06-20 12:11) @lasted(1h26m1s)
     ☐ Underground belts
-
 
     ☐ Display with networkx
 
@@ -24,13 +29,13 @@ Create a node network from the blueprint:
     ☐ splitters
 
 Optimisation:
+    ☐ Reduce identical belts that follow each other
     ☐ Assembly recipes
     Filters:
         ☐ Chests
         ☐ Arms
         ☐ Splitters
 
-Create some new Blueprints:
-    ☐ Recursive arms with and without chests
-    ☐ Underground belts test sets
-    ☐ Belts mess
+Other:
+    ☐ Deal with arms grabing quantity reseach level
+    ☐ Deal with beacons

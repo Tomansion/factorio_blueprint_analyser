@@ -40,7 +40,7 @@ class NetworkCreator:
                 self.create_node(x, y)
 
         # Optimize the network
-        # TODO
+        # TODO: Remove belts that follow each others
 
         return Network(self.blueprint, self.node_map)
 
@@ -105,15 +105,25 @@ class NetworkCreator:
 
             return node
 
+        if node.type == "assembling-machine":
+            for offset in node.entity.offsets:
+                target_x = node.entity.position["x"] + offset[0]
+                target_y = node.entity.position["y"] + offset[1]
+
+                if target_x < 0 or target_x >= self.blueprint.width\
+                        or target_y < 0 or target_y >= self.blueprint.heigth:
+                    continue
+
+                self.node_map[target_y][target_x] = node
+            return node
+
         if node.type == "container":
-            # Nothing to do here
+            # Those entities does not interact with other entities
             self.node_map[y][x] = node
             return node
 
         print(f"Unsupported entity type: {entity.data['type']}")
         return None
-
-        # if entity.data["type"] == "assembling-machine":
 
 
 class Network:
@@ -126,7 +136,10 @@ class Network:
         for row in self.nodes_array:
             for node in row:
                 if node is not None:
-                    self.nodes.append(node)
+                    # Check that the node is not already in the list
+                    # It can happen if the node takes multiple tiles
+                    if node not in self.nodes:
+                        self.nodes.append(node)
 
     def get_root_nodes(self):
         roots = []
