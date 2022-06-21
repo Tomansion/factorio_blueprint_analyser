@@ -4,9 +4,10 @@ Create some new Blueprints:
     ☐ Underground belts test sets (belts too far appart, ...)
     ☐ Belts mess
 
-✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
-✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)
-✔ Decode the blueprint if it is encoded @done(22-06-15 12:04)
+Init the project:
+    ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
+    ✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)
+    ✔ Decode the blueprint if it is encoded @done(22-06-15 12:04)
 
 Convert blueprint to 2D array:
     ✔ Belts @done(22-06-17 11:51)
@@ -14,7 +15,6 @@ Convert blueprint to 2D array:
     ✔ assembly machines @done(22-06-17 11:52)
     ✔ storage machines @started(22-06-17 11:52) @done(22-06-17 11:59) @lasted(7m57s)
     ✔ underground belts @started(22-06-17 11:59) @done(22-06-17 12:05) @lasted(6m59s)
-    ☐ better unsuported items display
 
 Create a node network from the blueprint:
     ✔ Converyor belts @started(22-06-17 12:06): @done(22-06-17 16:44) @lasted(4h38m25s)
@@ -22,10 +22,9 @@ Create a node network from the blueprint:
     ✔ Containers @done(22-06-20 10:32)
     ✔ Assembly machines @started(22-06-20 10:45) @done(22-06-20 12:11) @lasted(1h26m1s)
     ✔ Underground belts @done(22-06-20 15:28)
+    ✔ Display with networkx @done(22-06-21 10:15)
 
-    ☐ Display with networkx
-
-    ☐ Red arms
+    ☐ Red arms @started(22-06-21 10:15)
     ☐ splitters
 
 Optimisation:
@@ -39,3 +38,4 @@ Optimisation:
 Other:
     ☐ Deal with arms grabing quantity reseach level
     ☐ Deal with beacons
+    ☐ better unsuported items display
