@@ -1,8 +1,11 @@
 
 Create some new Blueprints:
-    ☐ Recursive arms with and without chests
-    ☐ Underground belts test sets (belts too far appart, ...)
-    ☐ Belts mess
+    ✔ Recursive arms with and without chests @done(22-06-21 14:31)
+    ✔ Underground belts test sets (belts too far appart, ...) @done(22-06-21 14:31)
+    ✔ Belts mess @done(22-06-21 14:31)
+    ☐ Belts with shared items and complex mechanisms
+    ☐ Pipes
+    ☐ Beacons
 
 Init the project:
     ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
@@ -24,8 +27,10 @@ Create a node network from the blueprint:
     ✔ Underground belts @done(22-06-20 15:28)
     ✔ Display with networkx @done(22-06-21 10:15)
 
-    ☐ Red arms @started(22-06-21 10:15)
+    ☐ Red arms @started(22-06-21 14:26)
     ☐ splitters
+    ☐ Make arms pass items if no entity
+
 
 Optimisation:
     ☐ Reduce identical belts that follow each other
