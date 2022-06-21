@@ -255,6 +255,7 @@ class RedArm (Inserter):
         # This entity image path is an exception
         return "https://wiki.factorio.com/images/Long-handed_inserter.png"
 
+
 class AssemblingMachine (LargeEntity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
