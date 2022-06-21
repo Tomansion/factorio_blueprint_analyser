@@ -255,7 +255,7 @@ class Network:
                          color=node_color,
                          value=node_size,
                          shape="image",
-                         image=f"https://wiki.factorio.com/images/{node.entity.data['name'].capitalize().replace('-', '_')}.png",
+                         image=node.entity.get_ingame_image_path(),
                          brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
 
         for node in self.nodes:

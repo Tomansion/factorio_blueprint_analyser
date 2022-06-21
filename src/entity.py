@@ -47,7 +47,10 @@ def create_entity(entity_in_blueprint):
         return AssemblingMachine(entity_in_blueprint, entity_data)
 
     elif entity_data["type"] == "inserter":
-        return Inserter(entity_in_blueprint, entity_data)
+        if entity_data["name"] == "long-handed-inserter":
+            return RedArm(entity_in_blueprint, entity_data)
+        else:
+            return Inserter(entity_in_blueprint, entity_data)
 
     elif entity_data["type"] == "container":
         return Container(entity_in_blueprint, entity_data)
@@ -84,6 +87,16 @@ class Entity:
     def to_char(self):
         return '?'
 
+    def get_ingame_image_path(self):
+        # Item image url
+        # To display the entity game image, we will the images
+        # from : https://wiki.factorio.com/Category:Game_images
+
+        # We need to transform the entity name to a valid url
+        entity_wiki_name = self.data['name'].capitalize().replace('-', '_')
+
+        return f"https://wiki.factorio.com/images/{entity_wiki_name}.png"
+
 
 class LargeEntity(Entity):
     # Assembling machines, splitters, furnace, etc.
@@ -101,7 +114,7 @@ class LargeEntity(Entity):
         return False
 
 
-class TransportBelt (Entity):
+class TransportBelt(Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
 
@@ -205,15 +218,10 @@ class Inserter (Entity):
     def can_move_from(self, entity):
         # The arm can move items from belts,
         # underground belts, chests or assembling machines
-        available_types = ["transport-belt",
-                           "underground-belt",
-                           "container",
-                           "assembling-machine"]
 
-        if entity.data["type"] in available_types:
-            return True
-
-        return False
+        # It seams that the allowed entities
+        # are the same as the can_move_to
+        return self.can_move_to(entity)
 
     def to_char(self):
         color = "white"
@@ -235,11 +243,27 @@ class Inserter (Entity):
             return colored("▼", color)
 
 
+class RedArm (Inserter):
+    def __init__(self, dictionary_entity, entity_data):
+        super().__init__(dictionary_entity, entity_data)
+        print("red arm creation")
+
+    def get_drop_tile_offset(self):
+        return [e * 2 for e in super().get_drop_tile_offset()]
+
+    def get_ingame_image_path(self):
+        # This entity image path is an exception
+        return "https://wiki.factorio.com/images/Long-handed_inserter.png"
+
 class AssemblingMachine (LargeEntity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
-        self.recipe = dictionary_entity["recipe"]
-        # TODO: Check that it exist
+
+        if "recipe" in dictionary_entity:
+            self.recipe = dictionary_entity["recipe"]
+            # TODO: Check that it exist
+        else:
+            self.recipe = None
 
         self.offsets = [
             [0, 0],
@@ -262,7 +286,7 @@ class AssemblingMachine (LargeEntity):
             color = "yellow"
 
         if coords is None:
-            return colored(self.recipe[0] or "?", color)
+            return colored(self.recipe[0] if self.recipe is not None else "?", color)
 
         offset = [coords[0] - self.position["x"],
                   coords[1] - self.position["y"]]
@@ -278,7 +302,7 @@ class AssemblingMachine (LargeEntity):
         # └─┘
 
         if offset == [0, 0] or coords is None:
-            return colored(self.recipe[0] or "?", color)
+            return colored(self.recipe[0] if self.recipe is not None else "?", color)
         elif offset == [1, 1]:
             return colored("┘", color)
         elif offset == [1, -1]:

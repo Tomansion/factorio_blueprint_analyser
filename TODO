@@ -27,8 +27,10 @@ Create a node network from the blueprint:
     ✔ Underground belts @done(22-06-20 15:28)
     ✔ Display with networkx @done(22-06-21 10:15)
 
-    ☐ Red arms @started(22-06-21 14:26)
-    ☐ splitters
+    ✔ Red arms @started(22-06-21 14:26) @done(22-06-21 14:48) @lasted(22m38s)
+    ☐ Splitters
+    ☐ Display assembly machines recipes
+
     ☐ Make arms pass items if no entity
 
 
