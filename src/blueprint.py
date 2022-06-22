@@ -78,6 +78,7 @@ class Blueprint:
 
     def display_array(self):
         if not options.silent:
+            print("display")
             print("")
             for (y, row) in enumerate(self.array):
                 print("   ", end=" ")
@@ -85,8 +86,6 @@ class Blueprint:
                     if entity is None:
                         print(" ", end=" ")
                     else:
-                        # print([x, y])
-                        # print("")
                         if entity.large:
                             print(entity.to_char([x, y]), end=" ")
                         else:

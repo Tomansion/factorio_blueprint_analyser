@@ -58,6 +58,9 @@ def create_entity(entity_in_blueprint):
     elif entity_data["type"] == "underground-belt":
         return UndergroundBelt(entity_in_blueprint, entity_data)
 
+    elif entity_data["type"] == "splitter":
+        return Splitter(entity_in_blueprint, entity_data)
+
     print(f"Warning: entity {entity_in_blueprint['name']} not supported")
 
 
@@ -367,7 +370,64 @@ class UndergroundBelt (TransportBelt):
         else:
             return colored("⇧", color)
 
+
+class Splitter (LargeEntity):
+    def __init__(self, dictionary_entity, entity_data):
+        super().__init__(dictionary_entity, entity_data)
+        self.offsets = [[0, 0], self.get_second_belt_offset()]
+        # TODO: Filters
+
+    def get_second_belt_offset(self):
+
+        if self.direction == 2:  # ⇨
+            return [0, -1]
+        elif self.direction == 4:  # ⇩
+            return [-1, 0]
+        elif self.direction == 6:  # ⇦
+            return [0, -1]
+        else:  # ⇧
+            return [-1, 0]
+
+    def to_char(self, coords=None):
+
+        color = "white"
+        if self.name == "splitter":
+            color = "yellow"
+        if self.name == "fast-splitter":
+            color = "red"
+        if self.name == "express-splitter":
+            color = "blue"
+
+        # ⬑⬏ ⬐⬎
+        # ↱    ↰
+        # ↳    ↲
+
+        if coords is None:
+            return colored("⬑⬏", color)
+
+        if self.position["x"] == coords[0] and self.position["y"] == coords[1]:
+            if self.direction == 2:
+                return colored("↳", color)
+            elif self.direction == 4:
+                return colored("⬎", color)
+            elif self.direction == 6:
+                return colored("↲", color)
+            else:
+                return colored("⬏", color)
+        else:
+            if self.direction == 2:
+                return colored("↱", color)
+            elif self.direction == 4:
+                return colored("⬐", color)
+            elif self.direction == 6:
+                return colored("↰", color)
+            else:
+                return colored("⬑", color)
+
+
 # ↕ ↔
 # ╔═╗
 # ║ ║
 # ╚═╝
+
+# ⭦ ⭧ ⭩ ⭨
