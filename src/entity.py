@@ -170,7 +170,8 @@ class TransportBelt(Entity):
             return True
 
         elif entity.data["type"] == "underground-belt" and \
-                entity.belt_type == "input":
+                entity.belt_type == "input" or \
+                entity.data["type"] == "splitter":
             # A belt can be connected to an underground belt
             # if they are in the same direction
 
@@ -224,7 +225,8 @@ class Inserter (Entity):
 
         # It seams that the allowed entities
         # are the same as the can_move_to
-        return self.can_move_to(entity)
+        # except for the splitters
+        return [self.can_move_to(entity), "splitter"]
 
     def to_char(self):
         color = "white"
@@ -387,6 +389,39 @@ class Splitter (LargeEntity):
             return [0, -1]
         else:  # ⇧
             return [-1, 0]
+
+    def get_drop_tile_offsets(self):
+        if self.direction == 2:  # ⇨
+            return [[1, -1], [1, 0]]
+        elif self.direction == 4:  # ⇩
+            return [[-1, 1], [0, 1]]
+        elif self.direction == 6:  # ⇦
+            return [[-1, -1], [-1, 0]]
+        else:  # ⇧
+            return [[-1, -1], [0, -1]]
+
+    def can_move_to(self, entity):
+        if entity.data["type"] == "transport-belt":
+            # A belt can be connected to another belt
+            # except if they are facing each other
+            if self.direction == 2 and entity.direction == 6 or \
+                    self.direction == 6 and entity.direction == 2:
+                return False
+            elif self.direction == 4 and entity.direction is None or \
+                    self.direction is None and entity.direction == 4:
+                return False
+
+            return True
+
+        elif entity.data["type"] == "underground-belt" and \
+                entity.belt_type == "input" or \
+                entity.data["type"] == "splitter":
+            # A belt can be connected to an underground belt
+            # if they are in the same direction
+
+            return self.direction == entity.direction
+
+        return False
 
     def to_char(self, coords=None):
 

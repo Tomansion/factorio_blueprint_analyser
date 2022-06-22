@@ -20,5 +20,5 @@ if __name__ == "__main__":
     bp.display()
 
     # Creade a node network from the blueprint
-    # nw = network.create_network(bp)
-    # nw.display()
+    nw = network.create_network(bp)
+    nw.display()

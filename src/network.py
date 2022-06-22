@@ -170,6 +170,39 @@ class NetworkCreator:
             self.node_map[y][x] = node
             return node
 
+        elif node.type == "splitter":
+
+            # We need to add the second splitter tile to the map
+            if x == entity.position["x"] and y == entity.position["y"]:
+                # If we are the original splitter, we need to add the second splitter
+                self.node_map[y][x] = node
+
+                second_belt_offset = entity.get_second_belt_offset()
+                second_node_x = x + second_belt_offset[0]
+                second_node_y = y + second_belt_offset[1]
+
+                if second_node_x >= 0 and second_node_x < self.blueprint.width and\
+                        second_node_y >= 0 and second_node_y < self.blueprint.heigth:
+                    self.node_map[second_node_y][second_node_x] = node
+            else:
+                # We create the original splitter instead
+                return self.create_node(entity.position["x"], entity.position["y"])
+
+            # Set the entity where items are droped as the node's child
+            drop_tile_offsets = entity.get_drop_tile_offsets()
+            for offset in drop_tile_offsets:
+                target_drop_x = x + offset[0]
+                target_drop_y = y + offset[1]
+
+                drop_child_node = self.create_node(
+                    target_drop_x, target_drop_y)
+
+                if drop_child_node is not None and entity.can_move_to(drop_child_node.entity):
+                    node.childs.append(drop_child_node)
+                    drop_child_node.parents.append(node)
+
+            return node
+
         utils.verbose(f"Unsupported entity type: {entity.data['type']}")
         return None
 
@@ -185,7 +218,8 @@ class Network:
             for node in row:
                 if node is not None:
                     # Check that the node is not already in the list
-                    # It can happen if the node takes multiple tiles
+                    # It's normal if the node takes multiple tiles
+                    # (They appear multiple times in the map)
                     if node not in self.nodes:
                         self.nodes.append(node)
 
@@ -204,25 +238,15 @@ class Network:
         return leafs
 
     def display(self):
-        for node in self.nodes:
-            print(node)
+        # for node in self.nodes:
+        #     print(node)
 
-        print("\nRoot nodes:")
-        for node in self.get_root_nodes():
-            print(node)
-        print("Leef nodes:")
-        for node in self.get_leef_nodes():
-            print(node)
-
-        # net = NetworkDisplay(directed=True)
-        # # net.add_node(1, label="Node 1")  # node id = 1 and label = Node 1
-        # # net.add_node(2)  # node id and label = 2
-        # net.add_nodes([1, 2, 3], value=[10, 100, 400],
-        #               title=['I am node 1', 'node 2 here', 'and im node 3'],
-        #               x=[21.4, 54.2, 11.2],
-        #               y=[100.2, 23.54, 32.1],
-        #               label=['NODE 1', 'NODE 2', 'NODE 3'],
-        #               color=['#00ff1e', '#162347', '#dd4b39'])
+        # print("\nRoot nodes:")
+        # for node in self.get_root_nodes():
+        #     print(node)
+        # print("Leef nodes:")
+        # for node in self.get_leef_nodes():
+        #     print(node)
 
         # Import items colors
         item_colors = {}
@@ -238,15 +262,15 @@ class Network:
                 node_color = item_colors[node.entity.name]
 
             # Define node size
-            node_size = 10
+            node_size = 3
             if node.type == "transport-belt":
                 node_size = 3
-            if node.type == "underground-belt":
+            if node.type == "underground-belt" or "splitter":
                 node_size = 4
             if node.type == "container":
-                node_size = 5
+                node_size = 3
             if node.type == "assembling-machine":
-                node_size = 6
+                node_size = 5
             if node.type == "inserter":
                 node_size = 4
 

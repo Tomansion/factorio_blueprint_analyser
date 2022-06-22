@@ -6,6 +6,7 @@ Create some new Blueprints:
     ☐ Belts with shared items and complex mechanisms
     ☐ Pipes
     ☐ Beacons
+    ☐ Tests if arms can pickup from splitters
 
 Init the project:
     ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
@@ -28,7 +29,7 @@ Create a node network from the blueprint:
     ✔ Display with networkx @done(22-06-21 10:15)
 
     ✔ Red arms @started(22-06-21 14:26) @done(22-06-21 14:48) @lasted(22m38s)
-    ☐ Splitters @started(22-06-22 10:36)
+    ✔ Splitters @started(22-06-22 10:36) @done(22-06-22 12:12) @lasted(1h36m44s)
     ☐ Display assembly machines recipes
 
     ☐ Make arms pass items if no entity
