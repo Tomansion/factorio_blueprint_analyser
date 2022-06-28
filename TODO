@@ -34,9 +34,9 @@ Create a node network from the blueprint:
     ☐ Make arms pass items if no entity
 
 Display enhancement:
-    ☐ Display assembly machines recipes @started(22-06-28 10:31)
-    ☐ Display inputs
-    ☐ Display outputs
+    ✔ Display assembly machines recipes @started(22-06-28 10:31) @done(22-06-28 11:05) @lasted(34m14s)
+    ✔ Display inputs @done(22-06-28 11:22)
+    ✔ Display outputs @done(22-06-28 11:22)
 
 Optimisation:
     ☐ Reduce identical belts that follow each other

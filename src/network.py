@@ -1,3 +1,4 @@
+from turtle import color
 from matplotlib.pyplot import title
 from numpy import size
 from src import utils
@@ -261,12 +262,13 @@ class Network:
 
         for node in self.nodes:
             for child in node.childs:
-                net.add_edge(node.entity.number, child.entity.number)
+                net.add_edge(node.entity.number,
+                             child.entity.number,
+                             color="black")
 
         # Display recipes
         for node in self.nodes:
             if node.type == "assembling-machine" and node.entity.recipe is not None:
-                print(node.entity.recipe.get_ingame_image_path())
                 node_id = str(node.entity.number) + "_recipe"
                 net.add_node(node_id,
                              label=node.entity.recipe.name,
@@ -280,7 +282,42 @@ class Network:
                              title="produce",
                              color="grey",
                              size=2,
-                             dashes=True)
+                             dashes=True,
+                             arrowStrikethrough=False)
+
+        # Display inputs
+        for node in self.root_nodes():
+            node_id = str(node.entity.number) + "_root"
+            net.add_node(node_id,
+                         label="Input",
+                         value=3,
+                         shape="text")
+
+            net.add_edge(node_id,
+                         node.entity.number,
+                         color="red",
+                         size=2,
+                         dashes=True,
+                         arrowStrikethrough=False)
+
+            # TODO: Display the expected input materials
+
+        # Display outputs
+        for node in self.leaf_nodes():
+            node_id = str(node.entity.number) + "_leaf"
+            net.add_node(node_id,
+                         label="Output",
+                         value=3,
+                         shape="text")
+
+            net.add_edge(node.entity.number,
+                         node_id,
+                         color="blue",
+                         size=2,
+                         dashes=True,
+                         arrowStrikethrough=False)
+
+            # TODO: Display the expected produced materials
 
         # Display the graph
         net.show("graph.html")
