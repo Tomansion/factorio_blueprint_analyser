@@ -235,10 +235,10 @@ class Network:
         return leafs
 
     def display(self):
-        net = NetworkDisplay(directed=True, height=1000, width=1000)
+        net = NetworkDisplay(directed=True, height=1000, width=1900)
         net.repulsion(node_distance=100, spring_length=0)
-        # Nodes and edges
 
+        # Nodes and edges
         for node in self.nodes:
             # Define node size
             node_size = 3
@@ -254,7 +254,6 @@ class Network:
                 node_size = 4
 
             net.add_node(node.entity.number,
-                         label=node.entity.data["name"],
                          value=node_size,
                          shape="image",
                          image=node.entity.get_ingame_image_path(),
@@ -267,20 +266,21 @@ class Network:
         # Display recipes
         for node in self.nodes:
             if node.type == "assembling-machine" and node.entity.recipe is not None:
+                print(node.entity.recipe.get_ingame_image_path())
                 node_id = str(node.entity.number) + "_recipe"
                 net.add_node(node_id,
-                             label=node.entity.recipe,
-                             value=3,)
-                #  shape="image",
-                #  image=recipe.get_ingame_image_path(),
-                #  brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
-                net.add_edge(
-                    node.entity.number,
-                    node_id,
-                    title="produce",
-                    color="grey",
-                    size=2,
-                    dashes=True)
+                             label=node.entity.recipe.name,
+                             value=3,
+                             shape="image",
+                             image=node.entity.recipe.get_ingame_image_path(),
+                             brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
+
+                net.add_edge(node.entity.number,
+                             node_id,
+                             title="produce",
+                             color="grey",
+                             size=2,
+                             dashes=True)
 
         # Display the graph
         net.show("graph.html")

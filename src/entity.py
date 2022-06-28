@@ -3,7 +3,7 @@ from cv2 import sepFilter2D
 from matplotlib.style import available
 from termcolor import colored
 
-from src import utils, factorio
+from src import utils, factorio, recipe
 
 # -----------------------------------------------------------
 # Base class for all entities
@@ -266,8 +266,7 @@ class AssemblingMachine (LargeEntity):
         super().__init__(dictionary_entity, entity_data)
 
         if "recipe" in dictionary_entity:
-            self.recipe = dictionary_entity["recipe"]
-            # TODO: Check that it exist
+            self.recipe = recipe.Recipe(dictionary_entity["recipe"])
         else:
             self.recipe = None
 
@@ -292,7 +291,7 @@ class AssemblingMachine (LargeEntity):
             color = "yellow"
 
         if coords is None:
-            return colored(self.recipe[0] if self.recipe is not None else "?", color)
+            return colored(self.recipe.name[0] if self.recipe is not None else "?", color)
 
         offset = [coords[0] - self.position["x"],
                   coords[1] - self.position["y"]]
@@ -308,7 +307,7 @@ class AssemblingMachine (LargeEntity):
         # └─┘
 
         if offset == [0, 0] or coords is None:
-            return colored(self.recipe[0] if self.recipe is not None else "?", color)
+            return colored(self.recipe.name[0] if self.recipe is not None else "?", color)
         elif offset == [1, 1]:
             return colored("┘", color)
         elif offset == [1, -1]:
