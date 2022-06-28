@@ -1,3 +1,19 @@
+Bottleneck calculator:
+    ☐ Recipe back propagation @started(22-06-28 14:21)
+    ☐ Capacity and speed calculation
+
+Optimisation:
+    ☐ Reduce identical belts that follow each other
+
+Other:
+    ☐ Furnaces
+    ☐ Science
+    ☐ Deal with arms grabing quantity reseach level
+    ☐ Deal with beacons
+    ☐ better unsuported items display
+    ☐ Deal with game difficulty
+    ☐ Filters
+    ☐ Beacons
 
 Create some new Blueprints:
     ✔ Recursive arms with and without chests @done(22-06-21 14:31)
@@ -38,15 +54,3 @@ Display enhancement:
     ✔ Display inputs @done(22-06-28 11:22)
     ✔ Display outputs @done(22-06-28 11:22)
 
-Optimisation:
-    ☐ Reduce identical belts that follow each other
-    ☐ Assembly recipes
-    Filters:
-        ☐ Chests
-        ☐ Arms
-        ☐ Splitters
-
-Other:
-    ☐ Deal with arms grabing quantity reseach level
-    ☐ Deal with beacons
-    ☐ better unsuported items display
