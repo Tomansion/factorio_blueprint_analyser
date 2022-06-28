@@ -22,3 +22,11 @@ if __name__ == "__main__":
     # Creade a node network from the blueprint
     nw = network.create_network(bp)
     nw.display()
+
+    # Get some informations
+    print("\n\n Roots:")
+    for root in nw.root_nodes():
+        print(root)
+    print("\n\n Leafs:")
+    for leaf in nw.leaf_nodes():
+        print(leaf)

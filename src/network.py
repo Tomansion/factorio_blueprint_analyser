@@ -223,14 +223,14 @@ class Network:
                     if node not in self.nodes:
                         self.nodes.append(node)
 
-    def get_root_nodes(self):
+    def root_nodes(self):
         roots = []
         for node in self.nodes:
             if len(node.parents) == 0:
                 roots.append(node)
         return roots
 
-    def get_leef_nodes(self):
+    def leaf_nodes(self):
         leafs = []
         for node in self.nodes:
             if len(node.childs) == 0:
@@ -238,16 +238,6 @@ class Network:
         return leafs
 
     def display(self):
-        # for node in self.nodes:
-        #     print(node)
-
-        # print("\nRoot nodes:")
-        # for node in self.get_root_nodes():
-        #     print(node)
-        # print("Leef nodes:")
-        # for node in self.get_leef_nodes():
-        #     print(node)
-
         # Import items colors
         item_colors = {}
         with open("src/assets/factorio_item_colors.json") as f:
