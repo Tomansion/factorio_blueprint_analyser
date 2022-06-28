@@ -1,9 +1,6 @@
-from turtle import color
-
-from matplotlib import image
+from matplotlib.pyplot import title
+from numpy import size
 from src import utils
-import networkx as nx
-import json
 from pyvis.network import Network as NetworkDisplay
 
 # -----------------------------------------------------------
@@ -238,19 +235,11 @@ class Network:
         return leafs
 
     def display(self):
-        # Import items colors
-        item_colors = {}
-        with open("src/assets/factorio_item_colors.json") as f:
-            item_colors = json.load(f)
-
         net = NetworkDisplay(directed=True, height=1000, width=1000)
+        net.repulsion(node_distance=100, spring_length=0)
+        # Nodes and edges
 
         for node in self.nodes:
-            # Define node color
-            node_color = "#000000"
-            if node.entity.name in item_colors:
-                node_color = item_colors[node.entity.name]
-
             # Define node size
             node_size = 3
             if node.type == "transport-belt":
@@ -266,7 +255,6 @@ class Network:
 
             net.add_node(node.entity.number,
                          label=node.entity.data["name"],
-                         color=node_color,
                          value=node_size,
                          shape="image",
                          image=node.entity.get_ingame_image_path(),
@@ -275,6 +263,24 @@ class Network:
         for node in self.nodes:
             for child in node.childs:
                 net.add_edge(node.entity.number, child.entity.number)
+
+        # Display recipes
+        for node in self.nodes:
+            if node.type == "assembling-machine" and node.entity.recipe is not None:
+                node_id = str(node.entity.number) + "_recipe"
+                net.add_node(node_id,
+                             label=node.entity.recipe,
+                             value=3,)
+                #  shape="image",
+                #  image=recipe.get_ingame_image_path(),
+                #  brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
+                net.add_edge(
+                    node.entity.number,
+                    node_id,
+                    title="produce",
+                    color="grey",
+                    size=2,
+                    dashes=True)
 
         # Display the graph
         net.show("graph.html")

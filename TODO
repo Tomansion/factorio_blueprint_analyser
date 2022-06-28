@@ -30,10 +30,13 @@ Create a node network from the blueprint:
 
     ✔ Red arms @started(22-06-21 14:26) @done(22-06-21 14:48) @lasted(22m38s)
     ✔ Splitters @started(22-06-22 10:36) @done(22-06-22 12:12) @lasted(1h36m44s)
-    ☐ Display assembly machines recipes
 
     ☐ Make arms pass items if no entity
 
+Display enhancement:
+    ☐ Display assembly machines recipes @started(22-06-28 10:31)
+    ☐ Display inputs
+    ☐ Display outputs
 
 Optimisation:
     ☐ Reduce identical belts that follow each other
