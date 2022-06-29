@@ -63,7 +63,8 @@ class NetworkCreator:
             return None
 
         # We can now create the node
-        node = Node(entity)
+        node = Assembly_node(
+            entity) if entity.data["type"] == "assembling-machine" else Transport_node(entity)
 
         # Each game entity interacts with the other nodes in there own way
         # The requiered nodes will be created recursively
@@ -287,6 +288,7 @@ class Network:
 
         # Display inputs
         for node in self.root_nodes():
+            # TODO: Display the expected input materials
             node_id = str(node.entity.number) + "_root"
             net.add_node(node_id,
                          label="Input",
@@ -300,10 +302,9 @@ class Network:
                          dashes=True,
                          arrowStrikethrough=False)
 
-            # TODO: Display the expected input materials
-
         # Display outputs
         for node in self.leaf_nodes():
+            # TODO: Display the expected produced materials
             node_id = str(node.entity.number) + "_leaf"
             net.add_node(node_id,
                          label="Output",
@@ -317,18 +318,204 @@ class Network:
                          dashes=True,
                          arrowStrikethrough=False)
 
-            # TODO: Display the expected produced materials
+        # Display nodes transported items
+        for node in self.nodes:
+            if node.type != "assembling-machine" and node.transported_items is not None:
+                for (i, item) in enumerate(node.transported_items):
+                    node_id = str(node.entity.number) + "_item_" + str(i)
+                    net.add_node(node_id,
+                                 label=" ",
+                                 value=2,
+                                 shape="image",
+                                 image=item.get_ingame_image_path(),
+                                 brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
+
+                    net.add_edge(node_id,
+                                 node.entity.number,
+                                 title="transport",
+                                 color="lightgrey")
 
         # Display the graph
         net.show("graph.html")
 
+    def calculate_bottleneck(self):
+        # ===========================================
+        # === Step 1: Purpose back propagation ======
+        # ===========================================
+
+        # The first step is to calculate the purpose of each node
+        # We will start from each assembling machine and go up and down
+        # each parent and child node to tell them what we expect them to do
+
+        for node in self.nodes:
+            # If the node is an assembling machine, we start from it
+            if node.type == "assembling-machine":
+                node.calculate_purpose()
+
 
 class Node:
     def __init__(self, entity):
+        # Network construction data
         self.entity = entity
         self.childs = []
         self.parents = []
         self.type = entity.data["type"]
 
+    def get_materials_output(self):
+        # Get the materials output of the node
+        # If the node is an assembling machine, the output is the recipe result
+        # Else, the output is the node inputs
+        return None
+
+    def calculate_purpose(self):
+        return None
+
+    def set_purpose(self, items, from_node=None):
+        return None
+
     def __str__(self):
-        return f"Node: {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)}"
+        return f"Node: {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)} "
+
+
+class Assembly_node (Node):
+    def __init__(self, entity):
+        super().__init__(entity)
+
+        # Bottleneck calculation data
+        self.inputs = []
+        self.outputs = []
+
+        if self.entity.recipe is not None:
+            # Set the self inputs as the recipe ingredients
+            for input_item in self.entity.recipe.ingredients:
+                self.inputs.append(input_item)
+
+            # Set the self outputs as the recipe result
+            self.outputs = [self.entity.recipe.result]
+            # We only consider that the recipes makes one item at the moment
+            # TODO: Add support for multiple items
+
+    def calculate_purpose(self):
+        if self.entity.recipe is not None:
+
+            # First, we calculate the purpose of our parents
+            # according to the inputs of the recipe
+            print("calculate_purpose of ", self)
+            if len(self.entity.recipe.ingredients) == 1:
+                # We only need one ingredient to make the recipe
+                # so our parents purpose is to provide the ingredient
+
+                for parent in self.parents:
+                    parent.set_purpose(
+                        self.entity.recipe.ingredients, from_node=self)
+
+            else:
+                # We need more than one ingredient to make the recipe,
+                # but we don't know witch parent will provide which ingredient
+
+                # So we start by getting all our parents output items
+                parent_outputs = []
+                for parent in self.parents:
+                    parent_output = parent.get_materials_output()
+                    parent_outputs.append(parent_output)
+
+                # Then, for each of our ingredients, we try to find a parent
+                # that provides the ingredient
+                provided_ingredients = []
+                for input_item in self.entity.recipe.ingredients:
+                    for parent_output in parent_outputs:
+                        for parent_item in parent_output:
+                            if input_item.name == parent_item.name:
+                                # We found a parent that provides the ingredient
+                                # We can ignore it and the ingredient it provides
+                                provided_ingredients.append(parent_item)
+
+                # The parents with no purpose will provide the other ingredients
+                needed_ingredients = [item for item in self.entity.recipe.ingredients
+                                      if item not in provided_ingredients]
+
+                for (i, parent_output) in enumerate(parent_outputs):
+                    if parent_output is None:
+                        # needed_ing = ""
+                        # for item in needed_ingredients:
+                        #     needed_ing += item.name + " "
+                        # print(
+                        #     "the parent ", self.parents[i], " has no output so we asign it to " + needed_ing)
+                        self.parents[i].set_purpose(
+                            needed_ingredients, from_node=self)
+
+            # Then we set the purpose of our childs
+            # according to the outputs of the recipe
+
+            for child in self.childs:
+                child.set_purpose([self.entity.recipe.result], from_node=self)
+
+    def get_materials_output(self):
+        # Get the materials output of the node
+        # For a assembling machine node, the output is the recipe result
+
+        return self.outputs
+
+    def __str__(self):
+        inputs = ""
+        for item in self.inputs:
+            inputs += str(item) + " "
+
+        outputs = ""
+        for item in self.outputs:
+            outputs += str(item) + " "
+
+        return f"Assembly node, childs: {len(self.childs)}, parents: {len(self.parents)} " \
+            + f" inputs: {inputs}, outputs: {outputs}"
+
+
+class Transport_node (Node):
+    def __init__(self, entity):
+        super().__init__(entity)
+
+        # Bottleneck calculation data
+        self.transported_items = None
+
+    def get_materials_output(self):
+        if self.transported_items is None:
+            # We don't know what the node outputs are
+            # so we ask our parents for their output
+            transported_items = []
+            for parent in self.parents:
+                transported_items += parent.get_materials_output()
+
+            # self.transported_items = transported_items
+            return transported_items
+
+        return self.transported_items
+
+    def set_purpose(self, items, from_node=None):
+        if self.transported_items is not None:
+            print(
+                "warning: set_purpose called on a transport node that already has a purpose")
+            # self.transported_items += items
+        else:
+            self.transported_items = items
+            print("  setting the purpose of ", self)
+
+            for parent in self.parents:
+                if parent is not from_node:
+                    parent.set_purpose(items, from_node=self)
+
+            for child in self.childs:
+                if child is not from_node:
+                    child.set_purpose(items, from_node=self)
+
+    def __str__(self):
+        transported_items = ""
+
+        if self.transported_items is None:
+            transported_items = "?"
+
+        elif len(self.transported_items) == 0:
+            transported_items = "None"
+        else:
+            for item in self.transported_items:
+                transported_items += str(item) + " "
+
+        return f"Node {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)} " + f" transported items: {transported_items}"

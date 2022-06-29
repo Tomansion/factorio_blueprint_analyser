@@ -1,22 +1,47 @@
 
-from src import factorio
+from src import factorio, item
 
 # -----------------------------------------------------------
 # Assembly machines recipe class
 # -----------------------------------------------------------
+DIFFICULTY = "normal"
 
 
 class Recipe:
     def __init__(self, name) -> None:
         self.name = name
+        self.exists = True
 
         # Check that the recipe exists
         if name not in factorio.recipies:
             print(f"WARNING: no recipe found for {name}")
             self.exists = False
-        else:
-            self.ingredients = factorio.recipies[name]
-            print(self.ingredients)
+            return
+
+        factorio_recipe = factorio.recipies[name]
+
+        # Get result item
+        self.nb_item_output = factorio_recipe["result_count"] \
+            if "result_count" in factorio_recipe else 1
+
+        self.result = item.Item(name, self.nb_item_output)
+        # TODO: deal with multiple results
+
+        # Get ingredients
+        self.ingredients = []
+
+        ingredients = factorio_recipe[DIFFICULTY]["ingredients"] \
+            if DIFFICULTY in factorio_recipe \
+            else factorio_recipe["ingredients"]
+
+        for ingredient in ingredients:
+            self.ingredients.append(
+                item.Item(ingredient[0], ingredient[1]))
+
+        # Get production time
+        self.time = factorio_recipe["energy_required"] \
+            if "energy_required" in factorio_recipe \
+            else 1
 
     def get_ingame_image_path(self):
         # Item image url

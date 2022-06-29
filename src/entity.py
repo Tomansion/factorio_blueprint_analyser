@@ -64,6 +64,7 @@ def create_entity(entity_in_blueprint):
     print(f"Warning: entity {entity_in_blueprint['name']} not supported")
 
 
+# Enities interfaces
 class Entity:
     def __init__(self, entity_in_blueprint, entity_data):
         self.data = entity_data
@@ -117,6 +118,7 @@ class LargeEntity(Entity):
         return False
 
 
+# Factorio entities:
 class TransportBelt(Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
@@ -251,7 +253,6 @@ class Inserter (Entity):
 class RedArm (Inserter):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
-        print("red arm creation")
 
     def get_drop_tile_offset(self):
         return [e * 2 for e in super().get_drop_tile_offset()]
@@ -267,6 +268,9 @@ class AssemblingMachine (LargeEntity):
 
         if "recipe" in dictionary_entity:
             self.recipe = recipe.Recipe(dictionary_entity["recipe"])
+            if not self.recipe.exists:
+                self.recipe = None
+
         else:
             self.recipe = None
 

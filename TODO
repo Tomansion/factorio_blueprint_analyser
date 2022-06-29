@@ -1,5 +1,5 @@
 Bottleneck calculator:
-    ☐ Recipe back propagation @started(22-06-28 14:21)
+    ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
     ☐ Capacity and speed calculation
 
 Optimisation:
@@ -14,6 +14,7 @@ Other:
     ☐ Deal with game difficulty
     ☐ Filters
     ☐ Beacons
+    ☐ Multy system process
 
 Create some new Blueprints:
     ✔ Recursive arms with and without chests @done(22-06-21 14:31)
@@ -23,6 +24,17 @@ Create some new Blueprints:
     ☐ Pipes
     ☐ Beacons
     ☐ Tests if arms can pickup from splitters
+
+Project end:
+    ☐ Add types for most of the variables
+    ☐ Add coverage tests
+
+    Readme:
+        ☐ Use guide
+        ☐ List todo's
+        ☐ List bugs
+        ☐ List improvements
+        ☐ List limitations
 
 Init the project:
     ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
