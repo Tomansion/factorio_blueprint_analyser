@@ -174,9 +174,19 @@ class TransportBelt(Entity):
                 entity.belt_type == "input" or \
                 entity.data["type"] == "splitter":
             # A belt can be connected to an underground belt
-            # if they are in the same direction
+            # except if they are facing each other
 
-            return self.direction == entity.direction
+            # return self.direction == entity.direction
+
+            if self.direction == 2 and entity.direction == 6 or \
+                    self.direction == 6 and entity.direction == 2:
+                return False
+            elif self.direction == 4 and entity.direction is None or \
+                    self.direction is None and entity.direction == 4:
+                return False
+
+            # We are ignoring the complex transfers for now
+            return True
 
         return False
 

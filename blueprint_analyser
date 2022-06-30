@@ -27,8 +27,8 @@ if __name__ == "__main__":
     nw.calculate_bottleneck()
 
     # Get some informations
-    for node in nw.nodes:
-        print(node)
+    # for node in nw.nodes:
+    #     print(node)
 
     # print("\n\n Roots:")
     # for root in nw.root_nodes():

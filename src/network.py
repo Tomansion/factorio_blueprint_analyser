@@ -1,6 +1,3 @@
-from pickletools import optimize
-
-from torch import le
 from src import utils
 from pyvis.network import Network as NetworkDisplay
 
@@ -17,11 +14,9 @@ def create_network(blueprint):
 
 
 class NetworkCreator:
-    blueprint = {}
-    node_map = []
-
     def __init__(self, blueprint):
         self.blueprint = blueprint
+        self.node_map = []
 
     def create_network(self):
         # Create a 2D array that will contain all nodes,
@@ -251,6 +246,35 @@ class Network:
                 leafs.append(node)
         return leafs
 
+    def calculate_bottleneck(self):
+        # ===========================================
+        # === Step 1: Purpose back propagation ======
+        # ===========================================
+
+        # The first step is to calculate the purpose of each node
+        # We will start from each assembling machine and go up and down
+        # each parent and child node to tell them what we expect them to do
+
+        for node in self.nodes:
+            # If the node is an assembling machine, we start from it
+            if node.type == "assembling-machine":
+                node.calculate_purpose()
+
+        # Display some debug info
+        nb_transport_nodes_with_no_purpose = 0
+        nb_transport_nodes = 0
+
+        for node in self.nodes:
+            if type(node) == Transport_node:
+                nb_transport_nodes += 1
+                if node.transported_items is None or\
+                        len(node.transported_items) == 0:
+                    nb_transport_nodes_with_no_purpose += 1
+
+        utils.verbose("\nBottleneck analysis complete:")
+        utils.verbose(
+            f"{nb_transport_nodes - nb_transport_nodes_with_no_purpose} / {nb_transport_nodes} nodes with purpose")
+
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
         net.repulsion(node_distance=100, spring_length=0)
@@ -353,22 +377,9 @@ class Network:
         # Display the graph
         net.show("graph.html")
 
-    def calculate_bottleneck(self):
-        # ===========================================
-        # === Step 1: Purpose back propagation ======
-        # ===========================================
-
-        # The first step is to calculate the purpose of each node
-        # We will start from each assembling machine and go up and down
-        # each parent and child node to tell them what we expect them to do
-
-        for node in self.nodes:
-            # If the node is an assembling machine, we start from it
-            if node.type == "assembling-machine":
-                node.calculate_purpose()
-
-
 # ========= Nodes =========
+
+
 class Node:
     def __init__(self, entity):
         # Network construction data
@@ -460,16 +471,15 @@ class Assembly_node (Node):
                 self.inputs.append(input_item)
 
             # Set the self outputs as the recipe result
-            self.outputs = [self.entity.recipe.result]
             # We only consider that the recipes makes one item at the moment
             # TODO: Add support for multiple items
+            self.outputs = [self.entity.recipe.result]
 
     def calculate_purpose(self):
         if self.entity.recipe is not None:
 
             # First, we calculate the purpose of our parents
             # according to the inputs of the recipe
-            print("calculate_purpose of ", self)
             if len(self.entity.recipe.ingredients) == 1:
                 # We only need one ingredient to make the recipe
                 # so our parents purpose is to provide the ingredient
@@ -508,8 +518,6 @@ class Assembly_node (Node):
                         # needed_ing = ""
                         # for item in needed_ingredients:
                         #     needed_ing += item.name + " "
-                        # print(
-                        #     "the parent ", self.parents[i], " has no output so we asign it to " + needed_ing)
                         self.parents[i].set_purpose(
                             needed_ingredients, from_node=self)
 
@@ -564,7 +572,6 @@ class Transport_node (Node):
             # self.transported_items += items
         else:
             self.transported_items = items
-            print("  setting the purpose of ", self)
 
             for parent in self.parents:
                 if parent is not from_node:
