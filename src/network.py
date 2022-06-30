@@ -228,6 +228,7 @@ class Network:
         for node in self.nodes:
             node.optimize()
 
+        # Filter the removed nodes
         optimized_nodes = []
 
         for node in self.nodes:
