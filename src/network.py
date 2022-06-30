@@ -389,6 +389,8 @@ class Node:
             if len(self.childs) == 0 and \
                     len(self.parents) == 1 and \
                     self.parents[0].entity.name == self.entity.name:
+                #     and \
+                # not self.parents[0].removed:
 
                 self.remove()
 
@@ -397,6 +399,8 @@ class Node:
             elif len(self.childs) == 1 and \
                     len(self.parents) == 1 and \
                     self.parents[0].entity.name == self.entity.name:
+                #     and\
+                # not self.parents[0].removed:
 
                 self.remove()
 
@@ -412,8 +416,10 @@ class Node:
         if len(self.childs) > 0:
             # We need to replace our child parent with our parent
             self.childs[0].parents.remove(self)
-            self.childs[0].parents.append(self.parents[0])
-            self.parents[0].childs.append(self.childs[0])
+            if self.childs[0] != self.parents[0]:
+                # This condition avoid belts loop to be removed
+                self.childs[0].parents.append(self.parents[0])
+                self.parents[0].childs.append(self.childs[0])
 
         # We keep a trace of this node by adding it to the compacted list
         self.compacted_nodes.append(self)
