@@ -42,11 +42,14 @@ class Recipe:
             try:
                 if isinstance(ingredient, list):
                     self.ingredients.append(
-                        item.Item(ingredient[0], ingredient[1]))
+                        item.Item(ingredient[0],
+                                  ingredient[1]))
 
                 elif isinstance(ingredient, dict):
                     self.ingredients.append(
-                        item.Item(ingredient["name"], ingredient["amount"]))
+                        item.Item(ingredient["name"],
+                                  ingredient["amount"],
+                                  type=ingredient["type"]))
             except KeyError:
                 print(f"WARNING: Something went wrong with the recipe {name}")
                 self.exists = False
