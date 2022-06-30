@@ -277,7 +277,7 @@ class Network:
 
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
-        net.repulsion(node_distance=100, spring_length=0)
+        net.repulsion(node_distance=80, spring_length=0)
 
         # Nodes and edges
         for node in self.nodes:
@@ -296,7 +296,10 @@ class Network:
 
             net.add_node(node.entity.number,
                          value=node_size,
-                         shape="image",
+                         shape="circularImage",
+                         borderWidth=10,
+                         color="lightgrey",
+
                          image=node.entity.get_ingame_image_path(),
                          brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
 
@@ -304,7 +307,8 @@ class Network:
             for child in node.childs:
                 net.add_edge(node.entity.number,
                              child.entity.number,
-                             color="black")
+                             value=1,
+                             color="lightgrey")
 
         # Display recipes
         for node in self.nodes:
@@ -321,7 +325,6 @@ class Network:
                              node_id,
                              title="produce",
                              color="grey",
-                             size=2,
                              dashes=True,
                              arrowStrikethrough=False)
 
@@ -337,7 +340,6 @@ class Network:
             net.add_edge(node_id,
                          node.entity.number,
                          color="red",
-                         size=2,
                          dashes=True,
                          arrowStrikethrough=False)
 
