@@ -52,7 +52,7 @@ def create_entity(entity_in_blueprint):
         else:
             return Inserter(entity_in_blueprint, entity_data)
 
-    elif entity_data["type"] == "container":
+    elif entity_data["type"] in ["container", "logistic-container"]:
         return Container(entity_in_blueprint, entity_data)
 
     elif entity_data["type"] == "underground-belt":
@@ -61,7 +61,8 @@ def create_entity(entity_in_blueprint):
     elif entity_data["type"] == "splitter":
         return Splitter(entity_in_blueprint, entity_data)
 
-    print(f"Warning: entity {entity_in_blueprint['name']} not supported")
+    print(
+        f"Warning: entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
 
 
 # Enities interfaces
@@ -214,6 +215,7 @@ class Inserter (Entity):
         available_types = ["transport-belt",
                            "underground-belt",
                            "container",
+                           "logistic-container",
                            "assembling-machine"]
 
         if entity.data["type"] in available_types:
@@ -330,8 +332,29 @@ class Container (Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
 
-    def to_char(self, offset=[0, 0]):
+    def to_char(self):
+        if self.name == "logistic-chest-passive-provider":
+            return colored("⧈", "red")
+        if self.name == "logistic-chest-active-provider":
+            return colored("⧈", "purple")
+        if self.name == "logistic-chest-buffer":
+            return colored("⧈", "green")
+        if self.name == "logistic-chest-requester":
+            return colored("⧈", "cyan")
+
         return "⧈"
+
+    def get_ingame_image_path(self):
+        if self.name == "logistic-chest-passive-provider":
+            return "https://wiki.factorio.com/images/Passive_provider_chest.png"
+        if self.name == "logistic-chest-active-provider":
+            return "https://wiki.factorio.com/images/Active_provider_chest.png"
+        if self.name == "logistic-chest-buffer":
+            return "https://wiki.factorio.com/images/Buffer_chest.png"
+        if self.name == "logistic-chest-requester":
+            return "https://wiki.factorio.com/images/Requester_chest.png"
+
+        return super().get_ingame_image_path()
 
 
 class UndergroundBelt (TransportBelt):

@@ -63,8 +63,9 @@ class NetworkCreator:
             return None
 
         # We can now create the node
-        node = Assembly_node(
-            entity) if entity.data["type"] == "assembling-machine" else Transport_node(entity)
+        node = Assembly_node(entity) \
+            if entity.data["type"] == "assembling-machine" \
+            else Transport_node(entity)
 
         # Each game entity interacts with the other nodes in there own way
         # The requiered nodes will be created recursively
@@ -164,7 +165,7 @@ class NetworkCreator:
 
             return node
 
-        elif node.type == "container":
+        elif node.type in ["container", "logistic-container"]:
             # Those entities does not interact with others
             self.node_map[y][x] = node
             return node
@@ -248,7 +249,7 @@ class Network:
                 node_size = 3
             if node.type == "underground-belt" or "splitter":
                 node_size = 4
-            if node.type == "container":
+            if node.type == "container" or "logistic-container":
                 node_size = 3
             if node.type == "assembling-machine":
                 node_size = 5
