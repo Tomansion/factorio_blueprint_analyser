@@ -1,6 +1,6 @@
-from turtle import color
-from matplotlib.pyplot import title
-from numpy import size
+from pickletools import optimize
+
+from torch import le
 from src import utils
 from pyvis.network import Network as NetworkDisplay
 
@@ -10,6 +10,7 @@ from pyvis.network import Network as NetworkDisplay
 # -----------------------------------------------------------
 
 
+# ========= Network =========
 def create_network(blueprint):
     network_creator = NetworkCreator(blueprint)
     return network_creator.create_network()
@@ -39,9 +40,6 @@ class NetworkCreator:
         for y in range(self.blueprint.heigth):
             for x in range(self.blueprint.width):
                 self.create_node(x, y)
-
-        # Optimize the network
-        # TODO: Remove belts that follow each others
 
         return Network(self.blueprint, self.node_map)
 
@@ -216,12 +214,27 @@ class Network:
 
         for row in self.nodes_array:
             for node in row:
-                if node is not None:
+                if node is not None and not node.removed:
                     # Check that the node is not already in the list
                     # It's normal if the node takes multiple tiles
                     # (They appear multiple times in the map)
                     if node not in self.nodes:
                         self.nodes.append(node)
+
+        self.optimize()
+
+    def optimize(self):
+        # Network optimisation
+        for node in self.nodes:
+            node.optimize()
+
+        optimized_nodes = []
+
+        for node in self.nodes:
+            if not node.removed:
+                optimized_nodes.append(node)
+
+        self.nodes = optimized_nodes
 
     def root_nodes(self):
         roots = []
@@ -354,6 +367,7 @@ class Network:
                 node.calculate_purpose()
 
 
+# ========= Nodes =========
 class Node:
     def __init__(self, entity):
         # Network construction data
@@ -361,6 +375,49 @@ class Node:
         self.childs = []
         self.parents = []
         self.type = entity.data["type"]
+
+        # Network optimization data
+        self.removed = False
+        self.compacted_nodes = []  # Contain the nodes deleted by the optimizer
+
+    def optimize(self):
+        # Optimize the graph by removing the node if it's not needed.
+
+        if self.type == "transport-belt":
+            # If the transport belt as a single belt parent with same name
+            # and no childs, we can remove it
+            if len(self.childs) == 0 and \
+                    len(self.parents) == 1 and \
+                    self.parents[0].entity.name == self.entity.name:
+
+                self.remove()
+
+            # If the transport belt as a single child
+            # and a single belt parent with same name, we can remove it
+            elif len(self.childs) == 1 and \
+                    len(self.parents) == 1 and \
+                    self.parents[0].entity.name == self.entity.name:
+
+                self.remove()
+
+    def remove(self):
+        # Remove the node from the network
+        if len(self.childs) > 1 or len(self.parents) != 1:
+            raise Exception("Can't remove this node " + str(self))
+
+        self.removed = True
+
+        # We need to replace our parent child with our child
+        self.parents[0].childs.remove(self)
+        if len(self.childs) > 0:
+            # We need to replace our child parent with our parent
+            self.childs[0].parents.remove(self)
+            self.childs[0].parents.append(self.parents[0])
+            self.parents[0].childs.append(self.childs[0])
+
+        # We keep a trace of this node by adding it to the compacted list
+        self.compacted_nodes.append(self)
+        self.parents[0].compacted_nodes += self.compacted_nodes
 
     def get_materials_output(self):
         # Get the materials output of the node
@@ -375,7 +432,11 @@ class Node:
         return None
 
     def __str__(self):
-        return f"Node: {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)} "
+        compatced_info = ""
+        if len(self.compacted_nodes) > 0:
+            compatced_info = "[⧈ " + str(len(self.compacted_nodes)) + "]"
+
+        return f"{self.entity} [{len(self.parents)} ► {len(self.childs)}] {compatced_info}"
 
 
 class Assembly_node (Node):
@@ -466,8 +527,7 @@ class Assembly_node (Node):
         for item in self.outputs:
             outputs += str(item) + " "
 
-        return f"Assembly node, childs: {len(self.childs)}, parents: {len(self.parents)} " \
-            + f" inputs: {inputs}, outputs: {outputs}"
+        return f"Assembly node, {super().__str__()} [⭨ {inputs} ⭧ {outputs}]"
 
 
 class Transport_node (Node):
@@ -519,4 +579,4 @@ class Transport_node (Node):
             for item in self.transported_items:
                 transported_items += str(item) + " "
 
-        return f"Node {self.entity}, childs: {len(self.childs)}, parents: {len(self.parents)} " + f" transported items: {transported_items}"
+        return f"Node {super().__str__()} [↔ {transported_items}]"

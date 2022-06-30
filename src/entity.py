@@ -1,9 +1,7 @@
 from math import floor
-from cv2 import sepFilter2D
-from matplotlib.style import available
 from termcolor import colored
 
-from src import utils, factorio, recipe
+from src import factorio, recipe
 
 # -----------------------------------------------------------
 # Base class for all entities
@@ -87,7 +85,7 @@ class Entity:
             self.direction = None
 
     def __str__(self):
-        return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] [{self.original_position['x']}, {self.original_position['y']}]" + " " + self.to_char()
+        return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] {self.to_char()}"
 
     def to_char(self):
         return '?'
