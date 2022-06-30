@@ -365,15 +365,29 @@ class UndergroundBelt (TransportBelt):
         if self.name == "express-underground-belt":
             color = "blue"
 
-        # ⇦ ⇨ ⇧
-        if self.direction == 2:
-            return colored("⇨", color)
-        elif self.direction == 4:
-            return colored("⇩", color)
-        elif self.direction == 6:
-            return colored("⇦", color)
+        if self.belt_type == "input":
+            # ⇐ ⇑ ⇒ ⇓
+            if self.direction == 2:
+                return colored("⇒", color)
+            elif self.direction == 4:
+                return colored("⇓", color)
+            elif self.direction == 6:
+                return colored("⇐", color)
+            else:
+                return colored("⇑", color)
         else:
-            return colored("⇧", color)
+            # ⇦ ⇨ ⇧ ⇩
+            if self.direction == 2:
+                return colored("⇨", color)
+            elif self.direction == 4:
+                return colored("⇩", color)
+            elif self.direction == 6:
+                return colored("⇦", color)
+            else:
+                return colored("⇧", color)
+
+    def __str__(self):
+        return super().__str__() + " " + self.belt_type
 
 
 class Splitter (LargeEntity):
