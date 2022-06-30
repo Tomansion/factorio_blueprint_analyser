@@ -35,8 +35,22 @@ class Recipe:
             else factorio_recipe["ingredients"]
 
         for ingredient in ingredients:
-            self.ingredients.append(
-                item.Item(ingredient[0], ingredient[1]))
+            # The recipe ingredients can have two formats:
+            # - ['fast-transport-belt', 1]
+            # - {'amount': 20, 'type': 'fluid', 'name': 'lubricant'}
+
+            try:
+                if isinstance(ingredient, list):
+                    self.ingredients.append(
+                        item.Item(ingredient[0], ingredient[1]))
+
+                elif isinstance(ingredient, dict):
+                    self.ingredients.append(
+                        item.Item(ingredient["name"], ingredient["amount"]))
+            except KeyError:
+                print(f"WARNING: Something went wrong with the recipe {name}")
+                self.exists = False
+                return
 
         # Get production time
         self.time = factorio_recipe["energy_required"] \
