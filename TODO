@@ -1,10 +1,7 @@
 Bottleneck calculator:
     ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
-    ☐ Few thing to fix @started(22-07-01 11:33)
+    ✔ Few thing to fix @started(22-07-01 11:33) @done(22-07-01 18:35) @lasted(7h2m27s)
     ☐ Capacity and speed calculation
-
-Optimisation:
-    ☐ Reduce identical belts that follow each other
 
 Other:
     ☐ Furnaces
@@ -25,6 +22,9 @@ Create some new Blueprints:
     ✔ Pipes @done(22-07-01 12:35)
     ✔ Tests if arms can pickup from splitters @done(22-07-01 12:35)
     ☐ Beacons
+
+Optimisation:
+    ✔ Reduce identical belts that follow each other @done(22-07-01 18:35)
 
 Project end:
     ☐ Add types for most of the variables
@@ -60,7 +60,7 @@ Create a node network from the blueprint:
     ✔ Red arms @started(22-06-21 14:26) @done(22-06-21 14:48) @lasted(22m38s)
     ✔ Splitters @started(22-06-22 10:36) @done(22-06-22 12:12) @lasted(1h36m44s)
 
-    ☐ Make arms pass items if no entity
+    ☐ Make arms pass items if no entity @started(22-07-01 18:36)
 
 Display enhancement:
     ✔ Display assembly machines recipes @started(22-06-28 10:31) @done(22-06-28 11:05) @lasted(34m14s)
