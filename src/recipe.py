@@ -46,6 +46,10 @@ class Recipe:
                                   ingredient[1]))
 
                 elif isinstance(ingredient, dict):
+                    if "type" in ingredient and ingredient["type"] == "fluid":
+                        # Fluid ingredient, we ignore it
+                        continue
+
                     self.ingredients.append(
                         item.Item(ingredient["name"],
                                   ingredient["amount"],

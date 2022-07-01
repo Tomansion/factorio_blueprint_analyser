@@ -198,6 +198,8 @@ class Inserter (Entity):
     def get_drop_tile_offset(self):
         # Returns an offset of the tile in front of the arm
         #   example: [1, 0] if the arm is facing the right
+        # For some reason, the inserter is facing
+        # the oposite direction compared to the belts
         if self.direction == 2:
             return [-1, 0]
         elif self.direction == 4:
@@ -206,9 +208,6 @@ class Inserter (Entity):
             return [1, 0]
         else:
             return [0, 1]
-
-        # For some reason, the inserter is facing
-        # the oposite direction compared to the belts
 
     def get_pickup_tile_offset(self):
         # Returns the offset of the tile in front of the arm
@@ -224,7 +223,8 @@ class Inserter (Entity):
                            "underground-belt",
                            "container",
                            "logistic-container",
-                           "assembling-machine"]
+                           "assembling-machine",
+                           "splitter"]
 
         if entity.data["type"] in available_types:
             return True
@@ -237,8 +237,7 @@ class Inserter (Entity):
 
         # It seams that the allowed entities
         # are the same as the can_move_to
-        # except for the splitters
-        return [self.can_move_to(entity), "splitter"]
+        return self.can_move_to(entity)
 
     def to_char(self):
         color = "white"
@@ -276,13 +275,11 @@ class AssemblingMachine (LargeEntity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
 
+        self.recipe = None
         if "recipe" in dictionary_entity:
             self.recipe = recipe.Recipe(dictionary_entity["recipe"])
             if not self.recipe.exists:
                 self.recipe = None
-
-        else:
-            self.recipe = None
 
         self.offsets = [
             [0, 0],
@@ -335,6 +332,13 @@ class AssemblingMachine (LargeEntity):
         else:
             return colored("│", color)
 
+    def __str__(self):
+        recipe_str = ""
+        if self.recipe is not None:
+            recipe_str = self.recipe.name
+
+        return super().__str__() + " [" + recipe_str + "]"
+
 
 class Container (Entity):
     def __init__(self, dictionary_entity, entity_data):
@@ -343,24 +347,29 @@ class Container (Entity):
     def to_char(self):
         if self.name == "logistic-chest-passive-provider":
             return colored("⧈", "red")
-        if self.name == "logistic-chest-active-provider":
+        elif self.name == "logistic-chest-active-provider":
             return colored("⧈", "purple")
-        if self.name == "logistic-chest-buffer":
+        elif self.name == "logistic-chest-buffer":
             return colored("⧈", "green")
-        if self.name == "logistic-chest-requester":
+        elif self.name == "logistic-chest-requester":
             return colored("⧈", "cyan")
+        elif self.name == "logistic-chest-storage":
+            return colored("⧈", "yellow")
 
         return "⧈"
 
     def get_ingame_image_path(self):
+
         if self.name == "logistic-chest-passive-provider":
             return "https://wiki.factorio.com/images/Passive_provider_chest.png"
-        if self.name == "logistic-chest-active-provider":
+        elif self.name == "logistic-chest-active-provider":
             return "https://wiki.factorio.com/images/Active_provider_chest.png"
-        if self.name == "logistic-chest-buffer":
+        elif self.name == "logistic-chest-buffer":
             return "https://wiki.factorio.com/images/Buffer_chest.png"
-        if self.name == "logistic-chest-requester":
+        elif self.name == "logistic-chest-requester":
             return "https://wiki.factorio.com/images/Requester_chest.png"
+        elif self.name == "logistic-chest-storage":
+            return "https://wiki.factorio.com/images/Storage_chest.png"
 
         return super().get_ingame_image_path()
 

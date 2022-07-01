@@ -255,9 +255,20 @@ class Network:
         # We will start from each assembling machine and go up and down
         # each parent and child node to tell them what we expect them to do
 
+        # The purpose calculation starts from the assembly machines
+        # We will process the assembling machines with recipes that
+        # have one ingredient first as they are easier to process
+
         for node in self.nodes:
-            # If the node is an assembling machine, we start from it
-            if node.type == "assembling-machine":
+            if node.type == "assembling-machine" and\
+                    node.entity.recipe is not None and\
+                    len(node.entity.recipe.ingredients) == 1:
+                node.calculate_purpose()
+
+        for node in self.nodes:
+            if node.type == "assembling-machine" and\
+                    node.entity.recipe is not None and\
+                    len(node.entity.recipe.ingredients) > 1:
                 node.calculate_purpose()
 
         # Display some debug info
@@ -478,56 +489,102 @@ class Assembly_node (Node):
             self.outputs = [self.entity.recipe.result]
 
     def calculate_purpose(self):
-        if self.entity.recipe is not None:
+        # Set our childrens and parents purpose
 
-            # First, we calculate the purpose of our parents
-            # according to the inputs of the recipe
-            if len(self.entity.recipe.ingredients) == 1:
-                # We only need one ingredient to make the recipe
-                # so our parents purpose is to provide the ingredient
+        if self.entity.recipe is None:
+            return  # No purpose
 
-                for parent in self.parents:
-                    parent.set_purpose(
-                        self.entity.recipe.ingredients, from_node=self)
+        # We first set the purpose of our childs according to the outputs of the recipe
+        for child in self.childs:
+            child.set_purpose([self.entity.recipe.result], from_node=self)
 
-            else:
-                # We need more than one ingredient to make the recipe,
-                # but we don't know witch parent will provide which ingredient
+        # We will assign our parents a purpose according to the recipe inputs and the
+        # purpose our parents already have
 
-                # So we start by getting all our parents output items
-                parent_outputs = []
-                for parent in self.parents:
-                    parent_output = parent.get_materials_output()
-                    parent_outputs.append(parent_output)
+        # If we have no parents, we are an inpot so we do nothing
+        if len(self.parents) == 0:
+            return
 
-                # Then, for each of our ingredients, we try to find a parent
-                # that provides the ingredient
-                provided_ingredients = []
-                for input_item in self.entity.recipe.ingredients:
-                    for parent_output in parent_outputs:
-                        for parent_item in parent_output:
-                            if input_item.name == parent_item.name:
-                                # We found a parent that provides the ingredient
-                                # We can ignore it and the ingredient it provides
-                                provided_ingredients.append(parent_item)
+        if len(self.entity.recipe.ingredients) == 1:
+            # We only need one ingredient to make the recipe
+            # so our parents purpose is to provide the ingredient
 
-                # The parents with no purpose will provide the other ingredients
-                needed_ingredients = [item for item in self.entity.recipe.ingredients
-                                      if item not in provided_ingredients]
+            for parent in self.parents:
+                # TODO: detect wrongly wired parents
+                # The parent is wrong if it has a strict purpose and it's not the same as the recipe input
+                parent.set_purpose(
+                    self.entity.recipe.ingredients, from_node=self)
 
-                for (i, parent_output) in enumerate(parent_outputs):
-                    if parent_output is None:
-                        # needed_ing = ""
-                        # for item in needed_ingredients:
-                        #     needed_ing += item.name + " "
-                        self.parents[i].set_purpose(
-                            needed_ingredients, from_node=self)
+        else:
+            # We need more than one ingredient to make the recipe,
+            # but we don't know witch parent will provide which ingredient
 
-            # Then we set the purpose of our childs
-            # according to the outputs of the recipe
+            # === 1. Finding our parents purpose ===
 
-            for child in self.childs:
-                child.set_purpose([self.entity.recipe.result], from_node=self)
+            utils.verbose(
+                f"Finding providers for recipe {self.entity.recipe.name} with ingredinents:")
+
+            # So we start by getting all our parents output items
+            parent_outputs = []
+            for parent in self.parents:
+                parent_output = parent.get_materials_output()
+                parent_outputs.append(parent_output)
+
+            # === 2. Finding if our ingredients are all available ===
+            # for each of our ingredients, we try to find a parent
+            # that provides the ingredient
+            provided_ingredients = [None] * \
+                len(self.entity.recipe.ingredients)
+
+            for (ing_index, ingredient) in enumerate(self.entity.recipe.ingredients):
+                utils.verbose(f"\t{ingredient}")
+                provided_ingredients[ing_index] = []
+                for (parent_ind, parent_output) in enumerate(parent_outputs):
+                    for parent_item in parent_output:
+                        if ingredient.name == parent_item.name:
+                            # We found a parent that provides the ingredient
+                            # We can ignore it and the ingredient it provides
+                            provided_ingredients[ing_index].append(
+                                parent_item)
+                            utils.verbose(
+                                f"\t\t{self.parents[parent_ind]} provides {ingredient}")
+
+            nb_treated_ingredients = 0
+            needed_ingredients = []
+            for (i, provided_ingredient) in enumerate(provided_ingredients):
+                if len(provided_ingredient) > 0:
+                    nb_treated_ingredients += 1
+                else:
+                    needed_ingredients.append(
+                        self.entity.recipe.ingredients[i])
+
+            utils.verbose(
+                f"\t  {nb_treated_ingredients}/{len(self.entity.recipe.ingredients)} provided ingredients")
+
+            if nb_treated_ingredients == len(self.entity.recipe.ingredients):
+                # We consider that all our ingredients are provided
+                return
+
+            # === 3. Assigning available parents to the missing ingredients ===
+
+            # The parents with no purpose will provide the other ingredients
+            parent_without_purpose = []
+            for parent in self.parents:
+                if parent.transported_items is None:
+                    parent_without_purpose.append(parent)
+                    utils.verbose(
+                        f"\t\t{parent} has no purpose, it will provide the other ingredients")
+
+            if len(parent_without_purpose) == 0:
+                # No parent can provide the other ingredients
+                # TODO Force on non strict transporters
+                utils.verbose(
+                    "WARNING: No parent can provide the other ingredients for the recipe " + self.entity.recipe.name)
+                return
+
+            # Assign the other ingredients to the parents
+            for parent in parent_without_purpose:
+                parent.set_purpose(needed_ingredients, from_node=self)
 
     def get_materials_output(self):
         # Get the materials output of the node
@@ -555,6 +612,8 @@ class Transport_node (Node):
         self.transported_items = None
 
     def get_materials_output(self):
+        # Get the materials output of the node
+
         if self.transported_items is None:
             # We don't know what the node outputs are
             # so we ask our parents for their output
@@ -562,16 +621,29 @@ class Transport_node (Node):
             for parent in self.parents:
                 transported_items += parent.get_materials_output()
 
-            # self.transported_items = transported_items
+            if len(transported_items) > 0:
+                self.transported_items = transported_items
+
+            # items_output = ""
+            # for item in transported_items:
+            #     items_output += str(item) + " "
+            # utils.verbose(f"                  {self} outputs: {items_output}")
             return transported_items
+
+        # items_output = ""
+        # for item in self.transported_items:
+        #     items_output += str(item) + " "
+        # utils.verbose(f"                  {self} outputs: {items_output}")
 
         return self.transported_items
 
     def set_purpose(self, items, from_node=None):
         if self.transported_items is not None:
-            print(
-                "warning: set_purpose called on a transport node that already has a purpose")
-            # self.transported_items += items
+            for item in items:
+                for transported_item in self.transported_items:
+                    if transported_item.name == item.name:
+                        # We already transport the item so we can ignore it
+                        break
         else:
             self.transported_items = items
 

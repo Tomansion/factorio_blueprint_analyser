@@ -20,7 +20,6 @@ class Blueprint:
         self.label = label
 
         for entity_dic in entities:
-
             # Replace infinit chests with a normal chest
             if entity_dic["name"] == "infinity-chest":
                 entity_dic["name"] = "iron-chest"
@@ -28,6 +27,10 @@ class Blueprint:
             new_entity = entity.create_entity(entity_dic)
             if new_entity is not None:
                 self.entities.append(new_entity)
+
+        if len(self.entities) == 0:
+            utils.verbose(f"No entities found for {label}")
+            return
 
         # Set the blueprint origin to [0, 0]
         lowest_x = min(entity.position["x"] for entity in self.entities)
