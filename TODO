@@ -1,5 +1,6 @@
 Bottleneck calculator:
     ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
+    ☐ Few thing to fix @started(22-07-01 11:33)
     ☐ Capacity and speed calculation
 
 Optimisation:
@@ -20,10 +21,10 @@ Create some new Blueprints:
     ✔ Recursive arms with and without chests @done(22-06-21 14:31)
     ✔ Underground belts test sets (belts too far appart, ...) @done(22-06-21 14:31)
     ✔ Belts mess @done(22-06-21 14:31)
-    ☐ Belts with shared items and complex mechanisms
-    ☐ Pipes
+    ✔ Belts with shared items and complex mechanisms @done(22-07-01 12:35)
+    ✔ Pipes @done(22-07-01 12:35)
+    ✔ Tests if arms can pickup from splitters @done(22-07-01 12:35)
     ☐ Beacons
-    ☐ Tests if arms can pickup from splitters
 
 Project end:
     ☐ Add types for most of the variables
