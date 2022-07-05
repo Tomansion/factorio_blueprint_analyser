@@ -29,6 +29,7 @@ Optimisation:
 Project end:
     ☐ Add types for most of the variables
     ☐ Add coverage tests
+    ☐ Add style verification
 
     Readme:
         ☐ Use guide
