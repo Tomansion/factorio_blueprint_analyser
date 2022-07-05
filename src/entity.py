@@ -10,7 +10,7 @@ from src import factorio, recipe
 # -----------------------------------------------------------
 
 
-def create_entity(entity_in_blueprint):
+def create_entity(entity_in_blueprint, virtual=False):
     # entity_in_blueprint examples:
     # {
     #     'entity_number': 18,
@@ -36,6 +36,11 @@ def create_entity(entity_in_blueprint):
         return None
 
     entity_data = factorio.entities[entity_in_blueprint["name"]]
+
+    # Virtual entities are entities that are not in the original blueprint
+    # We have created them to solve certain edge cases such as the inserter
+    # that needs to pickup the item from an empty tile
+    entity_data["virtual"] = virtual
 
     # Return the corresponding Entity object
     if entity_data["type"] == "transport-belt":
@@ -73,10 +78,10 @@ class Entity:
 
         # Correc position
         self.original_position = entity_in_blueprint["position"]
-        self.position = {
-            "x": floor(entity_in_blueprint["position"]["x"]),
-            "y": floor(entity_in_blueprint["position"]["y"]),
-        }
+        self.position = [
+            floor(entity_in_blueprint["position"]["x"]),
+            floor(entity_in_blueprint["position"]["y"])
+        ]
 
         # Get the direction
         if "direction" in entity_in_blueprint:
@@ -85,7 +90,7 @@ class Entity:
             self.direction = None
 
     def __str__(self):
-        return f"{self.number} {self.name} [{self.position['x']}, {self.position['y']}] {self.to_char()}"
+        return f"{self.number} {self.name} [{self.position[0]}, {self.position[1]}] {self.to_char()}"
 
     def to_char(self):
         return '?'
@@ -196,7 +201,7 @@ class Inserter (Entity):
         super().__init__(dictionary_entity, entity_data)
 
     def get_drop_tile_offset(self):
-        # Returns an offset of the tile in front of the arm
+        # Returns an offset of the tile where items are dropped
         #   example: [1, 0] if the arm is facing the right
         # For some reason, the inserter is facing
         # the oposite direction compared to the belts
@@ -209,11 +214,27 @@ class Inserter (Entity):
         else:
             return [0, 1]
 
+    def get_drop_tile_coord(self):
+        # Returns the coordinaties of the tile where items are dropped
+        pickup_tile_offset = self.get_drop_tile_offset()
+        return [
+            pickup_tile_offset[0] + self.position[0],
+            pickup_tile_offset[1] + self.position[1]
+        ]
+
     def get_pickup_tile_offset(self):
-        # Returns the offset of the tile in front of the arm
+        # Returns the offset of the tile where items are picked up
         return [
             -self.get_drop_tile_offset()[0],
             -self.get_drop_tile_offset()[1]
+        ]
+
+    def get_pickup_tile_coord(self):
+        # Returns the coordinates of the tile where items are picked up
+        pickup_tile_offset = self.get_pickup_tile_offset()
+        return [
+            pickup_tile_offset[0] + self.position[0],
+            pickup_tile_offset[1] + self.position[1]
         ]
 
     def can_move_to(self, entity):
@@ -304,8 +325,8 @@ class AssemblingMachine (LargeEntity):
         if coords is None:
             return colored(self.recipe.name[0] if self.recipe is not None else "?", color)
 
-        offset = [coords[0] - self.position["x"],
-                  coords[1] - self.position["y"]]
+        offset = [coords[0] - self.position[0],
+                  coords[1] - self.position[1]]
 
         # The entity_offset is used to tell witch part
         # of the assembling machine we want to display
@@ -387,10 +408,10 @@ class UndergroundBelt (TransportBelt):
         possible_coords = []
 
         for _ in range(self.max_distance):
-            start_coord = {
-                "x": start_coord["x"] + self.get_tile_in_front_offset()[0],
-                "y": start_coord["y"] + self.get_tile_in_front_offset()[1]
-            }
+            start_coord = [
+                start_coord[0] + self.get_tile_in_front_offset()[0],
+                start_coord[1] + self.get_tile_in_front_offset()[1]
+            ]
 
             possible_coords.append(start_coord)
 
@@ -497,7 +518,7 @@ class Splitter (LargeEntity):
         if coords is None:
             return colored("⬑⬏", color)
 
-        if self.position["x"] == coords[0] and self.position["y"] == coords[1]:
+        if self.position[0] == coords[0] and self.position[1] == coords[1]:
             if self.direction == 2:
                 return colored("↳", color)
             elif self.direction == 4:

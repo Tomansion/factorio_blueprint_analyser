@@ -60,7 +60,7 @@ Create a node network from the blueprint:
     ✔ Red arms @started(22-06-21 14:26) @done(22-06-21 14:48) @lasted(22m38s)
     ✔ Splitters @started(22-06-22 10:36) @done(22-06-22 12:12) @lasted(1h36m44s)
 
-    ☐ Make arms pass items if no entity @started(22-07-01 18:36)
+    ✔ Make arms pass items if no entity @started(22-07-05 12:50) @done(22-07-05 13:33) @lasted(43m38s)
 
 Display enhancement:
     ✔ Display assembly machines recipes @started(22-06-28 10:31) @done(22-06-28 11:05) @lasted(34m14s)

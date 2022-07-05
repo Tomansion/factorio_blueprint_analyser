@@ -113,8 +113,8 @@ class NetworkCreator:
             # We will create 9 nodes for the 9 tiles of the assembling machine
             # All the cells are the same object, they share their parents and childs
             for offset in node.entity.offsets:
-                target_x = node.entity.position["x"] + offset[0]
-                target_y = node.entity.position["y"] + offset[1]
+                target_x = node.entity.position[0] + offset[0]
+                target_y = node.entity.position[1] + offset[1]
 
                 if target_x < 0 or target_x >= self.blueprint.width\
                         or target_y < 0 or target_y >= self.blueprint.heigth:
@@ -144,7 +144,7 @@ class NetworkCreator:
                 possible_output_coords = entity.get_possible_output_coords()
                 for possible_coord in possible_output_coords:
                     child_node = self.create_node(
-                        possible_coord["x"], possible_coord["y"])
+                        possible_coord[0], possible_coord[1])
 
                     if child_node is not None and \
                             child_node.entity.name == node.entity.name and \
@@ -166,7 +166,7 @@ class NetworkCreator:
         elif node.type == "splitter":
 
             # We need to add the second splitter tile to the map
-            if x == entity.position["x"] and y == entity.position["y"]:
+            if x == entity.position[0] and y == entity.position[1]:
                 # If we are the original splitter, we need to add the second splitter
                 self.node_map[y][x] = node
 
@@ -179,7 +179,7 @@ class NetworkCreator:
                     self.node_map[second_node_y][second_node_x] = node
             else:
                 # We create the original splitter instead
-                return self.create_node(entity.position["x"], entity.position["y"])
+                return self.create_node(entity.position[0], entity.position[1])
 
             # Set the entity where items are droped as the node's child
             drop_tile_offsets = entity.get_drop_tile_offsets()

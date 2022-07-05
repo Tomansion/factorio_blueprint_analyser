@@ -6,9 +6,9 @@ import base64
 from src import options
 
 
-def verbose(*args):
+def verbose(content, end="\n"):
     if not options.silent:
-        print(*args, file=sys.stderr, flush=True)
+        print(content, end=end, file=sys.stderr, flush=True)
 
 
 def decode(string):
