@@ -23,3 +23,9 @@ class Item:
         entity_wiki_name = self.name.capitalize().replace('-', '_')
 
         return f"https://wiki.factorio.com/images/{entity_wiki_name}.png"
+
+
+class Flow:
+    def __init__(self, items, amount):
+        self.items = items
+        self.amount = amount  # Per min

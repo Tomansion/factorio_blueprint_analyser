@@ -89,8 +89,14 @@ class Entity:
         else:
             self.direction = None
 
+        self.speed = None
+
     def __str__(self):
-        return f"{self.number} {self.name} [{self.position[0]}, {self.position[1]}] {self.to_char()}"
+        speed = ""
+        if self.speed is not None:
+            speed = f"{self.speed}/s"
+
+        return f"{self.number} {self.name} [{self.position[0]}, {self.position[1]}] {self.to_char()} {speed}"
 
     def to_char(self):
         return '?'
@@ -126,6 +132,22 @@ class LargeEntity(Entity):
 class TransportBelt(Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
+
+        # Saving speed of the belt
+        if "speed" not in entity_data:
+            print(f"Warning: {self.name} has no speed")
+            self.tile_per_sec = 0.03125  # the tile_per_sec of the lvl1 transport belt
+        else:
+            self.tile_per_sec = entity_data["speed"]
+
+        # Calculation of the belt item per second
+        # 60 ticks / second
+        # A tile is 4 items
+        # There is two line on the belt
+        # this will result, for the first belt, with an output of 15 item per second
+        # This can be veryfied here: https://wiki.factorio.com/Belt_transport_system
+
+        self.speed = self.tile_per_sec * 60 * 4 * 2
 
     def to_char(self):
         color = "white"
@@ -199,6 +221,18 @@ class TransportBelt(Entity):
 class Inserter (Entity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
+
+        # Saving speed of the inserter
+        if "rotation_speed" not in entity_data:
+            print(f"Warning: {self.name} has no rotation speed")
+            self.rotation_speed = 0.014  # the rotation_speed of the lvl1 inserter
+        else:
+            self.rotation_speed = entity_data["rotation_speed"]
+
+        # The rotation speed is the turn per tick
+        # There is 60 ticks per second
+        # TODO : inserter capacity bonnus https://wiki.factorio.com/Inserter_capacity_bonus_(research)
+        self.speed = self.rotation_speed * 60  # turn or items per second
 
     def get_drop_tile_offset(self):
         # Returns an offset of the tile where items are dropped
@@ -314,6 +348,13 @@ class AssemblingMachine (LargeEntity):
             [-1, -1],
         ]
 
+        # Saving speed of the belt
+        if "crafting_speed" not in entity_data:
+            print(f"Warning: {self.name} has no crafting speed")
+            self.speed = 0.5  # the speed of the assembling-machine-1
+        else:
+            self.speed = entity_data["crafting_speed"]
+
     def to_char(self, coords=None):
 
         color = "white"
@@ -401,7 +442,20 @@ class UndergroundBelt (TransportBelt):
 
         self.belt_type = dictionary_entity["type"]  # "input" or "output"
 
-        self.max_distance = entity_data["max_distance"]
+        # Saving belt distance
+        if "max_distance" not in entity_data:
+            self.max_distance = 5  # the distance of the lvl1 underground-belt
+        else:
+            self.max_distance = entity_data["max_distance"]
+
+        # Saving speed
+        if "speed" not in entity_data:
+            print(f"Warning: {self.name} has no speed")
+            self.speed = 0.03125  # the speed of the lvl1 underground-belt
+        else:
+            self.speed = entity_data["speed"]
+
+        self.speed = self.speed * 60 * 4 * 2
 
     def get_possible_output_coords(self):
         start_coord = self.position
@@ -456,6 +510,15 @@ class Splitter (LargeEntity):
         super().__init__(dictionary_entity, entity_data)
         self.offsets = [[0, 0], self.get_second_belt_offset()]
         # TODO: Filters
+
+        # Saving speed
+        if "speed" not in entity_data:
+            print(f"Warning: {self.name} has no speed")
+            self.speed = 0.03125  # the speed of the lvl1 splitter
+        else:
+            self.speed = entity_data["speed"]
+
+        self.speed = self.speed * 60 * 4 * 2
 
     def get_second_belt_offset(self):
 
