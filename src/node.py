@@ -120,6 +120,17 @@ class Assembly_node (Node):
             # TODO: Add support for multiple items
             self.outputs = [self.entity.recipe.result]
 
+    def __str__(self):
+        inputs = ""
+        for item in self.inputs:
+            inputs += str(item) + " "
+
+        outputs = ""
+        for item in self.outputs:
+            outputs += str(item) + " "
+
+        return f"Assembly node, {super().__str__()} [⭨ {inputs} ⭧ {outputs}]"
+
     # Purpose estimation
     def calculate_purpose(self):
         # Set our childrens and parents purpose
@@ -237,21 +248,20 @@ class Assembly_node (Node):
 
     def give_flow(self, flow):
         # We receive a flow from a parent
+
+        if self.entity.recipe is None:
+            return item.Flow([], 0)
+
+        # We send our recipe results to our childs
+        for child in self.childs:
+            output_flow = item.Flow(
+                [self.entity.recipe.result],
+                self.entity.items_per_second / len(self.childs)
+            )
+
+            child.give_flow(output_flow)
         # at the moment, we accept all flows
         return flow
-
-    # Other
-
-    def __str__(self):
-        inputs = ""
-        for item in self.inputs:
-            inputs += str(item) + " "
-
-        outputs = ""
-        for item in self.outputs:
-            outputs += str(item) + " "
-
-        return f"Assembly node, {super().__str__()} [⭨ {inputs} ⭧ {outputs}]"
 
 
 class Transport_node (Node):
@@ -328,13 +338,9 @@ class Transport_node (Node):
         # For a transport node, the input is the transported items
         return self.transported_items
 
-    # def get_supported_item_amount(self):
-    #     # TODO : priority
-    #     pass
-
     @property
     def capacity(self):
-        if self.flow is None:
+        if self.flow is None or self.entity.speed is None:
             return None
 
         return self.flow.amount / self.entity.speed
@@ -343,6 +349,11 @@ class Transport_node (Node):
         # An item flow is given to the node
         # TODO: check transported items
         processed_flow = flow
+
+        if self.entity.speed is None:
+            # Node without speed or capacity limits (chests)
+            self.flow = processed_flow
+            return self.send_childs_flow(processed_flow)
 
         # If we have already a flow, we merge the two flows
         if self.flow is not None:

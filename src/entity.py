@@ -330,12 +330,6 @@ class AssemblingMachine (LargeEntity):
     def __init__(self, dictionary_entity, entity_data):
         super().__init__(dictionary_entity, entity_data)
 
-        self.recipe = None
-        if "recipe" in dictionary_entity:
-            self.recipe = recipe.Recipe(dictionary_entity["recipe"])
-            if not self.recipe.exists:
-                self.recipe = None
-
         self.offsets = [
             [0, 0],
             [0, 1],
@@ -348,12 +342,20 @@ class AssemblingMachine (LargeEntity):
             [-1, -1],
         ]
 
-        # Saving speed of the belt
-        if "crafting_speed" not in entity_data:
-            print(f"Warning: {self.name} has no crafting speed")
-            self.speed = 0.5  # the speed of the assembling-machine-1
-        else:
-            self.speed = entity_data["crafting_speed"]
+        self.recipe = None
+        if "recipe" in dictionary_entity:
+            self.recipe = recipe.get_recipe(dictionary_entity["recipe"])
+
+        if self.recipe is not None:
+            # Saving speed of the assembling machine
+            if "crafting_speed" not in entity_data:
+                print(f"Warning: {self.name} has no crafting speed")
+                self.speed = 0.5  # the speed of the assembling-machine-1
+            else:
+                self.speed = entity_data["crafting_speed"]
+
+            self.time_per_item = self.recipe.time / self.speed
+            self.items_per_second = self.recipe.nb_item_output / self.time_per_item
 
     def to_char(self, coords=None):
 

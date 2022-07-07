@@ -7,16 +7,18 @@ from src import factorio, item
 DIFFICULTY = "normal"
 
 
+def get_recipe(name):
+    # Check that the recipe exists
+    if name not in factorio.recipies:
+        print(f"WARNING: no recipe found for {name}")
+        return None
+
+    return Recipe(name)
+
+
 class Recipe:
     def __init__(self, name) -> None:
         self.name = name
-        self.exists = True
-
-        # Check that the recipe exists
-        if name not in factorio.recipies:
-            print(f"WARNING: no recipe found for {name}")
-            self.exists = False
-            return
 
         factorio_recipe = factorio.recipies[name]
 

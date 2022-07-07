@@ -396,7 +396,7 @@ class Network:
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
                     node_label = " "
-                    if node.flow is not None:
+                    if node.flow is not None and node.entity.speed is not None:
                         node_label = str(
                             int(node.flow.amount * 10) / 10) + "/s " + str(int(node.capacity * 100)) + "%"
 

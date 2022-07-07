@@ -30,6 +30,11 @@ class Flow:
         self.items = items
         self.amount = amount  # Per min
 
+        if amount is None:
+            print(f"WARNING: Flow {self} has no amount")
+            # TODO: Remove this, it crash on the bp beltFac4.txt
+            self.amount = 0
+
     def __str__(self) -> str:
         items = ""
         for item in self.items:
