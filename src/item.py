@@ -29,3 +29,25 @@ class Flow:
     def __init__(self, items, amount):
         self.items = items
         self.amount = amount  # Per min
+
+    def __str__(self) -> str:
+        items = ""
+        for item in self.items:
+            items += f"{item.name} "
+        return f"[{items} {self.amount}/min]"
+
+
+def merge_flows(flows):
+    # Fuse all flows
+    total_ips = 0
+    treated_items = []
+    treated_items_names = []
+    for flow in flows:
+        total_ips += flow.amount
+        for item in flow.items:
+            if item.name not in treated_items_names:
+                treated_items_names.append(item.name)
+                treated_items.append(Item(item.name, 1))
+
+    # Create a new flow
+    return Flow(treated_items, total_ips)

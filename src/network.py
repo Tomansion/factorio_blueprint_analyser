@@ -1,4 +1,4 @@
-from src import node as node_service, utils
+from src import node as node_service, utils, item
 from pyvis.network import Network as NetworkDisplay
 
 # -----------------------------------------------------------
@@ -256,12 +256,14 @@ class Network:
         # We will process the assembling machines with recipes that
         # have one ingredient first as they are easier to process
 
+        # Recipes with one ingredient first
         for node in self.nodes:
             if node.type == "assembling-machine" and\
                     node.entity.recipe is not None and\
                     len(node.entity.recipe.ingredients) == 1:
                 node.calculate_purpose()
 
+        # Recipes with multiple ingredients
         for node in self.nodes:
             if node.type == "assembling-machine" and\
                     node.entity.recipe is not None and\
@@ -297,9 +299,12 @@ class Network:
             utils.verbose(node)
             items_input = node.get_materials_input()
             if items_input is not None and len(items_input) > 0:
-                for item in items_input:
-                    utils.verbose(f"{node.entity.name} needs {item.name}")
-                    utils.verbose(item)
+                # Creation of a flow that covers the node's purpose
+                # We give the flow the speed of the node
+                flow = item.Flow(items_input, node.entity.speed)
+
+                # We pass the flow to the node, it will send it to his childs
+                node.give_flow(flow)
 
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
@@ -385,13 +390,18 @@ class Network:
                          dashes=True,
                          arrowStrikethrough=False)
 
-        # Display nodes transported items
+        # Display nodes transported items and flow
         for node in self.nodes:
             if node.type != "assembling-machine" and node.transported_items is not None:
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
+                    node_label = " "
+                    if node.flow is not None:
+                        node_label = str(
+                            int(node.flow.amount * 10) / 10) + "/s " + str(int(node.capacity * 100)) + "%"
+
                     net.add_node(node_id,
-                                 label=" ",
+                                 label=node_label,
                                  value=2,
                                  shape="image",
                                  image=item.get_ingame_image_path(),
@@ -403,4 +413,4 @@ class Network:
                                  color="lightgrey")
 
         # Display the graph
-        net.show("graph.html")
+        net.show(self.blueprint.label + ".html")

@@ -1,4 +1,4 @@
-from src import utils
+from src import utils, item
 
 # -----------------------------------------------------------
 # Network nodes properties
@@ -22,6 +22,9 @@ class Node:
         # Network optimization data
         self.removed = False
         self.compacted_nodes = []  # Contain the nodes deleted by the optimizer
+
+        # Bottleneck calculation
+        self.flow = None
 
     # Optimization
     def optimize(self):
@@ -232,6 +235,11 @@ class Assembly_node (Node):
 
         return self.inputs
 
+    def give_flow(self, flow):
+        # We receive a flow from a parent
+        # at the moment, we accept all flows
+        return flow
+
     # Other
 
     def __str__(self):
@@ -253,6 +261,21 @@ class Transport_node (Node):
 
         # Bottleneck calculation data
         self.transported_items = None
+        self.flow = None
+
+    def __str__(self):
+        transported_items = ""
+
+        if self.transported_items is None:
+            transported_items = "?"
+
+        elif len(self.transported_items) == 0:
+            transported_items = "None"
+        else:
+            for item in self.transported_items:
+                transported_items += str(item) + " "
+
+        return f"Node {super().__str__()} [↔ {transported_items}]"
 
     # Purpose estimation
     def get_materials_output(self):
@@ -305,17 +328,79 @@ class Transport_node (Node):
         # For a transport node, the input is the transported items
         return self.transported_items
 
-    # Other
-    def __str__(self):
-        transported_items = ""
+    # def get_supported_item_amount(self):
+    #     # TODO : priority
+    #     pass
 
-        if self.transported_items is None:
-            transported_items = "?"
+    @property
+    def capacity(self):
+        if self.flow is None:
+            return None
 
-        elif len(self.transported_items) == 0:
-            transported_items = "None"
+        return self.flow.amount / self.entity.speed
+
+    def give_flow(self, flow):
+        # An item flow is given to the node
+        # TODO: check transported items
+        processed_flow = flow
+
+        # If we have already a flow, we merge the two flows
+        if self.flow is not None:
+            if self.capacity >= 1:
+                # We are full, we can't accept the flow
+                return item.Flow([], 0)
+
+            # We get only the flow we can accept
+            available_flow_amount = self.entity.speed - self.flow.amount
+
+            if available_flow_amount < processed_flow.amount:
+                # We have an exceding flow,
+                # we can't accept all of the second flow
+                processed_flow = item.Flow(
+                    self.flow.items, available_flow_amount)
+
+            # How much of this new flow can our children accept
+            processed_flow = self.send_childs_flow(processed_flow)
+
+            # We add it to our flow
+            self.flow = item.merge_flows([processed_flow, self.flow])
+
         else:
-            for item in self.transported_items:
-                transported_items += str(item) + " "
+            # First time we receive a flow
+            # We check if we can support the given flow
+            if flow.amount > self.entity.speed:
+                # We can't support it, we take the maximum we can support
+                processed_flow = item.Flow(flow.items, self.entity.speed)
 
-        return f"Node {super().__str__()} [↔ {transported_items}]"
+            # Then we ask our childrens
+            processed_flow = self.send_childs_flow(processed_flow)
+
+            # We save the flow
+            self.flow = processed_flow
+
+        return processed_flow
+
+    def send_childs_flow(self, flow):
+        # If we don't have children, we are an output node
+        if len(self.childs) == 0:
+            # so we accept all the input flow
+            return flow
+
+        # If we have one child, we try to give it the flow
+        elif len(self.childs) == 1:
+            return self.childs[0].give_flow(flow)
+
+        # If we have multiple children,
+        # We give the flow to each childs, they are sorted by priority
+        # If there is some flow left from a previous child, we give it to the next child
+        leftover_flow = flow
+        cumulated_flow = 0
+        for child in self.childs:
+            child_flow = child.give_flow(leftover_flow)
+            cumulated_flow += child_flow.amount
+            leftover_flow = item.Flow(
+                leftover_flow.items,
+                leftover_flow.amount - child_flow.amount
+            )
+
+        return item.Flow(flow.items, cumulated_flow)

@@ -24,4 +24,4 @@ if __name__ == "__main__":
 
     # Calculate bottleneck
     nw.calculate_bottleneck()
-    # nw.display()
+    nw.display()
