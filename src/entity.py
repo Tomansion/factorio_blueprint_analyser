@@ -357,11 +357,34 @@ class AssemblingMachine (LargeEntity):
             self.time_per_item = self.recipe.time / self.speed
             self.items_per_second = self.recipe.result.amount / self.time_per_item
 
-    def get_produced_items_per_second(self, ingredients):
+            # Define the required items per second
+            # to have the assembling machine working at 100%
+            self.required_items_per_second = {}
+            for item in self.recipe.ingredients:
+                self.required_items_per_second[item.name] = item.amount / \
+                    self.time_per_item
+
+    def get_usage_ratio(self, ingredients_amount):
         # Calculate the number of items produced per second
         # according to the ingredients
 
-        return self.items_per_second
+        if self.recipe is None or not self.recipe.all_ingredients_required(ingredients_amount.keys()):
+            return 0
+
+        print("")
+        lowest_ingredient_requierment = None
+        for ingredient in ingredients_amount:
+            completion_percentage = ingredients_amount[ingredient] / \
+                self.required_items_per_second[ingredient]
+
+            print(self.recipe.result.name, '/', ingredient +
+                  ": " + str(completion_percentage))
+            if lowest_ingredient_requierment is None or \
+                    completion_percentage < lowest_ingredient_requierment:
+                lowest_ingredient_requierment = completion_percentage
+
+        print("get_usage_ratio: " + str(lowest_ingredient_requierment))
+        return min(1.0, lowest_ingredient_requierment)
 
     def to_char(self, coords=None):
 

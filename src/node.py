@@ -121,6 +121,8 @@ class Assembly_node (Node):
             self.outputs = [self.entity.recipe.result]
 
         self.ingredients_input = {}
+        self.usage_ratio = None
+        self.produced_items_per_second = 0
 
     def __str__(self):
         inputs = ""
@@ -275,13 +277,7 @@ class Assembly_node (Node):
 
         # We check if we have enough ingredients to make the recipe
         if self.entity.recipe.all_ingredients_required(self.ingredients_input.keys()):
-            print("enough ingredients !")
             self.send_childs_recipe_results()
-        else:
-            print("not enough ingredients")
-
-        # We send our recipe results to our childs
-        self.send_childs_recipe_results()
 
         # We tell our parent how much we take from the flow
         required_ingredient_nb = self.entity.recipe.get_ingredient_nb(
@@ -293,16 +289,22 @@ class Assembly_node (Node):
             # We have the capacity to take all the flow
             return item.Flow(flow.items, flow.amount)
 
+        # Current limitaitons:
+        # If the our childrens can't accept our flow for some reason
+        # we are still accepting our parent flow, but we should not
+
         return item.Flow(flow.items, required_ingredient_nb_per_second)
 
     def send_childs_recipe_results(self):
         # We send our recipe results to our childs
         # At the moment, we split the recipe result
         # for each child
-        produced_items_per_second = self.entity.get_produced_items_per_second(
-            self.ingredients_input)
+
+        self.usage_ratio = self.entity.get_usage_ratio(self.ingredients_input)
+        self.produced_items_per_second = self.entity.items_per_second * self.usage_ratio
+
         flow_to_send = item.Flow(
-            [self.entity.recipe.result], produced_items_per_second)
+            [self.entity.recipe.result], self.produced_items_per_second)
 
         if self.flow is None:
             self.flow = flow_to_send
@@ -310,7 +312,7 @@ class Assembly_node (Node):
             # We have already a flow, we need
             # to send what we don't have sent yet
             flow_to_send = item.Flow([self.entity.recipe.result],
-                                     produced_items_per_second - self.flow.amount)
+                                     self.produced_items_per_second - self.flow.amount)
 
         for child in self.childs:
             leftover_flow = child.give_flow(flow_to_send)
@@ -318,7 +320,8 @@ class Assembly_node (Node):
                 # We have no more flow to send
                 return
 
-            flow_to_send = item.Flow([self.entity.recipe.result], leftover_flow.amount)
+            flow_to_send = item.Flow(
+                [self.entity.recipe.result], leftover_flow.amount)
 
 
 class Transport_node (Node):

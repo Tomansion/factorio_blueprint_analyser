@@ -41,6 +41,10 @@ Other:
     ☐ Deal with arms grabing quantity reseach level
     ☐ Multy system process
 
+On to of the project:
+    ☐ Blueprint analysis dashboard
+    ☐ creation of the belt factory with genetic algorithm
+
 Init the project:
     ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)
     ✔ Read a blueprint @started(22-06-15 11:16) @done(22-06-15 12:04) @lasted(48m18s)

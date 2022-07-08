@@ -347,17 +347,21 @@ class Network:
                 node_id = str(node.entity.number) + "_recipe"
 
                 # Display the produced items per sec
-                items_per_sec = int(node.entity.items_per_second * 10) / 10
+                items_per_sec = int(node.produced_items_per_second * 10) / 10
+
+                # Display the usage rate
+                usage_rate = (str(int(node.usage_ratio * 100)) +
+                              "%") if node.usage_ratio is not None else ""
 
                 net.add_node(node_id,
-                             label=node.entity.recipe.name + " (" + str(items_per_sec) + ")",
+                             label=str(items_per_sec) + "/s " + usage_rate,
                              value=3,
                              shape="image",
                              image=node.entity.recipe.get_ingame_image_path(),
                              brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
 
-                net.add_edge(node.entity.number,
-                             node_id,
+                net.add_edge(node_id,
+                             node.entity.number,
                              title="produce",
                              color="grey",
                              dashes=True,
