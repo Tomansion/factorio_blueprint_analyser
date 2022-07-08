@@ -1,19 +1,8 @@
 Bottleneck calculator:
     ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
     ✔ Few thing to fix @started(22-07-01 11:33) @done(22-07-01 18:35) @lasted(7h2m27s)
-    ☐ Capacity and speed calculation
+    ☐ Capacity and speed calculation @started(22-07-01 16:49)
 
-Other:
-    ☐ Furnaces
-    ☐ Arm capacity
-    ☐ Science
-    ☐ Deal with arms grabing quantity reseach level
-    ☐ Deal with beacons
-    ☐ better unsuported items display
-    ☐ Deal with game difficulty
-    ☐ Filters
-    ☐ Beacons
-    ☐ Multy system process
 
 Create some new Blueprints:
     ✔ Recursive arms with and without chests @done(22-06-21 14:31)
@@ -38,6 +27,19 @@ Project end:
         ☐ List bugs
         ☐ List improvements
         ☐ List limitations
+
+Other:
+    ☐ Stack inserter capacity
+    ☐ Furnaces (no combustion items)
+    ☐ Science
+    ☐ Deal with beacons
+    ☐ better unsuported items display
+    ☐ Deal with game difficulty
+    ☐ Filters
+    ☐ Beacons
+    ☐ Modules
+    ☐ Deal with arms grabing quantity reseach level
+    ☐ Multy system process
 
 Init the project:
     ✔ Import Factorio recipes file @started(22-06-15 10:55) @done(22-06-15 11:14) @lasted(19m)

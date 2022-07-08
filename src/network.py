@@ -345,8 +345,12 @@ class Network:
         for node in self.nodes:
             if node.type == "assembling-machine" and node.entity.recipe is not None:
                 node_id = str(node.entity.number) + "_recipe"
+
+                # Display the produced items per sec
+                items_per_sec = int(node.entity.items_per_second * 10) / 10
+
                 net.add_node(node_id,
-                             label=node.entity.recipe.name,
+                             label=node.entity.recipe.name + " (" + str(items_per_sec) + ")",
                              value=3,
                              shape="image",
                              image=node.entity.recipe.get_ingame_image_path(),
@@ -395,6 +399,8 @@ class Network:
             if node.type != "assembling-machine" and node.transported_items is not None:
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
+
+                    # Display the items / second and the node capacity
                     node_label = " "
                     if node.flow is not None and node.entity.speed is not None:
                         node_label = str(

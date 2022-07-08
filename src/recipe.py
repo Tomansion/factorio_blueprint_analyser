@@ -23,10 +23,10 @@ class Recipe:
         factorio_recipe = factorio.recipies[name]
 
         # Get result item
-        self.nb_item_output = factorio_recipe["result_count"] \
+        nb_item_output = factorio_recipe["result_count"] \
             if "result_count" in factorio_recipe else 1
 
-        self.result = item.Item(name, self.nb_item_output)
+        self.result = item.Item(name, nb_item_output)
         # TODO: deal with multiple results
 
         # Get ingredients
@@ -65,6 +65,27 @@ class Recipe:
         self.time = factorio_recipe["energy_required"] \
             if "energy_required" in factorio_recipe \
             else 1
+
+    def ingredient_required(self, ingredient_name):
+        for ingredient in self.ingredients:
+            if ingredient.name == ingredient_name:
+                return True
+
+        return False
+
+    def get_ingredient_nb(self, ingredient_name):
+        for ingredient in self.ingredients:
+            if ingredient.name == ingredient_name:
+                return ingredient.amount
+
+        return None
+
+    def all_ingredients_required(self, ingredients):
+        for ingredient in ingredients:
+            if not self.ingredient_required(ingredient):
+                return False
+
+        return True
 
     def get_ingame_image_path(self):
         # Item image url

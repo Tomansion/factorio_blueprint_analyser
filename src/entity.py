@@ -355,7 +355,13 @@ class AssemblingMachine (LargeEntity):
                 self.speed = entity_data["crafting_speed"]
 
             self.time_per_item = self.recipe.time / self.speed
-            self.items_per_second = self.recipe.nb_item_output / self.time_per_item
+            self.items_per_second = self.recipe.result.amount / self.time_per_item
+
+    def get_produced_items_per_second(self, ingredients):
+        # Calculate the number of items produced per second
+        # according to the ingredients
+
+        return self.items_per_second
 
     def to_char(self, coords=None):
 
