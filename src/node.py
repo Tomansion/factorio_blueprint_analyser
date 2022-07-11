@@ -1,3 +1,4 @@
+import math
 from src import utils, item
 
 # -----------------------------------------------------------
@@ -122,7 +123,6 @@ class Assembly_node (Node):
 
         self.ingredients_input = {}
         self.usage_ratio = None
-        self.produced_items_per_second = 0
 
     def __str__(self):
         inputs = ""
@@ -260,8 +260,13 @@ class Assembly_node (Node):
         if len(self.parents) == 0:
             # If no parents, we are an input,
             # so we supose that we have all the elements we need
+
+            for ingredient in self.entity.recipe.ingredients:
+                self.ingredients_input[ingredient.name] = math.inf
+
             # we just send our childrens our produced item
             self.send_childs_recipe_results()
+            return
 
         # We check that the given item is in our recipe
         flow_ingredient_name = flow.items[0].name
@@ -290,8 +295,14 @@ class Assembly_node (Node):
             return item.Flow(flow.items, flow.amount)
 
         # Current limitaitons:
-        # If the our childrens can't accept our flow for some reason
-        # we are still accepting our parent flow, but we should not
+        # We are still accepting our parent flow, but we should not
+        # if our childrens can't accept our flow for some reason
+        # TODO: show this with a test
+
+        # # Fix that only work if we have one parent:
+        # if len(self.parents) == 1:
+        #     # We can't take all the flow, we take the rest
+        #     return item.Flow(flow.items, required_ingredient_nb_per_second * self.usage_ratio)
 
         return item.Flow(flow.items, required_ingredient_nb_per_second)
 
@@ -300,28 +311,43 @@ class Assembly_node (Node):
         # At the moment, we split the recipe result
         # for each child
 
-        self.usage_ratio = self.entity.get_usage_ratio(self.ingredients_input)
-        self.produced_items_per_second = self.entity.items_per_second * self.usage_ratio
+        usage_ratio = self.entity.get_usage_ratio(self.ingredients_input)
+        produced_items_per_second = self.entity.items_per_second * usage_ratio
 
         flow_to_send = item.Flow(
-            [self.entity.recipe.result], self.produced_items_per_second)
+            [self.entity.recipe.result], produced_items_per_second)
 
-        if self.flow is None:
-            self.flow = flow_to_send
-        else:
+        if self.flow is not None:
             # We have already a flow, we need
             # to send what we don't have sent yet
-            flow_to_send = item.Flow([self.entity.recipe.result],
-                                     self.produced_items_per_second - self.flow.amount)
 
-        for child in self.childs:
-            leftover_flow = child.give_flow(flow_to_send)
-            if leftover_flow.amount == 0:
-                # We have no more flow to send
-                return
+            if self.flow.amount >= produced_items_per_second:
+                # We don't have more flow than we can send
+                return item.Flow([], 0)
 
             flow_to_send = item.Flow(
-                [self.entity.recipe.result], leftover_flow.amount)
+                [self.entity.recipe.result], produced_items_per_second - self.flow.amount)
+
+        sended_amount = 0
+        for child in self.childs:
+            accepted_flow = child.give_flow(flow_to_send)
+            sended_amount += accepted_flow.amount
+            # if accepted_flow.amount == flow_to_send.amount:
+            #     print("All flow accepted")
+            #     # We have no more flow to send
+            #     break
+
+            flow_to_send = item.Flow(
+                [self.entity.recipe.result], flow_to_send.amount - accepted_flow.amount)
+
+        if self.flow is None:
+            self.flow = item.Flow([self.entity.recipe.result], sended_amount)
+        else:
+            self.flow.amount += sended_amount
+
+        # print("produced_items_per_second", produced_items_per_second)
+        # print("sended_amount", self.flow.amount)
+        self.usage_ratio = self.flow.amount / self.entity.items_per_second
 
 
 class Transport_node (Node):

@@ -347,7 +347,7 @@ class Network:
                 node_id = str(node.entity.number) + "_recipe"
 
                 # Display the produced items per sec
-                items_per_sec = int(node.produced_items_per_second * 10) / 10
+                items_per_sec = int(node.flow.amount * 10) / 10
 
                 # Display the usage rate
                 usage_rate = (str(int(node.usage_ratio * 100)) +

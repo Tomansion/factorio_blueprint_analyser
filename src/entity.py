@@ -366,28 +366,24 @@ class AssemblingMachine (LargeEntity):
 
     def get_usage_ratio(self, ingredients_amount):
         # Calculate the number of items produced per second
-        # according to the ingredients
+        # according to an ingredients amount dictionary
 
         if self.recipe is None or not self.recipe.all_ingredients_required(ingredients_amount.keys()):
             return 0
 
-        print("")
-        lowest_ingredient_requierment = None
+        lowest_ingredient_requierment_ratio = None
         for ingredient in ingredients_amount:
-            completion_percentage = ingredients_amount[ingredient] / \
+
+            completion_ratio = ingredients_amount[ingredient] / \
                 self.required_items_per_second[ingredient]
 
-            print(self.recipe.result.name, '/', ingredient +
-                  ": " + str(completion_percentage))
-            if lowest_ingredient_requierment is None or \
-                    completion_percentage < lowest_ingredient_requierment:
-                lowest_ingredient_requierment = completion_percentage
+            if lowest_ingredient_requierment_ratio is None or \
+                    completion_ratio < lowest_ingredient_requierment_ratio:
+                lowest_ingredient_requierment_ratio = completion_ratio
 
-        print("get_usage_ratio: " + str(lowest_ingredient_requierment))
-        return min(1.0, lowest_ingredient_requierment)
+        return min(1.0, lowest_ingredient_requierment_ratio)
 
     def to_char(self, coords=None):
-
         color = "white"
         if self.name == "assembling-machine-2":
             color = "blue"
