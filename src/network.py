@@ -336,7 +336,7 @@ class Network:
             # Display the node total items / second and the node use percentage
             node_label = ""
             if node.node_type == "transport_node":
-                node_label = str(int(node.flow.total_amount * 10) / 10) + "/s "
+                node_label = str(int(node.flow.total_amount * 100) / 100) + "/s "
 
                 if node.capacity is not None:
                     # Belts, arms, ...
@@ -418,17 +418,18 @@ class Network:
 
         # Display nodes transported items and flow
         for node in self.nodes:
-            if node.type != "assembling-machine":
+            if node.node_type == "transport_node":
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
 
                     node_label = " "
                     if len(node.transported_items) > 1:
+                        # We display the flow if there is one
                         if item.name not in node.flow.items:
                             node_label = "?/s"
                         else:
                             node_label = str(
-                                int(node.flow.items[item.name] * 10) / 10) + "/s"
+                                int(node.flow.items[item.name] * 100) / 100) + "/s"
 
                     net.add_node(node_id,
                                  label=node_label,

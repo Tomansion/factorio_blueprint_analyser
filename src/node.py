@@ -37,8 +37,6 @@ class Node:
             if len(self.childs) == 0 and \
                     len(self.parents) == 1 and \
                     self.parents[0].entity.name == self.entity.name:
-                #     and \
-                # not self.parents[0].removed:
 
                 self.remove()
 
@@ -47,8 +45,6 @@ class Node:
             elif len(self.childs) == 1 and \
                     len(self.parents) == 1 and \
                     self.parents[0].entity.name == self.entity.name:
-                #     and\
-                # not self.parents[0].removed:
 
                 self.remove()
 
