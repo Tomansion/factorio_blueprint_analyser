@@ -19,7 +19,7 @@ class Node:
         self.childs = []
         self.parents = []
         self.type = entity.data["type"]
-
+        # self.direct_input = False
         # Network optimization data
         self.removed = False
         self.compacted_nodes = []  # Contain the nodes deleted by the optimizer
@@ -85,6 +85,20 @@ class Node:
 
     def set_purpose(self, items, from_node=None):
         return None
+
+    def connected_to_input(self):
+        # True if no assembly mach between the node and the root
+        if self.node_type == "assembling-machine":
+            return False
+
+        if len(self.parents) == 0:
+            return True
+
+        for parent in self.parents:
+            if parent.connected_to_input():
+                return True
+
+        return False
 
     # Bottleneck calculation
     def get_materials_input(self):
@@ -223,16 +237,28 @@ class Assembly_node (Node):
                     utils.verbose(
                         f"\t\t{parent} has no purpose, it will provide the other ingredients")
 
-            if len(parent_without_purpose) == 0:
-                # No parent can provide the other ingredients
-                # TODO Force on non strict transporters
-                utils.verbose(
-                    "WARNING: No parent can provide the other ingredients for the recipe " + self.entity.recipe.name)
+            if len(parent_without_purpose) > 0:
+                # Assign the other ingredients to the parents
+                for parent in parent_without_purpose:
+                    parent.set_purpose(needed_ingredients, from_node=self)
                 return
 
-            # Assign the other ingredients to the parents
-            for parent in parent_without_purpose:
-                parent.set_purpose(needed_ingredients, from_node=self)
+            # === 4. Assigning root connected parents to the missing ingredients ===
+
+            # No available parents can provide the other ingredients
+            # So we will find the parents that are directly connected to an input
+            # without passing through another assembly node
+
+            for parent in self.parents:
+                if parent.connected_to_input():
+                    utils.verbose(
+                        f"\t\t{parent} has is an input, it will provide the other ingredients")
+
+                    parent.set_purpose(needed_ingredients, from_node=self)
+                    return
+
+            # No parent can provide the other ingredients
+            print(f"Waring No parent can provide the other ingredients for {self}")
 
     def get_materials_output(self):
         # Get the materials output of the node
@@ -255,7 +281,7 @@ class Assembly_node (Node):
 
         if self.entity.recipe is None:
             # If no recipe, we accept no flow
-            return item.Flow([], 0)
+            return item.Flow(flow.items, 0)
 
         if len(self.parents) == 0:
             # If no parents, we are an input,
@@ -266,13 +292,13 @@ class Assembly_node (Node):
 
             # we just send our childrens our produced item
             self.send_childs_recipe_results()
-            return
+            return flow
 
         # We check that the given item is in our recipe
         flow_ingredient_name = flow.items[0].name
 
         if not self.entity.recipe.ingredient_required(flow_ingredient_name):
-            return item.Flow([], 0)
+            return item.Flow(flow.items, 0)
 
         # We store the flow in our inputs
         if flow_ingredient_name not in self.ingredients_input:
@@ -323,7 +349,7 @@ class Assembly_node (Node):
 
             if self.flow.amount >= produced_items_per_second:
                 # We don't have more flow than we can send
-                return item.Flow([], 0)
+                return item.Flow([self.entity.recipe.result], 0)
 
             flow_to_send = item.Flow(
                 [self.entity.recipe.result], produced_items_per_second - self.flow.amount)
@@ -403,10 +429,16 @@ class Transport_node (Node):
     def set_purpose(self, items, from_node=None):
         if self.transported_items is not None:
             for item in items:
+                item_already_in_list = False
                 for transported_item in self.transported_items:
                     if transported_item.name == item.name:
                         # We already transport the item so we can ignore it
+                        item_already_in_list = True
                         break
+
+                if not item_already_in_list:
+                    self.transported_items.append(item)
+
         else:
             self.transported_items = items
 
@@ -445,7 +477,7 @@ class Transport_node (Node):
         if self.flow is not None:
             if self.capacity >= 1:
                 # We are full, we can't accept the flow
-                return item.Flow([], 0)
+                return item.Flow(flow.items, 0)
 
             # We get only the flow we can accept
             available_flow_amount = self.entity.speed - self.flow.amount

@@ -35,6 +35,10 @@ class Flow:
             # TODO: Remove this, it crash on the bp beltFac4.txt
             self.amount = 0
 
+        if items is None or len(items) == 0:
+            print(f"ERROR: a flow was created without items")
+            raise Exception("Flow without items")
+
     def __str__(self) -> str:
         items = ""
         for item in self.items:
