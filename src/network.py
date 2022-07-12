@@ -298,13 +298,26 @@ class Network:
         for node in root_nodes:
             utils.verbose(node)
             items_input = node.get_materials_input()
-            if items_input is not None and len(items_input) > 0:
-                # Creation of a flow that covers the node's purpose
-                # We give the flow the speed of the node
-                flow = item.Flow(items_input, node.entity.speed)
 
+            if items_input is None or len(items_input) == 0:
+                continue
+
+            # We will give each item the node requires
+            # If there is some capacity left with the item n,
+            # we will give the item n+1 the remaining capacity
+
+            flow_capacity = node.entity.speed if node.entity.speed is not None else 10000
+
+            for item_input in items_input:
                 # We pass the flow to the node, it will send it to his childs
-                node.give_flow(flow)
+                acepted_amount = node.give_flow(item_input.name, flow_capacity)
+
+                flow_capacity -= acepted_amount
+
+                print("give_flow", item_input, flow_capacity, "to node",
+                      node, "accepted", acepted_amount, "remaining", flow_capacity)
+
+            print("")
 
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
@@ -347,7 +360,7 @@ class Network:
                 node_id = str(node.entity.number) + "_recipe"
 
                 # Display the produced items per sec
-                items_per_sec = int(node.flow.amount * 10) / 10
+                items_per_sec = int(node.flow.total_amount * 10) / 10
 
                 # Display the usage rate
                 usage_rate = (str(int(node.usage_ratio * 100)) +
@@ -400,15 +413,17 @@ class Network:
 
         # Display nodes transported items and flow
         for node in self.nodes:
-            if node.type != "assembling-machine" and node.transported_items is not None:
+            if node.type != "assembling-machine":
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
 
-                    # Display the items / second and the node capacity
-                    node_label = " "
-                    if node.flow is not None and node.entity.speed is not None:
-                        node_label = str(
-                            int(node.flow.amount * 10) / 10) + "/s " + str(int(node.capacity * 100)) + "%"
+                    # Display each transported items flow / second
+                    if item.name not in node.flow.items:
+                        node_label = "x/s"
+                        print("Warning: item", item.name, "not in flow")
+                        print(node.flow.items)
+                    else:
+                        node_label = str(int(node.flow.items[item.name] * 10) / 10) + "/s"
 
                     net.add_node(node_id,
                                  label=node_label,
@@ -421,6 +436,30 @@ class Network:
                                  node.entity.number,
                                  title="transport",
                                  color="lightgrey")
+
+        # Display nodes flow
+        for node in self.nodes:
+            if node.node_type == "transport_node" and node.flow is not None:
+                # Display the node total items / second and the node use percentage
+                node_id = str(node.entity.number) + "_flow"
+                node_label = str(
+                    int(node.flow.total_amount * 10) / 10) + "/s "
+
+                if node.capacity is not None:
+                    # Belts, arms, ...
+                    node_label += str(int(node.capacity * 100)) + "%"
+
+                net.add_node(node_id,
+                             label=node_label,
+                             value=2,
+                             shape="image",
+                             image=item.get_ingame_image_path(),
+                             brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
+
+                net.add_edge(node_id,
+                             node.entity.number,
+                             title="transport",
+                             color="lightgrey")
 
         # Display the graph
         net.show(self.blueprint.label + ".html")

@@ -26,37 +26,34 @@ class Item:
 
 
 class Flow:
-    def __init__(self, items, amount):
-        self.items = items
-        self.amount = amount  # Per min
+    def __init__(self):
+        self.items = {}
+        # Format:  {
+        #    item_name_1: 0.8, # Per min
+        #    item_name_2: 0.4,
+        # }
+
+    def add_item(self, item, amount):
+        if item is None:
+            print(f"ERROR: a flow was added without an item")
+            raise Exception("Flow added without item")
 
         if amount is None:
-            print(f"WARNING: Flow {self} has no amount")
-            # TODO: Remove this, it crash on the bp beltFac4.txt
-            self.amount = 0
+            print(f"ERROR: a flow was added without an amount")
+            raise Exception("Flow added without amount")
 
-        if items is None or len(items) == 0:
-            print(f"ERROR: a flow was created without items")
-            raise Exception("Flow without items")
+        if item not in self.items:
+            self.items[item] = amount
+        else:
+            self.items[item] += amount
+
+        print("FLOW: added item:", item, amount)
+
+    @property
+    def total_amount(self):
+        if len(self.items) == 0:
+            return 0
+        return sum(self.items.values())
 
     def __str__(self) -> str:
-        items = ""
-        for item in self.items:
-            items += f"{item.name} "
-        return f"[{items} {self.amount}/min]"
-
-
-def merge_flows(flows):
-    # Fuse all flows
-    total_ips = 0
-    treated_items = []
-    treated_items_names = []
-    for flow in flows:
-        total_ips += flow.amount
-        for item in flow.items:
-            if item.name not in treated_items_names:
-                treated_items_names.append(item.name)
-                treated_items.append(Item(item.name, 1))
-
-    # Create a new flow
-    return Flow(treated_items, total_ips)
+        return "[" + ", ".join([f"{item}: {amount}" for item, amount in self.items.items()]) + "]"
