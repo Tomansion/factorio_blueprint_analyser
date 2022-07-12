@@ -314,11 +314,6 @@ class Network:
 
                 flow_capacity -= acepted_amount
 
-                print("give_flow", item_input, flow_capacity, "to node",
-                      node, "accepted", acepted_amount, "remaining", flow_capacity)
-
-            print("")
-
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
         net.repulsion(node_distance=80, spring_length=0)
@@ -338,8 +333,18 @@ class Network:
             if node.type == "inserter":
                 node_size = 4
 
+            # Display the node total items / second and the node use percentage
+            node_label = ""
+            if node.node_type == "transport_node":
+                node_label = str(int(node.flow.total_amount * 10) / 10) + "/s "
+
+                if node.capacity is not None:
+                    # Belts, arms, ...
+                    node_label += str(int(node.capacity * 100)) + "%"
+
             net.add_node(node.entity.number,
                          value=node_size,
+                         label=node_label,
                          shape="circularImage",
                          borderWidth=10,
                          color="lightgrey",
@@ -417,13 +422,13 @@ class Network:
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
 
-                    # Display each transported items flow / second
-                    if item.name not in node.flow.items:
-                        node_label = "x/s"
-                        print("Warning: item", item.name, "not in flow")
-                        print(node.flow.items)
-                    else:
-                        node_label = str(int(node.flow.items[item.name] * 10) / 10) + "/s"
+                    node_label = " "
+                    if len(node.transported_items) > 1:
+                        if item.name not in node.flow.items:
+                            node_label = "?/s"
+                        else:
+                            node_label = str(
+                                int(node.flow.items[item.name] * 10) / 10) + "/s"
 
                     net.add_node(node_id,
                                  label=node_label,
@@ -436,30 +441,6 @@ class Network:
                                  node.entity.number,
                                  title="transport",
                                  color="lightgrey")
-
-        # Display nodes flow
-        for node in self.nodes:
-            if node.node_type == "transport_node" and node.flow is not None:
-                # Display the node total items / second and the node use percentage
-                node_id = str(node.entity.number) + "_flow"
-                node_label = str(
-                    int(node.flow.total_amount * 10) / 10) + "/s "
-
-                if node.capacity is not None:
-                    # Belts, arms, ...
-                    node_label += str(int(node.capacity * 100)) + "%"
-
-                net.add_node(node_id,
-                             label=node_label,
-                             value=2,
-                             shape="image",
-                             image=item.get_ingame_image_path(),
-                             brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
-
-                net.add_edge(node_id,
-                             node.entity.number,
-                             title="transport",
-                             color="lightgrey")
 
         # Display the graph
         net.show(self.blueprint.label + ".html")

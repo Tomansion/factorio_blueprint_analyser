@@ -35,19 +35,15 @@ class Flow:
 
     def add_item(self, item, amount):
         if item is None:
-            print(f"ERROR: a flow was added without an item")
             raise Exception("Flow added without item")
 
         if amount is None:
-            print(f"ERROR: a flow was added without an amount")
             raise Exception("Flow added without amount")
 
         if item not in self.items:
             self.items[item] = amount
         else:
             self.items[item] += amount
-
-        print("FLOW: added item:", item, amount)
 
     @property
     def total_amount(self):

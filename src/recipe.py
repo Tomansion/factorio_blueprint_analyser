@@ -80,9 +80,9 @@ class Recipe:
 
         return None
 
-    def all_ingredients_required(self, ingredients):
-        for ingredient in ingredients:
-            if not self.ingredient_required(ingredient):
+    def all_ingredients_required(self, given_ingredients):
+        for ingredient in self.ingredients:
+            if ingredient not in given_ingredients:
                 return False
 
         return True
