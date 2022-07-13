@@ -1,16 +1,12 @@
 
 import ujson
 
-from src import utils
+from src import utils, config
 
 # -----------------------------------------------------------
 # Provide for the other files Factorio data
 # from the src/assets/factorio_raw/factorio_raw_min.json file
 # -----------------------------------------------------------
-
-factorio_raw_data_file_path = "src/assets/factorio_raw/factorio_raw_min.json"
-# TODO: read from options instead
-
 
 recipies_key = "recipe"
 recipies = {}
@@ -34,6 +30,7 @@ entities = {}
 
 def load_data():
     global recipies, entities, items
+    factorio_raw_data_file_path = config.config.data_file_path
 
     # TODO:. check that the file exists
     with open(factorio_raw_data_file_path, "r") as f:

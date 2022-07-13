@@ -1,27 +1,11 @@
 #!/usr/bin/env python3
-
 from src import (
-    factorio,
     options,
-    blueprint,
-    network
+    blueprint_analyser
 )
-
 
 if __name__ == "__main__":
     # Read and check the user parameters
     options.read_options()
 
-    # Load the Factorio data
-    factorio.load_data()
-
-    # Read the input blueprint
-    bp = blueprint.load_blueprint(options.input)
-    bp.display()
-
-    # Creade a node network from the blueprint
-    nw = network.create_network(bp)
-
-    # Calculate bottleneck
-    nw.calculate_bottleneck()
-    nw.display()
+    blueprint_analyser.calculate_blueprint_bottleneck(options.input)

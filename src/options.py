@@ -3,8 +3,6 @@ import argparse
 import sys
 import os
 
-from src import utils
-
 # -----------------------------------------------------------
 # Read the user input and check the options
 # The options are stored in the global variables
@@ -51,13 +49,9 @@ def read_options():
 
     # Check if the input file exists
     if not os.path.exists(opt.input):
-        print(f"Input file '{opt.input}' does not exist")
-        sys.exit(1)
+        raise(f"Input file '{opt.input}' does not exist")
 
     # Check if the output file exists
     if os.path.exists(opt.output) and not force:
-        print(f"Output file '{opt.output}' already exists")
-        print("Use --force or -f to overwrite it")
-        sys.exit(1)
-
-    utils.verbose(f"file: {opt.input}")
+        raise(
+            f"Output file '{opt.output}' already exists\nUse --force or -f to overwrite it")

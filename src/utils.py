@@ -3,11 +3,11 @@ import json
 import sys
 import base64
 
-from src import options
+from src import config
 
 
-def verbose(content, end="\n"):
-    if not options.silent:
+def verbose(content, end="\n", level=1):
+    if config.config.verbose_level >= level:
         print(content, end=end, file=sys.stderr, flush=True)
 
 

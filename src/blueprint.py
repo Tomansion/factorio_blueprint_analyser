@@ -1,10 +1,10 @@
 import json
 import sys
 
-from src import utils, entity, options
+from src import utils, entity
 
 # -----------------------------------------------------------
-# Read the blueprint from the given file in the options
+# Read the blueprint from the given file
 # Decode the file is encoded
 # Create an entity list from the blueprint items
 # Place the entities in a 2D array according to their position
