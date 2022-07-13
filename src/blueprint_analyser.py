@@ -23,4 +23,5 @@ def calculate_blueprint_bottleneck(blueprint_path, config_path=None):
 
     # Calculate bottleneck
     nw.calculate_bottleneck()
-    nw.display()
+    if config.config.display_network:
+        nw.display()

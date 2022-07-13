@@ -8,7 +8,12 @@ blueprints = listdir(blueprints_path)
 
 
 def test_all_blueprints():
-    for blueprint in blueprints:
-        blueprint_path = f"{blueprints_path}/{blueprint}"
-        blueprint_analyser.calculate_blueprint_bottleneck(
-            blueprint_path, config_path=config_file_path)
+    for (i, blueprint) in enumerate(blueprints):
+        try:
+            print(f"Analysing blueprint: {blueprint}, {i+1}/{len(blueprints)}")
+            blueprint_path = f"{blueprints_path}/{blueprint}"
+            blueprint_analyser.calculate_blueprint_bottleneck(
+                blueprint_path, config_path=config_file_path)
+
+        except Exception as e:
+            print(f"Error: {e}")

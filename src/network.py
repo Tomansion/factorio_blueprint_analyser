@@ -265,12 +265,14 @@ class Network:
         # Recipes with one ingredient first
         for node in self.nodes:
             if node.type == "assembling-machine" and\
+                node.entity.recipe is not None and\
                     len(node.entity.recipe.ingredients) == 1:
                 node.calculate_parents_purpose()
 
         # Recipes with multiple ingredients
         for node in self.nodes:
             if node.type == "assembling-machine" and\
+                node.entity.recipe is not None and\
                     len(node.entity.recipe.ingredients) > 1:
                 node.calculate_parents_purpose()
 
