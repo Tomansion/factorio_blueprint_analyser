@@ -253,22 +253,26 @@ class Network:
         # each parent and child node to tell them what we expect them to do
 
         # The purpose calculation starts from the assembly machines
-        # We will process the assembling machines with recipes that
-        # have one ingredient first as they are easier to process
+        # childs as only one item is produced per assembling machine
+
+        for node in self.nodes:
+            if node.type == "assembling-machine":
+                node.calculate_childs_purpose()
+
+        # We will then, for the parents, deal with the assembling machines
+        # with recipes that have one ingredient first as they are easier to process
 
         # Recipes with one ingredient first
         for node in self.nodes:
             if node.type == "assembling-machine" and\
-                    node.entity.recipe is not None and\
                     len(node.entity.recipe.ingredients) == 1:
-                node.calculate_purpose()
+                node.calculate_parents_purpose()
 
         # Recipes with multiple ingredients
         for node in self.nodes:
             if node.type == "assembling-machine" and\
-                    node.entity.recipe is not None and\
                     len(node.entity.recipe.ingredients) > 1:
-                node.calculate_purpose()
+                node.calculate_parents_purpose()
 
         # Display some debug info
         nb_transport_nodes_with_no_purpose = 0
@@ -427,7 +431,7 @@ class Network:
 
         # Display nodes transported items and flow
         for node in self.nodes:
-            if node.node_type == "transport_node":
+            if node.node_type == "transport_node" and node.transported_items is not None:
                 for (i, item) in enumerate(node.transported_items):
                     node_id = str(node.entity.number) + "_item_" + str(i)
 

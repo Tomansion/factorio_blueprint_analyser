@@ -76,11 +76,11 @@ class Node:
         # Else, the output is the node inputs
         return None
 
-    def calculate_purpose(self):
-        return None
+    def set_purpose_from_parent(self, items):
+        pass
 
-    def set_purpose(self, items, from_node=None):
-        return None
+    def set_purpose_from_child(self, items):
+        pass
 
     def connected_to_input(self):
         # True if no assembly mach between the node and the root
@@ -147,20 +147,26 @@ class Assembly_node (Node):
         return f"Assembly node, {super().__str__()} [⭨ {inputs} ⭧ {outputs}]"
 
     # Purpose estimation
-    def calculate_purpose(self):
-        # Set our childrens and parents purpose
+    def calculate_childs_purpose(self):
+        # Set our childrens purpose
 
         if self.entity.recipe is None:
             return  # No purpose
 
-        # We first set the purpose of our childs according to the outputs of the recipe
+        # We just set the purpose of our childs according to the outputs of the recipe
         for child in self.childs:
-            child.set_purpose([self.entity.recipe.result], from_node=self)
+            child.set_purpose_from_parent([self.entity.recipe.result])
+
+    def calculate_parents_purpose(self):
+        # Set our parents purpose
+
+        if self.entity.recipe is None:
+            return  # No purpose
 
         # We will assign our parents a purpose according to the recipe inputs and the
         # purpose our parents already have
 
-        # If we have no parents, we are an inpot so we do nothing
+        # If we have no parents, we are an input, there is nothing more to do
         if len(self.parents) == 0:
             return
 
@@ -169,11 +175,9 @@ class Assembly_node (Node):
             # so our parents purpose is to provide the ingredient
 
             for parent in self.parents:
-                # TODO: detect wrongly wired parents
-                # The parent is wrong if it has a strict purpose and it's not the same as the recipe input
                 # Creating a copy of the recipe input to avoid modifying the recipe
                 recipe_ingredients = self.entity.recipe.ingredients[:]
-                parent.set_purpose(recipe_ingredients, from_node=self)
+                parent.set_purpose_from_child(recipe_ingredients)
 
         else:
             # We need more than one ingredient to make the recipe,
@@ -238,7 +242,7 @@ class Assembly_node (Node):
             if len(parent_without_purpose) > 0:
                 # Assign the other ingredients to the parents
                 for parent in parent_without_purpose:
-                    parent.set_purpose(needed_ingredients, from_node=self)
+                    parent.set_purpose_from_child(needed_ingredients)
                 return
 
             # === 4. Assigning root connected parents to the missing ingredients ===
@@ -250,9 +254,9 @@ class Assembly_node (Node):
             for parent in self.parents:
                 if parent.connected_to_input():
                     utils.verbose(
-                        f"\t\t{parent} has is an input, it will provide the other ingredients")
+                        f"\t\t{parent} is directly linked to an input, it will provide the other ingredients")
 
-                    parent.set_purpose(needed_ingredients, from_node=self)
+                    parent.set_purpose_from_child(needed_ingredients)
                     return
 
             # No parent can provide the other ingredients
@@ -404,8 +408,26 @@ class Transport_node (Node):
 
         return self.transported_items
 
-    def set_purpose(self, items, from_node=None):
-        if self.transported_items is not None:
+    def set_purpose_from_child(self, items):
+        # Our childrens are telling us the items that they need
+        self.add_transported_item(items)
+
+        # We send the message to our parents
+        for parent in self.parents:
+            parent.set_purpose_from_child(items)
+
+    def set_purpose_from_parent(self, items):
+        # Our parents are telling us the items that they will give us
+        self.add_transported_item(items)
+
+        # We send the message to our childs
+        for child in self.childs:
+            child.set_purpose_from_parent(items)
+
+    def add_transported_item(self, items):
+        if self.transported_items is None:
+            self.transported_items = items
+        else:
             for item in items:
                 item_already_in_list = False
                 for transported_item in self.transported_items:
@@ -416,17 +438,6 @@ class Transport_node (Node):
 
                 if not item_already_in_list:
                     self.transported_items.append(item)
-
-        else:
-            self.transported_items = items
-
-            for parent in self.parents:
-                if parent is not from_node:
-                    parent.set_purpose(items, from_node=self)
-
-            for child in self.childs:
-                if child is not from_node:
-                    child.set_purpose(items, from_node=self)
 
     # Bottleneck calculation
     def get_materials_input(self):
