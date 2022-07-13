@@ -1,5 +1,5 @@
 import math
-from src import utils, item
+from src import recipe, utils, item
 
 # -----------------------------------------------------------
 # Network nodes properties
@@ -117,7 +117,7 @@ class Assembly_node (Node):
         super().__init__(entity)
         self.node_type = "assembly_node"
 
-        # Bottleneck calculation data
+        # Purpose calculation data
         self.inputs = []
         self.outputs = []
 
@@ -131,6 +131,7 @@ class Assembly_node (Node):
             # TODO: Add support for multiple items
             self.outputs = [self.entity.recipe.result]
 
+        # Bottleneck calculation data
         self.ingredients_input = {}
         self.usage_ratio = None
 
@@ -170,8 +171,9 @@ class Assembly_node (Node):
             for parent in self.parents:
                 # TODO: detect wrongly wired parents
                 # The parent is wrong if it has a strict purpose and it's not the same as the recipe input
-                parent.set_purpose(
-                    self.entity.recipe.ingredients, from_node=self)
+                # Creating a copy of the recipe input to avoid modifying the recipe
+                recipe_ingredients = self.entity.recipe.ingredients[:]
+                parent.set_purpose(recipe_ingredients, from_node=self)
 
         else:
             # We need more than one ingredient to make the recipe,
@@ -441,12 +443,12 @@ class Transport_node (Node):
 
     def give_flow(self, item, amount):
         # An item flow is given to the node
-        processed_amount = amount
 
         if self.entity.speed is None:
             # Node without speed or capacity limits (chests)
-            self.flow.add_item(item, amount)
-            return self.send_childs_flow(item, amount)
+            accepted_amount = self.send_childs_flow(item, amount)
+            self.flow.add_item(item, accepted_amount)
+            return accepted_amount
 
         if self.capacity >= 1:
             # We are full, we can't accept the flow
@@ -455,6 +457,7 @@ class Transport_node (Node):
         # We get only the flow we can accept
         available_flow_amount = self.entity.speed - self.flow.total_amount
 
+        processed_amount = amount
         if available_flow_amount < processed_amount:
             # We have an exceding flow,
             # we can't accept all of the second flow

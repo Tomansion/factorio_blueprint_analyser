@@ -296,7 +296,6 @@ class Network:
         root_nodes = self.root_nodes()
 
         for node in root_nodes:
-            utils.verbose(node)
             items_input = node.get_materials_input()
 
             if items_input is None or len(items_input) == 0:
@@ -311,8 +310,17 @@ class Network:
             for item_input in items_input:
                 # We pass the flow to the node, it will send it to his childs
                 acepted_amount = node.give_flow(item_input.name, flow_capacity)
-
                 flow_capacity -= acepted_amount
+
+        utils.verbose("\nBottleneck calculation complete!")
+        utils.verbose("Produced items:")
+        for node in self.leaf_nodes():
+            # TODO: fix that nothing is shown for the bp blueprints4/drillFac1
+            # None of the leaf nodes have a flow and none of them are processed by
+            # the bottleneck algorithm (no node with 0 childs processed).
+            # due to bp optimization ?
+            for item in node.flow.items:
+                utils.verbose(f"   {item}: {node.flow.items[item]} /s")
 
     def display(self):
         net = NetworkDisplay(directed=True, height=1000, width=1900)
@@ -336,7 +344,8 @@ class Network:
             # Display the node total items / second and the node use percentage
             node_label = ""
             if node.node_type == "transport_node":
-                node_label = str(int(node.flow.total_amount * 100) / 100) + "/s "
+                node_label = str(
+                    int(node.flow.total_amount * 100) / 100) + "/s "
 
                 if node.capacity is not None:
                     # Belts, arms, ...
@@ -425,9 +434,7 @@ class Network:
                     node_label = " "
                     if len(node.transported_items) > 1:
                         # We display the flow if there is one
-                        if item.name not in node.flow.items:
-                            node_label = "?/s"
-                        else:
+                        if item.name in node.flow.items:
                             node_label = str(
                                 int(node.flow.items[item.name] * 100) / 100) + "/s"
 

@@ -96,3 +96,8 @@ class Recipe:
         entity_wiki_name = self.name.capitalize().replace('-', '_')
 
         return f"https://wiki.factorio.com/images/{entity_wiki_name}.png"
+
+    def __str__(self) -> str:
+        ingredients_str = ", ".join(
+            [f"{item.name}: {item.amount}" for item in self.ingredients])
+        return f"{self.name} [{ingredients_str}] => ({self.result})"
