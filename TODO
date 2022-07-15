@@ -1,9 +1,5 @@
-Bottleneck calculator:
-    ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
-    ✔ Few thing to fix @started(22-07-01 11:33) @done(22-07-01 18:35) @lasted(7h2m27s)
-    ✔ Capacity and speed calculation @started(22-07-01 16:49) @done(22-07-11 10:01) @lasted(1w2d17h12m57s)
-    ✔ Doing more tests @started(22-07-12 10:47) @done(22-07-13 16:48) @lasted(1d6h1m39s)
-    ✔ Reversing the flow process to resolve the multiple ingredinet issue @done(22-07-15 13:40)
+Export the output:
+    ☐ Complete the blueprint json with the data
 
 Create some new Blueprints:
     ✔ Recursive arms with and without chests @done(22-06-21 14:31)
@@ -18,9 +14,10 @@ Optimisation:
     ✔ Reduce identical belts that follow each other @done(22-07-01 18:35)
 
 Project end:
-    ☐ Add types for most of the variables
-    ☐ Add coverage tests
+    ✔ Add coverage tests @done(22-07-15 13:40)
+    ☐ CI CD
     ☐ Add style verification
+    ☐ Add types for most of the variables
 
     Readme:
         ☐ Use guide
@@ -28,6 +25,10 @@ Project end:
         ☐ List bugs
         ☐ List improvements
         ☐ List limitations
+
+    ☐ Create a Pipe packmage
+    ☐ Add license
+    ☐ Add contribution guidelines
 
 Other:
     ✔ Stack inserter capacity @done(22-07-15 13:40)
@@ -42,7 +43,7 @@ Other:
     ☐ Deal with arms grabing quantity reseach level
     ☐ Multy system process
 
-On to of the project:
+Next projects:
     ☐ Blueprint analysis dashboard
     ☐ creation of the belt factory with genetic algorithm
 
@@ -76,3 +77,9 @@ Display enhancement:
     ✔ Display inputs @done(22-06-28 11:22)
     ✔ Display outputs @done(22-06-28 11:22)
 
+Bottleneck calculator:
+    ✔ Recipe back propagation @started(22-06-28 14:21) @done(22-06-29 16:43) @lasted(1d2h22m30s)
+    ✔ Few thing to fix @started(22-07-01 11:33) @done(22-07-01 18:35) @lasted(7h2m27s)
+    ✔ Capacity and speed calculation @started(22-07-01 16:49) @done(22-07-11 10:01) @lasted(1w2d17h12m57s)
+    ✔ Doing more tests @started(22-07-12 10:47) @done(22-07-13 16:48) @lasted(1d6h1m39s)
+    ✔ Reversing the flow process to resolve the multiple ingredinet issue @done(22-07-15 13:40)
