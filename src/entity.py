@@ -1,7 +1,7 @@
 from math import floor
 from termcolor import colored
 
-from src import factorio, recipe, utils
+from src import factorio, recipe, utils, config
 
 # -----------------------------------------------------------
 # Base class for all entities
@@ -30,7 +30,7 @@ def create_entity(entity_in_blueprint, virtual=False):
 
     # Check that the entity exists in the Factorio data
     if entity_in_blueprint["name"] not in factorio.entities:
-        print(
+        utils.verbose(
             f"Warning: entity {entity_in_blueprint['name']} not found in Factorio data")
         # sys.exit(1)
         return None
@@ -52,6 +52,8 @@ def create_entity(entity_in_blueprint, virtual=False):
     elif entity_data["type"] == "inserter":
         if entity_data["name"] == "long-handed-inserter":
             return RedArm(entity_in_blueprint, entity_data)
+        elif entity_data["name"] == "stack-inserter":
+            return StackInserter(entity_in_blueprint, entity_data)
         else:
             return Inserter(entity_in_blueprint, entity_data)
 
@@ -64,7 +66,7 @@ def create_entity(entity_in_blueprint, virtual=False):
     elif entity_data["type"] == "splitter":
         return Splitter(entity_in_blueprint, entity_data)
 
-    print(
+    utils.verbose(
         f"Warning: entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
 
 
@@ -135,7 +137,7 @@ class TransportBelt(Entity):
 
         # Saving speed of the belt
         if "speed" not in entity_data:
-            print(f"Warning: {self.name} has no speed")
+            utils.verbose(f"Warning: {self.name} has no speed")
             self.tile_per_sec = 0.03125  # the tile_per_sec of the lvl1 transport belt
         else:
             self.tile_per_sec = entity_data["speed"]
@@ -224,15 +226,20 @@ class Inserter (Entity):
 
         # Saving speed of the inserter
         if "rotation_speed" not in entity_data:
-            print(f"Warning: {self.name} has no rotation speed")
+            utils.verbose(f"Warning: {self.name} has no rotation speed")
             self.rotation_speed = 0.014  # the rotation_speed of the lvl1 inserter
         else:
             self.rotation_speed = entity_data["rotation_speed"]
 
         # The rotation speed is the turn per tick
         # There is 60 ticks per second
-        # TODO : inserter capacity bonnus https://wiki.factorio.com/Inserter_capacity_bonus_(research)
         self.speed = self.rotation_speed * 60  # turn or items per second
+
+        # Inserter capacity bonnus https://wiki.factorio.com/Inserter_capacity_bonus_(research)
+        if config.config.inserter_capacity_bonus >= 7:
+            self.speed *= 3
+        elif config.config.inserter_capacity_bonus >= 2:
+            self.speed *= 2
 
     def get_drop_tile_offset(self):
         # Returns an offset of the tile where items are dropped
@@ -312,6 +319,26 @@ class Inserter (Entity):
             return colored("►", color)
         else:
             return colored("▼", color)
+
+
+class StackInserter  (Inserter):
+    def __init__(self, dictionary_entity, entity_data):
+        super().__init__(dictionary_entity, entity_data)
+
+        # Rewriting the speed
+        self.speed = self.rotation_speed * 60  # turn or items per second
+
+        # Inserter capacity bonnus https://wiki.factorio.com/Inserter_capacity_bonus_(research)
+        capacity_multiplier = 2 + config.config.inserter_capacity_bonus
+
+        if config.config.inserter_capacity_bonus >= 5:
+            capacity_multiplier += 1
+        if config.config.inserter_capacity_bonus >= 6:
+            capacity_multiplier += 1
+        if config.config.inserter_capacity_bonus >= 7:
+            capacity_multiplier += 1
+
+        self.speed *= capacity_multiplier
 
 
 class RedArm (Inserter):
@@ -478,7 +505,7 @@ class UndergroundBelt (TransportBelt):
 
         # Saving speed
         if "speed" not in entity_data:
-            print(f"Warning: {self.name} has no speed")
+            utils.verbose(f"Warning: {self.name} has no speed")
             self.speed = 0.03125  # the speed of the lvl1 underground-belt
         else:
             self.speed = entity_data["speed"]
@@ -541,7 +568,7 @@ class Splitter (LargeEntity):
 
         # Saving speed
         if "speed" not in entity_data:
-            print(f"Warning: {self.name} has no speed")
+            utils.verbose(f"Warning: {self.name} has no speed")
             self.speed = 0.03125  # the speed of the lvl1 splitter
         else:
             self.speed = entity_data["speed"]

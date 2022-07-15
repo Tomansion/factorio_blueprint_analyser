@@ -6,4 +6,4 @@ __pycache__/
 # Tests coverage
 .coverage
 .pytest_cache
-htmlcov
+htmlcov/

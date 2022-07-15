@@ -5,7 +5,7 @@ import os
 #
 #   factorio:
 #     difficulty: normal
-#     inserter_capacity: 1
+#     inserter_capacity_bonus: 0
 #     data_file_path: "src/assets/factorio_raw/factorio_raw_min.json"
 #   verbose_level: 3
 #   network:
@@ -50,28 +50,40 @@ class Config:
 
         return default_config
 
+    def get_config_value(self, *args):
+        conf = self.config
+
+        for arg in args:
+            if arg not in conf:
+                raise KeyError(
+                    f"Couldn't find the config key: {args.join('.')}")
+
+            conf = conf[arg]
+
+        return conf
+
     # Factorio
     @property
-    def inserter_capacity(self):
-        return self.config["factorio"]["inserter_capacity"]
+    def inserter_capacity_bonus(self):
+        return self.get_config_value("factorio", "inserter_capacity_bonus")
 
     @property
     def difficulty(self):
-        return self.config["factorio"]["difficulty"]
+        return self.get_config_value("factorio", "difficulty")
 
     @property
     def data_file_path(self):
-        return self.config["factorio"]["data_file_path"]
+        return self.get_config_value("factorio", "data_file_path")
 
     # Verbose level
     @property
     def verbose_level(self):
-        return self.config["verbose_level"]
+        return self.get_config_value("verbose_level")
 
     # Network
     @property
     def display_network(self):
-        return self.config["network"]["display"]
+        return self.get_config_value("network", "display")
 
 
 def load_config(config_path=None):

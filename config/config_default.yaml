@@ -1,6 +1,12 @@
 factorio:
   difficulty: normal
-  inserter_capacity: 1
+
+  # Inserter_capacity_bonus
+  # number between 0 and 7
+  # (https://wiki.factorio.com/Inserter_capacity_bonus_(research))
+  inserter_capacity_bonus: 0
+
+
   data_file_path: "src/assets/factorio_raw/factorio_raw_min.json"
 
 verbose_level: 3

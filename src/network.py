@@ -455,4 +455,4 @@ class Network:
                                  color="lightgrey")
 
         # Display the graph
-        net.show(self.blueprint.label + ".html")
+        net.show(self.blueprint.label.replace('/', '-') + ".html")
