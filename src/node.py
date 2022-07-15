@@ -256,8 +256,8 @@ class Assembly_node (Node):
                     return
 
             # No parent can provide the other ingredients
-            print(
-                f"Waring No parent can provide the other ingredients for {self}")
+            utils.verbose(
+                f"Waring No parent can provide the other ingredients for {self}", level=1)
 
     def get_materials_output(self):
         # Get the materials output of the node
@@ -283,18 +283,14 @@ class Assembly_node (Node):
         return self.inputs
 
     def ask_flow(self, item, amount):
-        print("  asking_flow " + str(item) + " " +
-              str(amount), self.entity.recipe)
         # We receive a flow request from a child
 
         if self.entity.recipe is None:
             # If no recipe, we give no flow
-            print("No recipe")
             return 0
 
         # We check that we produce the requested item
         if self.entity.recipe.result.name != item:
-            print("Bad item")
             return 0
 
         # We check that we have enougth assembly time
@@ -302,16 +298,10 @@ class Assembly_node (Node):
 
         if available_amount <= 0:
             # We don't have enough assembly time to produce the requested amount
-            print("No available amount")
             return 0
 
         amount_that_need_to_be_produced = min(amount, available_amount)
         usage = amount_that_need_to_be_produced / self.entity.items_per_second
-
-        print("items_per_second", self.entity.items_per_second,
-              "available_amount", available_amount,
-              "amount_that_need_to_be_produced", amount_that_need_to_be_produced,
-              "usage ", usage)
 
         if len(self.parents) == 0:
             # If no parents, we are an input,
@@ -333,8 +323,6 @@ class Assembly_node (Node):
             required_item_per_second *= usage
             required_item_per_second_target = required_item_per_second
 
-            print("we need", required_item_per_second, "of", item.name)
-
             # We then ask our parents for the item:
             for parent in self.parents:
                 amount_provided = parent.ask_flow(
@@ -344,13 +332,11 @@ class Assembly_node (Node):
                 ingredients_input[item.name]["total"] += amount_provided
                 required_item_per_second -= amount_provided
 
-                print("parent", parent, "provided", amount_provided)
                 if required_item_per_second <= 0:
                     break
 
             if ingredients_input[item.name]["total"] == 0:
                 # We don't have the needed ingredient, we can't proceed
-                print("No ingredient, ")
                 usage = 0
                 break
 
@@ -362,8 +348,6 @@ class Assembly_node (Node):
             # we don't need as much as expected
 
             usage *= percent_recieved
-            print("percent_recieved", percent_recieved,
-                  "adjusted expected usage", usage)
 
         produced_amount = usage * self.entity.items_per_second
         self.flow.add_item(item, produced_amount)
@@ -379,20 +363,13 @@ class Assembly_node (Node):
                 exceeding_amount = ingredients_input[ingredient_name]["total"] - \
                     real_required_amount
 
-                print("!!!we asked too much, we need to give back", exceeding_amount)
-                print("!!!The parent gave ", ingredients_input[ingredient_name]["total"], "of", ingredient_name,
-                      "but we need", real_required_amount)
-
                 for amount_from in ingredients_input[ingredient_name]["from"]:
                     parent = amount_from["from"]
-                    print("!!asking", parent, "to give back", exceeding_amount)
                     reduced_flow = parent.take_back_flow(
                         ingredient_name, exceeding_amount)
-                    print("!!parent gave back", reduced_flow)
                     exceeding_amount -= reduced_flow
 
                     if exceeding_amount <= 0:
-                        print("!!we took back enough")
                         break
 
         return produced_amount
@@ -601,7 +578,6 @@ class Transport_node (Node):
         if amount <= 0:
             return 0
 
-        print(f"[]{self} takes back {amount} of {item}")
         # We check that we tranport the requested item
         if not self.is_item_transported(item):
             return 0
@@ -625,7 +601,6 @@ class Transport_node (Node):
         taked_back_amount = self.take_back_parents_flow(
             item, amount_to_take_back)
         self.flow.reduce(item, taked_back_amount)
-        print("[]amount taked back")
         return taked_back_amount
 
     def take_back_parents_flow(self, item, amount):

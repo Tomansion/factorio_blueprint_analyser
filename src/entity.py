@@ -1,7 +1,7 @@
 from math import floor
 from termcolor import colored
 
-from src import factorio, recipe
+from src import factorio, recipe, utils
 
 # -----------------------------------------------------------
 # Base class for all entities
@@ -349,20 +349,21 @@ class AssemblingMachine (LargeEntity):
         if self.recipe is not None:
             # Saving speed of the assembling machine
             if "crafting_speed" not in entity_data:
-                print(f"Warning: {self.name} has no crafting speed")
+                utils.verbose(
+                    f"Warning: {self.name} has no crafting speed", level=1)
                 self.speed = 0.5  # the speed of the assembling-machine-1
             else:
                 self.speed = entity_data["crafting_speed"]
 
-            self.time_per_item = self.recipe.time / self.speed
-            self.items_per_second = self.recipe.result.amount / self.time_per_item
+            time_per_item = self.recipe.time / self.speed
+            self.items_per_second = self.recipe.result.amount / time_per_item
 
             # Define the required items per second
             # to have the assembling machine working at 100%
             self.required_items_per_second = {}
             for item in self.recipe.ingredients:
                 self.required_items_per_second[item.name] = item.amount / \
-                    self.time_per_item
+                    time_per_item
 
     def get_usage_ratio(self, ingredients_amount):
         # Calculate the number of items produced per second
