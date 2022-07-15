@@ -131,9 +131,6 @@ class Assembly_node (Node):
             # TODO: Add support for multiple items
             self.outputs = [self.entity.recipe.result]
 
-        # Bottleneck calculation data
-        self.ingredients_input = {}
-
     def __str__(self):
         inputs = ""
         for item in self.inputs:
@@ -286,7 +283,8 @@ class Assembly_node (Node):
         return self.inputs
 
     def ask_flow(self, item, amount):
-        print("  asking_flow " + str(item) + " " + str(amount), self.entity.recipe)
+        print("  asking_flow " + str(item) + " " +
+              str(amount), self.entity.recipe)
         # We receive a flow request from a child
 
         if self.entity.recipe is None:
@@ -309,6 +307,7 @@ class Assembly_node (Node):
 
         amount_that_need_to_be_produced = min(amount, available_amount)
         usage = amount_that_need_to_be_produced / self.entity.items_per_second
+
         print("items_per_second", self.entity.items_per_second,
               "available_amount", available_amount,
               "amount_that_need_to_be_produced", amount_that_need_to_be_produced,
@@ -322,12 +321,13 @@ class Assembly_node (Node):
 
         # We check that we have the needed ingredients
         # so we ask for each of our items how much our parents can provide
+        ingredients_input = {}
         for item in self.entity.recipe.ingredients:
-            self.ingredients_input[item.name] = 0
+            ingredients_input[item.name] = {"total": 0, "from": []}
 
             # We need to get the amount of the item we need the parents to provide
             # First we get the amount of the item that we would have needed in case of a 100% usage
-            required_item_per_second = item.amount / self.entity.recipe.time
+            required_item_per_second = self.entity.required_items_per_second[item.name]
 
             # Then we reduce it to correspond to the amount of the item we expect to produce
             required_item_per_second *= usage
@@ -339,123 +339,101 @@ class Assembly_node (Node):
             for parent in self.parents:
                 amount_provided = parent.ask_flow(
                     item.name, required_item_per_second)
-                self.ingredients_input[item.name] += amount_provided
+                ingredients_input[item.name]["from"].append({
+                    "amount": amount_provided, "from": parent})
+                ingredients_input[item.name]["total"] += amount_provided
                 required_item_per_second -= amount_provided
 
                 print("parent", parent, "provided", amount_provided)
                 if required_item_per_second <= 0:
                     break
 
-            if self.ingredients_input[item.name] == 0:
-                # We don't have the needed ingredient
-                # TODO: tell our parents that gave us items that we don't need them anymore
-                print("No ingredient")
-                return 0
+            if ingredients_input[item.name]["total"] == 0:
+                # We don't have the needed ingredient, we can't proceed
+                print("No ingredient, ")
+                usage = 0
+                break
 
-            print("total", self.ingredients_input[item.name])
-            percent_recieved = self.ingredients_input[item.name] / \
+            percent_recieved = ingredients_input[item.name]["total"] / \
                 required_item_per_second_target
 
             # If the percent of the item we received is less than 100%,
-            # we have to adjust our next items requests because we don't need as much as expected
+            # we have to adjust our next items requests because
+            # we don't need as much as expected
 
             usage *= percent_recieved
             print("percent_recieved", percent_recieved,
                   "adjusted expected usage", usage)
 
-            # if the next requests provide less than expected again,
-            # we adjust our next requests again and correct the first flow requests
-
-        # Here, we should have the needed ingredients
-        produced_amount = usage * amount_that_need_to_be_produced
+        produced_amount = usage * self.entity.items_per_second
         self.flow.add_item(item, produced_amount)
+
+        # Before sending how much item we can produce
+        # we nned to update our parents flow
+
+        for ingredient_name in ingredients_input:
+            required_item_per_second = self.entity.required_items_per_second[ingredient_name]
+            real_required_amount = required_item_per_second * usage
+            print("!!!The parent gave ", ingredients_input[ingredient_name]["total"], "of", ingredient_name,
+                  "but we need", real_required_amount)
+
+            if ingredients_input[ingredient_name]["total"] > real_required_amount:
+                # We asked too much, we need to give back
+                exceeding_amount = ingredients_input[ingredient_name]["total"] - \
+                    real_required_amount
+
+                print("!!!we asked too much, we need to give back", exceeding_amount)
+
+                for amount_from in ingredients_input[ingredient_name]["from"]:
+                    parent = amount_from["from"]
+                    reduced_flow = parent.take_back_flow(
+                        ingredient_name, amount_from["amount"])
+
+                    exceeding_amount -= reduced_flow
+
+                    if exceeding_amount <= 0:
+                        break
 
         return produced_amount
 
-    def give_flow(self, item, amount):
-        # We receive a flow from a parent
+    def take_back_flow(self, item, amount):
+        # We gived too much flow at some point, we take it back
+
         if self.entity.recipe is None:
-            # If no recipe, we accept no flow
             return 0
 
-        if len(self.parents) == 0:
-            # If no parents, we are an input,
-            # so we supose that we have all the elements we need
-
-            for ingredient in self.entity.recipe.ingredients:
-                self.ingredients_input[ingredient.name] = math.inf
-
-            # we just have to send our childrens our produced item
-            self.send_childs_recipe_results()
-            return amount
-
-        # We check that the given item is in our recipe
-        if not self.entity.recipe.ingredient_required(item):
+        # We check that we produce the requested item
+        if self.entity.recipe.result.name != item:
             return 0
 
-        # We store the flow in our inputs
-        if item not in self.ingredients_input:
-            self.ingredients_input[item] = []
-        self.ingredients_input[item].append({"amount": amount, })
+        if self.flow.total_amount <= 0:
+            return 0
 
-        # We check if we have enough ingredients to make the recipe
-        if self.entity.recipe.all_ingredients_required(self.ingredients_input.keys()):
-            self.send_childs_recipe_results()
+        # We get only take back the flow we can take back
+        amount_to_take_back = amount
+        if amount > self.flow.total_amount:
+            amount_to_take_back = self.flow.total_amount
 
-            # We need to tell our parents how much items they need to provide
+        percentage_to_take_back = amount_to_take_back / self.flow.total_amount
+
+        # We ask our parents to take back their flow
+        for item in self.entity.recipe.ingredients:
+            actual_required_amount = self.usage_ratio * \
+                self.entity.required_items_per_second[item.name]
+
+            item_amount_to_take_back = actual_required_amount * percentage_to_take_back
+
             for parent in self.parents:
-                parent.set_flow(item, amount)
+                amount_taked_back = parent.take_back_flow(
+                    item.name, item_amount_to_take_back)
+                item_amount_to_take_back -= amount_taked_back
 
-        else:
-            # If we don't have enough ingredients, we don't accept anything yet
-            return 0
+                if item_amount_to_take_back <= 0:
+                    break
 
-        # We tell our parent how much we take from the flow
-        required_ingredient_nb = self.entity.recipe.get_ingredient_nb(item)
+        self.flow.reduce(item, amount_to_take_back)
+        return amount_to_take_back
 
-        required_ingredient_nb_per_second = required_ingredient_nb / self.entity.time_per_item
-
-        if required_ingredient_nb_per_second >= amount:
-            # We have the capacity to take all the provided ingredients
-            return amount
-
-        # Current limitaitons:
-        # We are still accepting our parent flow, but we should not
-        # if our childrens can't accept our flow for some reason
-
-        # Solutions:
-        #   Resolve backward
-        #   Multy thread
-        #   database
-
-        return required_ingredient_nb_per_second
-
-    def send_childs_recipe_results(self):
-        # We send our recipe results to our childs
-        # At the moment, we split the recipe result
-        # for each child
-
-        usage_ratio = self.entity.get_usage_ratio(self.ingredients_input)
-        produced_items_per_second = self.entity.items_per_second * usage_ratio
-
-        recipe_result = self.entity.recipe.result.name
-        amount_to_send = produced_items_per_second
-
-        # If we have already sended items, we need to send the difference
-        if self.flow.total_amount >= produced_items_per_second:
-            # We don't have more flow than we can send
-            return 0
-
-        amount_to_send = produced_items_per_second - self.flow.total_amount
-
-        sended_amount = 0
-        for child in self.childs:
-            accepted_amount = child.give_flow(recipe_result, amount_to_send)
-            sended_amount += accepted_amount
-            amount_to_send -= accepted_amount
-
-        self.flow.add_item(self.entity.recipe.result, sended_amount)
-        self.usage_ratio = self.flow.total_amount / self.entity.items_per_second
 
 
 class Transport_node (Node):
@@ -618,56 +596,52 @@ class Transport_node (Node):
 
         return sendedable_amount
 
-    def send_childs_flow(self, item, amount):
-        # If we don't have children, we are an output node
-        if len(self.childs) == 0:
-            # so we accept all the input flow
-            return amount
+    def take_back_flow(self, item, amount):
+        # We gived too much flow at some point, we take it back
 
-        # If we have one child, we try to give it the flow
-        elif len(self.childs) == 1:
-            return self.childs[0].give_flow(item, amount)
-
-        # If we have multiple children,
-        # We give the flow to each childs, they are sorted by priority
-        # TODO: sort by priority (arms with higer speed first, ...)
-        # If there is some flow left from a previous child, we give it to the next child
-
-        leftover_amount = amount
-        sended_amount = 0
-        for child in self.childs:
-            accepted_amount = child.give_flow(item, leftover_amount)
-            sended_amount += accepted_amount
-            leftover_amount -= accepted_amount
-
-        return sended_amount
-
-    def give_flow(self, item, amount):
-        # An item flow is given to the node
+        # We check that we tranport the requested item
+        if not self.is_item_transported(item):
+            return 0
 
         if self.entity.speed is None:
             # Node without speed or capacity limits (chests)
-            accepted_amount = self.send_childs_flow(item, amount)
-            self.flow.add_item(item, accepted_amount)
-            return accepted_amount
+            taked_back_amount = self.take_back_parents_flow(item, amount)
+            self.flow.reduce(item, taked_back_amount)
+            return taked_back_amount
 
-        if self.capacity >= 1:
-            # We are full, we can't accept the flow
+        if self.capacity <= 0:
+            # We don't have flow to take back
             return 0
 
-        # We get only the flow we can accept
-        available_flow_amount = self.entity.speed - self.flow.total_amount
-
-        processed_amount = amount
-        if available_flow_amount < processed_amount:
-            # We have an exceding flow,
-            # we can't accept all of the second flow
-            processed_amount = available_flow_amount
+        # We get only take back the flow we can take back
+        amount_to_take_back = amount
+        if amount > self.flow.total_amount:
+            amount_to_take_back = self.flow.total_amount
 
         # How much of this new flow can our children accept
-        accepted_amount = self.send_childs_flow(item, processed_amount)
+        taked_back_amount = self.take_back_parents_flow(
+            item, amount_to_take_back)
+        self.flow.reduce(item, taked_back_amount)
+        return taked_back_amount
 
-        # We add it to our flow
-        self.flow.add_item(item, accepted_amount)
+    def take_back_parents_flow(self, item, amount):
+        # Same as get_parents_flow but to take it back
 
-        return accepted_amount
+        if len(self.parents) == 0:
+            # Input node
+            return amount
+
+        elif len(self.parents) == 1:
+            return self.parents[0].take_back_flow(item, amount)
+
+        amount_to_take_back = amount
+        taked_back_amount_total = 0
+        for parent in self.parents:
+            taked_back_amount = parent.take_back_flow(
+                item, amount_to_take_back)
+            taked_back_amount_total += taked_back_amount
+            amount_to_take_back -= taked_back_amount
+            if amount_to_take_back <= 0:
+                break
+
+        return taked_back_amount_total

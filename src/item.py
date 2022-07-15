@@ -45,6 +45,14 @@ class Flow:
         else:
             self.items[item] += amount
 
+    def reduce(self, item, amount):
+        if item not in self.items:
+            raise Exception("Item not in flow")
+
+        self.items[item] -= amount
+        if self.items[item] <= 0:
+            del self.items[item]
+
     @property
     def total_amount(self):
         if len(self.items) == 0:
