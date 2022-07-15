@@ -49,9 +49,9 @@ def read_options():
 
     # Check if the input file exists
     if not os.path.exists(opt.input):
-        raise(f"Input file '{opt.input}' does not exist")
+        raise Exception(f"Input file '{opt.input}' does not exist")
 
     # Check if the output file exists
     if os.path.exists(opt.output) and not force:
-        raise(
+        raise Exception(
             f"Output file '{opt.output}' already exists\nUse --force or -f to overwrite it")

@@ -147,10 +147,10 @@ def load_blueprint(file):
 
     # Check if the json is valid
     if "blueprint" not in bp_json:
-        raise("Invalid blueprint, no 'blueprint' key found")
+        raise Exception("Invalid blueprint, no 'blueprint' key found")
 
     if "entities" not in bp_json["blueprint"]:
-        raise("Invalid blueprint, no 'entities' key found")
+        raise Exception("Invalid blueprint, no 'entities' key found")
 
     blueprint_label = "No label"
     if "label" in bp_json["blueprint"]:

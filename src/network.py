@@ -296,26 +296,24 @@ class Network:
         # ==============================================
 
         # We will try to estimate the use rate of all nodes
-        # We start with the root nodes that have a purpose and
-        # we will give it the maximum required resources
+        # We start with the leaf nodes that have a purpose and
+        # we will ask for the maximum produced item per second
 
-        root_nodes = self.root_nodes()
+        for node in self.leaf_nodes():
+            items_output = node.get_materials_output()
 
-        for node in root_nodes:
-            items_input = node.get_materials_input()
-
-            if items_input is None or len(items_input) == 0:
+            if items_output is None or len(items_output) == 0:
                 continue
 
-            # We will give each item the node requires
+            # We ask each item that the node gives
             # If there is some capacity left with the item n,
-            # we will give the item n+1 the remaining capacity
+            # we will ask for the item n+1 at the remaining capacity
 
             flow_capacity = node.entity.speed if node.entity.speed is not None else 10000
 
-            for item_input in items_input:
+            for item_output in items_output:
                 # We pass the flow to the node, it will send it to his childs
-                acepted_amount = node.give_flow(item_input.name, flow_capacity)
+                acepted_amount = node.ask_flow(item_output.name, flow_capacity)
                 flow_capacity -= acepted_amount
 
         utils.verbose("\nBottleneck calculation complete!")
