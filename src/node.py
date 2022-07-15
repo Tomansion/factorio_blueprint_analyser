@@ -369,29 +369,30 @@ class Assembly_node (Node):
         self.flow.add_item(item, produced_amount)
 
         # Before sending how much item we can produce
-        # we nned to update our parents flow
+        # we need to update our parents flow
 
         for ingredient_name in ingredients_input:
             required_item_per_second = self.entity.required_items_per_second[ingredient_name]
             real_required_amount = required_item_per_second * usage
-            print("!!!The parent gave ", ingredients_input[ingredient_name]["total"], "of", ingredient_name,
-                  "but we need", real_required_amount)
-
             if ingredients_input[ingredient_name]["total"] > real_required_amount:
                 # We asked too much, we need to give back
                 exceeding_amount = ingredients_input[ingredient_name]["total"] - \
                     real_required_amount
 
                 print("!!!we asked too much, we need to give back", exceeding_amount)
+                print("!!!The parent gave ", ingredients_input[ingredient_name]["total"], "of", ingredient_name,
+                      "but we need", real_required_amount)
 
                 for amount_from in ingredients_input[ingredient_name]["from"]:
                     parent = amount_from["from"]
+                    print("!!asking", parent, "to give back", exceeding_amount)
                     reduced_flow = parent.take_back_flow(
-                        ingredient_name, amount_from["amount"])
-
+                        ingredient_name, exceeding_amount)
+                    print("!!parent gave back", reduced_flow)
                     exceeding_amount -= reduced_flow
 
                     if exceeding_amount <= 0:
+                        print("!!we took back enough")
                         break
 
         return produced_amount
@@ -433,7 +434,6 @@ class Assembly_node (Node):
 
         self.flow.reduce(item, amount_to_take_back)
         return amount_to_take_back
-
 
 
 class Transport_node (Node):
@@ -598,7 +598,10 @@ class Transport_node (Node):
 
     def take_back_flow(self, item, amount):
         # We gived too much flow at some point, we take it back
+        if amount <= 0:
+            return 0
 
+        print(f"[]{self} takes back {amount} of {item}")
         # We check that we tranport the requested item
         if not self.is_item_transported(item):
             return 0
@@ -622,6 +625,7 @@ class Transport_node (Node):
         taked_back_amount = self.take_back_parents_flow(
             item, amount_to_take_back)
         self.flow.reduce(item, taked_back_amount)
+        print("[]amount taked back")
         return taked_back_amount
 
     def take_back_parents_flow(self, item, amount):
@@ -637,6 +641,7 @@ class Transport_node (Node):
         amount_to_take_back = amount
         taked_back_amount_total = 0
         for parent in self.parents:
+
             taked_back_amount = parent.take_back_flow(
                 item, amount_to_take_back)
             taked_back_amount_total += taked_back_amount

@@ -437,7 +437,7 @@ class Container (Entity):
         if self.name == "logistic-chest-passive-provider":
             return colored("⧈", "red")
         elif self.name == "logistic-chest-active-provider":
-            return colored("⧈", "purple")
+            return colored("⧈", "magenta")
         elif self.name == "logistic-chest-buffer":
             return colored("⧈", "green")
         elif self.name == "logistic-chest-requester":
