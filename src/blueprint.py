@@ -224,7 +224,6 @@ class Blueprint:
         #     "entities_input": [1, 2, 3, ...],
         #     "entities_output": [32, 33, 34, ...],
         #     "entities_bottleneck": [18, 23],
-        #     "global_usage_rate": 0.21
         # }
 
         analysed_bp = self.blueprint.copy()
@@ -235,6 +234,8 @@ class Blueprint:
             node.entity.number for node in self.network.root_nodes()]
         leaf_entities_number = [
             node.entity.number for node in self.network.leaf_nodes()]
+
+        entities_bottleneck = []
 
         for entity in analysed_bp["blueprint"]["entities"]:
             node = self.network.get_node(entity["entity_number"])
@@ -253,6 +254,15 @@ class Blueprint:
                     compacted_entity = self._get_entity(
                         compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                     compacted_entity["usage_rate"] = usage_rate
+
+                    # Adding bottleneck entities number
+                    if usage_rate >= 1:
+                        entities_bottleneck.append(
+                            compacted_entity["entity_number"])
+
+                # Adding bottleneck entities number
+                if usage_rate >= 1:
+                    entities_bottleneck.append(entity["entity_number"])
 
             # Adding input/output
             if node.entity.number in root_entities_number:
@@ -277,6 +287,25 @@ class Blueprint:
                 compacted_entity = self._get_entity(
                     compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                 compacted_entity["transpoted_items"] = node.flow.items
+
+        # Adding the total in and out flow
+        items_input = []
+        for root_node in self.network.root_nodes():
+            items_input.append(root_node.flow.items)
+
+        items_output = []
+        for leaf_node in self.network.leaf_nodes():
+            items_output.append(leaf_node.flow.items)
+
+        analysed_bp["items_input"] = items_input
+        analysed_bp["items_output"] = items_output
+
+        # Adding the entities input and output
+        analysed_bp["entities_input"] = root_entities_number
+        analysed_bp["entities_output"] = leaf_entities_number
+
+        # Adding the entities bottleneck
+        analysed_bp["entities_bottleneck"] = entities_bottleneck
 
         return analysed_bp
 
