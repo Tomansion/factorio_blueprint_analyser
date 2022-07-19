@@ -229,6 +229,13 @@ class Blueprint:
 
         analysed_bp = self.blueprint.copy()
 
+        # Pre load network input and output
+
+        root_entities_number = [
+            node.entity.number for node in self.network.root_nodes()]
+        leaf_entities_number = [
+            node.entity.number for node in self.network.leaf_nodes()]
+
         for entity in analysed_bp["blueprint"]["entities"]:
             node = self.network.get_node(entity["entity_number"])
 
@@ -243,8 +250,26 @@ class Blueprint:
                 # If the node as been "compacted" with other entities
                 # due to optimization, we need to update the oser entites
                 for compacted_node in node.compacted_nodes:
-                    compacted_entity = self._get_entity(compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+                    compacted_entity = self._get_entity(
+                        compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                     compacted_entity["usage_rate"] = usage_rate
+
+            # Adding input/output
+            if node.entity.number in root_entities_number:
+                entity["input"] = True
+
+                for compacted_node in node.compacted_nodes:
+                    compacted_entity = self._get_entity(
+                        compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+                    compacted_entity["input"] = True
+
+            elif node.entity.number in leaf_entities_number:
+                entity["output"] = True
+
+                for compacted_node in node.compacted_nodes:
+                    compacted_entity = self._get_entity(
+                        compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+                    compacted_entity["output"] = True
 
         return analysed_bp
 
