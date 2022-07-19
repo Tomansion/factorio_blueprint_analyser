@@ -4,8 +4,15 @@ from src import (
     blueprint_analyser
 )
 
+import json
+
 if __name__ == "__main__":
     # Read and check the user parameters
     options.read_options()
 
-    blueprint_analyser.calculate_blueprint_bottleneck(options.input)
+    analysed_blueprint = blueprint_analyser.calculate_blueprint_bottleneck(
+        options.input)
+
+    # Export analysed blueprint in a json file
+    with open(options.output, "w") as f:
+        f.write(json.dumps(analysed_blueprint, indent=4))

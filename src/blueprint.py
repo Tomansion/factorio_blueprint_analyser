@@ -17,14 +17,29 @@ class Blueprint:
     heigth = 0
     width = 0
     array = []
+    blueprint = None
 
-    def __init__(self, label, entities):
-        self.label = label
+    def __init__(self, bp_json):
+        self.blueprint = bp_json
+
+        # Check if the json is valid
+        if "blueprint" not in bp_json:
+            raise Exception("Invalid blueprint, no 'blueprint' key found")
+
+        if "entities" not in bp_json["blueprint"]:
+            raise Exception("Invalid blueprint, no 'entities' key found")
+
+        self.label = "No label"
+        if "label" in bp_json["blueprint"]:
+            self.label = bp_json["blueprint"]["label"]
+
+        entities = bp_json["blueprint"]["entities"]
 
         # === Blueprint pre process ===
 
         # entities creation
         for entity_dic in entities:
+
             # Replace infinit chests with a normal chest
             if entity_dic["name"] == "infinity-chest":
                 entity_dic["name"] = "iron-chest"
@@ -36,7 +51,7 @@ class Blueprint:
                 self.entities.append(new_entity)
 
         if len(self.entities) == 0:
-            utils.verbose(f"No entities in the blueprint {label}")
+            utils.verbose(f"No entities in the blueprint {self.label}")
             return
 
         # For some reason, the blueprint does not always start at 0,0 so we set a new origin:
@@ -103,9 +118,12 @@ class Blueprint:
                                     'position': {'x': drop_coord[0], 'y': drop_coord[1]}
                                 }, virtual=True)
 
-                            utils.verbose(f"Adding temporary entity {container}")
+                            utils.verbose(
+                                f"Adding temporary entity {container}")
                             self.array[drop_coord[1]
                                        ][drop_coord[0]] = container
+
+        utils.verbose(f"Blueprint {self.label} loaded successfully")
 
     def is_coord_in_boundaries(self, coord):
         return coord[0] >= 0 and coord[0] < self.width and\
@@ -131,6 +149,111 @@ class Blueprint:
             utils.verbose("")
         utils.verbose("")
 
+    def get_analysis(self):
+        # Read the blueprint network if it exists
+        # Then fill the information in a new dictionary
+
+        if self.network is None:
+            raise Exception("No network found")
+
+        # Base blueprint format :
+        # "blueprint": {
+        #     "icons": [...],
+        #     "entities": [
+        #         {
+        #             "entity_number": 1,
+        #             "name": "transport-belt",
+        #             "position": {...},
+        #             "direction": 2
+        #         },
+        #         {
+        #             "entity_number": 2,
+        #             "name": "assembly-machine-1",
+        #             "position": {...},
+        #             "direction": 2
+        #         },
+        #         {
+        #             "entity_number": 3,
+        #             "name": "transport-belt",
+        #             "position": {...}
+        #         }
+        #     ],
+        #     "item": "blueprint",
+        #     "label": "beltFac1",
+        #     "version": 281479275544576
+        # }
+
+        # Analysed blueprint format:
+        # "blueprint": {
+        #     "icons": [...],
+        #     "entities": [
+        #         {
+        #             "entity_number": 1,
+        #             "name": "transport-belt",
+        #             "position": {...},
+        #             "direction": 2,
+        #
+        #             "input": True,
+        #             "transpoted_items": [{"item": "iron-plate", amount: 1.26}],
+        #             "usage_rate": 0.87,
+        #         },
+        #         {
+        #             "entity_number": 2,
+        #             "name": "assembly-machine-1",
+        #             "position": {...},
+        #             "recipe": "transport-belt"
+        #
+        #             "usage_rate": 0.84,
+        #         },
+        #         {
+        #             "entity_number": 3,
+        #             "name": "transport-belt",
+        #             "position": {...},
+        #
+        #             "output": True
+        #             "transpoted_items": [{"item": "transport-belt", amount: 0.84}],
+        #             "usage_rate": 0.52,
+        #         }
+        #     ],
+        #     "item": "blueprint",
+        #     "label": "beltFac1",
+        #     "version": 281479275544576,
+        #
+        #     "items_input": [{"item": "iron-plate", amount: 1.26}],
+        #     "items_output": [{"item": "transport-belt", amount: 0.84}],
+        #     "entities_input": [1, 2, 3, ...],
+        #     "entities_output": [32, 33, 34, ...],
+        #     "entities_bottleneck": [18, 23],
+        #     "global_usage_rate": 0.21
+        # }
+
+        analysed_bp = self.blueprint.copy()
+
+        for entity in analysed_bp["blueprint"]["entities"]:
+            node = self.network.get_node(entity["entity_number"])
+
+            if node is None:
+                continue
+
+            # Adding usage_rate
+            usage_rate = node.usage_ratio
+            if usage_rate is not None:
+                entity["usage_rate"] = usage_rate
+
+                # If the node as been "compacted" with other entities
+                # due to optimization, we need to update the oser entites
+                for compacted_node in node.compacted_nodes:
+                    compacted_entity = self._get_entity(compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+                    compacted_entity["usage_rate"] = usage_rate
+
+        return analysed_bp
+
+    def _get_entity(self, entity_number, entites):
+        for entity in entites:
+            if entity["entity_number"] == entity_number:
+                return entity
+        return None
+
 
 def load_blueprint(file):
     # Read the file
@@ -145,18 +268,5 @@ def load_blueprint(file):
             bp_encoded = f.read()
         bp_json = utils.decode(bp_encoded)
 
-    # Check if the json is valid
-    if "blueprint" not in bp_json:
-        raise Exception("Invalid blueprint, no 'blueprint' key found")
-
-    if "entities" not in bp_json["blueprint"]:
-        raise Exception("Invalid blueprint, no 'entities' key found")
-
-    blueprint_label = "No label"
-    if "label" in bp_json["blueprint"]:
-        blueprint_label = bp_json["blueprint"]["label"]
-
-    utils.verbose(f"Blueprint {blueprint_label} loaded successfully")
-
     # Return the blueprint
-    return Blueprint(blueprint_label, bp_json["blueprint"]["entities"])
+    return Blueprint(bp_json)

@@ -1,4 +1,4 @@
-from src import node as node_service, utils, item
+from src import node as node_service, utils
 from pyvis.network import Network as NetworkDisplay
 
 # -----------------------------------------------------------
@@ -9,7 +9,9 @@ from pyvis.network import Network as NetworkDisplay
 
 def create_network(blueprint):
     network_creator = NetworkCreator(blueprint)
-    return network_creator.create_network()
+    network = network_creator.create_network()
+    blueprint.network = network
+    return network
 
 
 class NetworkCreator:
@@ -229,6 +231,13 @@ class Network:
 
         self.nodes = optimized_nodes
 
+    def get_node(self, entity_number) -> node_service.Node:
+        for node in self.nodes:
+            if node.entity.number == entity_number:
+                return node
+
+        return None
+
     def root_nodes(self):
         roots = []
         for node in self.nodes:
@@ -351,9 +360,9 @@ class Network:
                 node_label = str(
                     int(node.flow.total_amount * 100) / 100) + "/s "
 
-                if node.capacity is not None:
+                if node.usage_ratio is not None:
                     # Belts, arms, ...
-                    node_label += str(int(node.capacity * 100)) + "%"
+                    node_label += str(int(node.usage_ratio * 100)) + "%"
 
             net.add_node(node.entity.number,
                          value=node_size,

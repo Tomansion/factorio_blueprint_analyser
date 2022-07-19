@@ -510,7 +510,7 @@ class Transport_node (Node):
         return self.transported_items
 
     @property
-    def capacity(self):
+    def usage_ratio(self):
         if self.entity.speed is None:
             return None
 
@@ -523,12 +523,12 @@ class Transport_node (Node):
             return 0
 
         if self.entity.speed is None:
-            # Node without speed or capacity limits (chests)
+            # Node without speed or usage_ratio limits (chests)
             provided_amount = self.get_parents_flow(item, amount)
             self.flow.add_item(item, provided_amount)
             return provided_amount
 
-        if self.capacity >= 1:
+        if self.usage_ratio >= 1:
             # We are full, we can't give more flow
             return 0
 
@@ -565,7 +565,7 @@ class Transport_node (Node):
         for parent in self.parents:
             provided_amount = parent.ask_flow(item, requested_amount)
             sendedable_amount += provided_amount
-            # If there is some capacity left afetr the previous parent,
+            # If there is some usage_ratio left afetr the previous parent,
             # we ask the next parent
             requested_amount -= provided_amount
             if requested_amount <= 0:
@@ -583,12 +583,12 @@ class Transport_node (Node):
             return 0
 
         if self.entity.speed is None:
-            # Node without speed or capacity limits (chests)
+            # Node without speed or usage_ratio limits (chests)
             taked_back_amount = self.take_back_parents_flow(item, amount)
             self.flow.reduce(item, taked_back_amount)
             return taked_back_amount
 
-        if self.capacity <= 0:
+        if self.usage_ratio <= 0:
             # We don't have flow to take back
             return 0
 
