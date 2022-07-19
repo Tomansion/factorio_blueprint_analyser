@@ -194,7 +194,7 @@ class Blueprint:
         #             "direction": 2,
         #
         #             "input": True,
-        #             "transpoted_items": [{"item": "iron-plate", amount: 1.26}],
+        #             "transpoted_items": [{"iron-plate": 1.26}],
         #             "usage_rate": 0.87,
         #         },
         #         {
@@ -211,7 +211,7 @@ class Blueprint:
         #             "position": {...},
         #
         #             "output": True
-        #             "transpoted_items": [{"item": "transport-belt", amount: 0.84}],
+        #             "transpoted_items": [{"transport-belt": 0.84}],
         #             "usage_rate": 0.52,
         #         }
         #     ],
@@ -219,8 +219,8 @@ class Blueprint:
         #     "label": "beltFac1",
         #     "version": 281479275544576,
         #
-        #     "items_input": [{"item": "iron-plate", amount: 1.26}],
-        #     "items_output": [{"item": "transport-belt", amount: 0.84}],
+        #     "items_input": [{"iron-plate": 1.26}],
+        #     "items_output": [{"transport-belt": 0.84}],
         #     "entities_input": [1, 2, 3, ...],
         #     "entities_output": [32, 33, 34, ...],
         #     "entities_bottleneck": [18, 23],
@@ -263,13 +263,20 @@ class Blueprint:
                         compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                     compacted_entity["input"] = True
 
-            elif node.entity.number in leaf_entities_number:
+            if node.entity.number in leaf_entities_number:
                 entity["output"] = True
 
                 for compacted_node in node.compacted_nodes:
                     compacted_entity = self._get_entity(
                         compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                     compacted_entity["output"] = True
+
+            # Adding transpoted_items
+            entity["transpoted_items"] = node.flow.items
+            for compacted_node in node.compacted_nodes:
+                compacted_entity = self._get_entity(
+                    compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+                compacted_entity["transpoted_items"] = node.flow.items
 
         return analysed_bp
 
@@ -288,7 +295,6 @@ def load_blueprint(file):
             bp_json = json.load(f)
 
     else:
-
         with open(file, 'r') as f:
             bp_encoded = f.read()
         bp_json = utils.decode(bp_encoded)

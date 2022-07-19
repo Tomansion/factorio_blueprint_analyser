@@ -306,7 +306,7 @@ class Assembly_node (Node):
         if len(self.parents) == 0:
             # If no parents, we are an input,
             # so we supose that we have all the elements we need
-            self.flow.add_item(item, amount_that_need_to_be_produced)
+            self.flow.add_item(item.name, amount_that_need_to_be_produced)
             return amount_that_need_to_be_produced
 
         # We check that we have the needed ingredients
@@ -350,7 +350,7 @@ class Assembly_node (Node):
             usage *= percent_recieved
 
         produced_amount = usage * self.entity.items_per_second
-        self.flow.add_item(item, produced_amount)
+        self.flow.add_item(self.entity.recipe.result.name, produced_amount)
 
         # Before sending how much item we can produce
         # we need to update our parents flow
@@ -449,16 +449,7 @@ class Transport_node (Node):
             if len(transported_items) > 0:
                 self.transported_items = transported_items
 
-            # items_output = ""
-            # for item in transported_items:
-            #     items_output += str(item) + " "
-            # utils.verbose(f"                  {self} outputs: {items_output}")
             return transported_items
-
-        # items_output = ""
-        # for item in self.transported_items:
-        #     items_output += str(item) + " "
-        # utils.verbose(f"                  {self} outputs: {items_output}")
 
         return self.transported_items
 

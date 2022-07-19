@@ -37,6 +37,9 @@ class Flow:
         if item is None:
             raise Exception("Flow added without item")
 
+        if type(item) is not str:
+            raise Exception("Flow added with invalid item")
+
         if amount is None:
             raise Exception("Flow added without amount")
 
