@@ -4,7 +4,8 @@ __pycache__/
 *.html
 analysed_blueprint.json
 
-# Tests coverage
+# Tests coverage & profiling
 .coverage
 .pytest_cache
 htmlcov/
+*.prof

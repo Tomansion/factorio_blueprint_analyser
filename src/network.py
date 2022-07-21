@@ -10,6 +10,9 @@ from pyvis.network import Network as NetworkDisplay
 def create_network(blueprint):
     network_creator = NetworkCreator(blueprint)
     network = network_creator.create_network()
+
+    # We give the network to the blueprint
+    # it will be used to export the analysis
     blueprint.network = network
     return network
 

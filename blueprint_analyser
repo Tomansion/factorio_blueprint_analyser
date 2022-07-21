@@ -10,6 +10,8 @@ if __name__ == "__main__":
     # Read and check the user parameters
     options.read_options()
 
+    blueprint_analyser.init()
+
     analysed_blueprint = blueprint_analyser.calculate_blueprint_bottleneck(
         options.input)
 
