@@ -336,6 +336,8 @@ class Network:
                 utils.verbose(f"   {item}: {node.flow.items[item]} /s")
 
     def display(self):
+        # Display the network as a node graph using the
+        # networkx library
         net = NetworkDisplay(directed=True, height=1000, width=1900)
         net.repulsion(node_distance=80, spring_length=0)
 
@@ -356,6 +358,7 @@ class Network:
 
             # Display the node total items / second and the node use percentage
             node_label = ""
+            bottleneck = False
             if node.node_type == "transport_node":
                 node_label = str(
                     int(node.flow.total_amount * 100) / 100) + "/s "
@@ -363,14 +366,14 @@ class Network:
                 if node.usage_ratio is not None:
                     # Belts, arms, ...
                     node_label += str(int(node.usage_ratio * 100)) + "%"
+                    bottleneck = int(node.usage_ratio * 100) >= 100
 
             net.add_node(node.entity.number,
                          value=node_size,
                          label=node_label,
                          shape="circularImage",
                          borderWidth=10,
-                         color="lightgrey",
-
+                         color="lightgrey" if not bottleneck else "black",
                          image=node.entity.get_ingame_image_path(),
                          brokenImage="https://wiki.factorio.com/images/Warning-icon.png")
 

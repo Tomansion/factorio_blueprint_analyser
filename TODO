@@ -1,5 +1,5 @@
 Export the output:
-    ☐ Complete the blueprint json with the data @started(22-07-19 11:23)
+    ✔ Complete the blueprint json with the data @started(22-07-19 11:23) @done(22-07-20 22:29) @lasted(1d11h6m1s)
     ☐ Add the blueprint cost to the export
 
 Create some new Blueprints:
@@ -35,14 +35,14 @@ Other:
     ✔ Stack inserter capacity @done(22-07-15 13:40)
     ☐ Furnaces (no combustion items)
     ☐ Science
-    ☐ Deal with beacons
-    ☐ better unsuported items display
     ☐ Deal with game difficulty
+    ☐ better unsuported items display
     ☐ Filters
     ☐ Beacons
     ☐ Modules
     ☐ Deal with arms grabing quantity reseach level
     ☐ Multy system process
+    ☐ Deal with beacons
 
 Next projects:
     ☐ Blueprint analysis dashboard
