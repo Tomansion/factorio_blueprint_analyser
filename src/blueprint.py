@@ -1,7 +1,6 @@
 import json
-import sys
 
-from src import utils, entity
+from src import utils, entity, config
 
 # -----------------------------------------------------------
 # Read the blueprint from the given file
@@ -27,7 +26,8 @@ class Blueprint:
             raise Exception("Invalid blueprint, no 'blueprint' key found")
 
         if "entities" not in bp_json["blueprint"]:
-            raise Exception("Invalid blueprint, no 'entities' key found")
+            # raise Exception("Invalid blueprint, no 'entities' key found")
+            bp_json["blueprint"]["entities"] = []
 
         self.label = "No label"
         if "label" in bp_json["blueprint"]:
@@ -130,6 +130,9 @@ class Blueprint:
             coord[1] >= 0 and coord[1] < self.heigth
 
     def display(self):
+        if config.config.verbose_level == 0:
+            return
+
         utils.verbose(
             f"\n{self.label}, width: {self.width}, heigth: {self.heigth}, {len(self.entities)} entities:")
         for entity in self.entities:
@@ -313,7 +316,8 @@ class Blueprint:
         for entity in entites:
             if entity["entity_number"] == entity_number:
                 return entity
-        return None
+
+        return {}
 
 
 def load_blueprint(file):

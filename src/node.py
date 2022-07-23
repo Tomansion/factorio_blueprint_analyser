@@ -1,5 +1,4 @@
-import math
-from src import recipe, utils, item
+from src import utils, item
 
 # -----------------------------------------------------------
 # Network nodes properties
@@ -7,9 +6,10 @@ from src import recipe, utils, item
 
 
 def create_node(entity):
-    return Assembly_node(entity) \
-        if entity.data["type"] == "assembling-machine" \
-        else Transport_node(entity)
+    if entity.data["type"] == "assembling-machine":
+        return Assembly_node(entity)
+    else:
+        return Transport_node(entity)
 
 
 class Node:
@@ -282,7 +282,7 @@ class Assembly_node (Node):
 
         return self.inputs
 
-    def ask_flow(self, item, amount):
+    def ask_flow(self, item_name, amount):
         # We receive a flow request from a child
 
         if self.entity.recipe is None:
@@ -290,7 +290,7 @@ class Assembly_node (Node):
             return 0
 
         # We check that we produce the requested item
-        if self.entity.recipe.result.name != item:
+        if self.entity.recipe.result.name != item_name:
             return 0
 
         # We check that we have enougth assembly time
@@ -306,7 +306,7 @@ class Assembly_node (Node):
         if len(self.parents) == 0:
             # If no parents, we are an input,
             # so we supose that we have all the elements we need
-            self.flow.add_item(item.name, amount_that_need_to_be_produced)
+            self.flow.add_item(item_name, amount_that_need_to_be_produced)
             return amount_that_need_to_be_produced
 
         # We check that we have the needed ingredients
@@ -374,14 +374,14 @@ class Assembly_node (Node):
 
         return produced_amount
 
-    def take_back_flow(self, item, amount):
+    def take_back_flow(self, item_name, amount):
         # We gived too much flow at some point, we take it back
 
         if self.entity.recipe is None:
             return 0
 
         # We check that we produce the requested item
-        if self.entity.recipe.result.name != item:
+        if self.entity.recipe.result.name != item_name:
             return 0
 
         if self.flow.total_amount <= 0:
@@ -409,7 +409,7 @@ class Assembly_node (Node):
                 if item_amount_to_take_back <= 0:
                     break
 
-        self.flow.reduce(item, amount_to_take_back)
+        self.flow.reduce(item_name, amount_to_take_back)
         return amount_to_take_back
 
 
@@ -507,16 +507,16 @@ class Transport_node (Node):
 
         return self.flow.total_amount / self.entity.speed
 
-    def ask_flow(self, item, amount):
+    def ask_flow(self, item_name, amount):
         # An item flow is requiered from a parent node
         # We check that we tranport the requested item
-        if not self.is_item_transported(item):
+        if not self.is_item_transported(item_name):
             return 0
 
         if self.entity.speed is None:
             # Node without speed or usage_ratio limits (chests)
-            provided_amount = self.get_parents_flow(item, amount)
-            self.flow.add_item(item, provided_amount)
+            provided_amount = self.get_parents_flow(item_name, amount)
+            self.flow.add_item(item_name, provided_amount)
             return provided_amount
 
         if self.usage_ratio >= 1:
@@ -533,11 +533,11 @@ class Transport_node (Node):
             processed_amount = available_flow_amount
 
         # How much of this new flow can our children accept
-        provided_amount = self.get_parents_flow(item, processed_amount)
-        self.flow.add_item(item, provided_amount)
+        provided_amount = self.get_parents_flow(item_name, processed_amount)
+        self.flow.add_item(item_name, provided_amount)
         return provided_amount
 
-    def get_parents_flow(self, item, amount):
+    def get_parents_flow(self, item_name, amount):
         # If we don't have parents, we are an input node
         if len(self.parents) == 0:
             # so we provide all the requested flow
@@ -545,7 +545,7 @@ class Transport_node (Node):
 
         # If we have one parent, we request from him the flow
         elif len(self.parents) == 1:
-            return self.parents[0].ask_flow(item, amount)
+            return self.parents[0].ask_flow(item_name, amount)
 
         # If we have multiple parents,
         # We ask them each the flow, they are sorted by priority
@@ -554,7 +554,7 @@ class Transport_node (Node):
         requested_amount = amount
         sendedable_amount = 0
         for parent in self.parents:
-            provided_amount = parent.ask_flow(item, requested_amount)
+            provided_amount = parent.ask_flow(item_name, requested_amount)
             sendedable_amount += provided_amount
             # If there is some usage_ratio left afetr the previous parent,
             # we ask the next parent
@@ -564,19 +564,19 @@ class Transport_node (Node):
 
         return sendedable_amount
 
-    def take_back_flow(self, item, amount):
+    def take_back_flow(self, item_name, amount):
         # We gived too much flow at some point, we take it back
         if amount <= 0:
             return 0
 
         # We check that we tranport the requested item
-        if not self.is_item_transported(item):
+        if not self.is_item_transported(item_name):
             return 0
 
         if self.entity.speed is None:
             # Node without speed or usage_ratio limits (chests)
-            taked_back_amount = self.take_back_parents_flow(item, amount)
-            self.flow.reduce(item, taked_back_amount)
+            taked_back_amount = self.take_back_parents_flow(item_name, amount)
+            self.flow.reduce(item_name, taked_back_amount)
             return taked_back_amount
 
         if self.usage_ratio <= 0:
@@ -590,11 +590,11 @@ class Transport_node (Node):
 
         # How much of this new flow can our children accept
         taked_back_amount = self.take_back_parents_flow(
-            item, amount_to_take_back)
-        self.flow.reduce(item, taked_back_amount)
+            item_name, amount_to_take_back)
+        self.flow.reduce(item_name, taked_back_amount)
         return taked_back_amount
 
-    def take_back_parents_flow(self, item, amount):
+    def take_back_parents_flow(self, item_name, amount):
         # Same as get_parents_flow but to take it back
 
         if len(self.parents) == 0:
@@ -602,14 +602,14 @@ class Transport_node (Node):
             return amount
 
         elif len(self.parents) == 1:
-            return self.parents[0].take_back_flow(item, amount)
+            return self.parents[0].take_back_flow(item_name, amount)
 
         amount_to_take_back = amount
         taked_back_amount_total = 0
         for parent in self.parents:
 
             taked_back_amount = parent.take_back_flow(
-                item, amount_to_take_back)
+                item_name, amount_to_take_back)
             taked_back_amount_total += taked_back_amount
             amount_to_take_back -= taked_back_amount
             if amount_to_take_back <= 0:
