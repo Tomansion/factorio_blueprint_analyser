@@ -8,14 +8,13 @@ import os
 # The options are stored in the global variables
 # -----------------------------------------------------------
 
-silent = False
 input = ""
 output = ""
 force = False
 
 
 def read_options():
-    global silent, input, output, force
+    global input, output, force
 
     # ==== Options read ====
 
@@ -24,10 +23,7 @@ def read_options():
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding="utf-8")
 
     parser = argparse.ArgumentParser(
-        description="Convert a factorio blueprint book to json")
-
-    parser.add_argument("-s", "--silent", action="store_true", dest="silent",
-                        help="Stop verbose output on STDERR", default=False),
+        description="Find the bottleneck in a Factorio blueprint")
 
     parser.add_argument("-i", "--input", nargs="?", dest="input",
                         help="Blueprint JSON or encoded file path", default="./examples/beltFac.json")
@@ -40,7 +36,6 @@ def read_options():
 
     opt = parser.parse_args()
 
-    silent = opt.silent
     input = opt.input
     output = opt.output
     force = opt.force

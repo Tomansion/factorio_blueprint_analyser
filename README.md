@@ -2,19 +2,21 @@
 
 ![](./doc/images/ban.png)
 
-## What is this tool?
+# What is this tool?
 
 This is a Python script that finds the bottleneck of a Factorio blueprint for you.
 
 It also predicts:
-- The entities that are the input or the output of the blueprint
+- Witch entitie(s) are the input or the output of the blueprint
 - What item(s) each belts, inserters or any entity are excpected to transport
-- The excepted amount of items that will be tranported by each entity
+- The excepted items/s that will be tranported by each entity
 - The excepted usage percentage of each entity
 
-## What is the bottleneck?
+## What is a bottleneck?
 
 A bottleneck is, in a Factorio blueprint, the entity that limits the output of a production line because it is at maximum capacity. It can be a belt, an inserter or a assembly machine.
+
+It's basically the entity that you need to improve to have a more efficient production line.
 
 ## In what way is this tool useful?
 
@@ -23,27 +25,63 @@ You can do what you want with the results of this tool, it can help programmers:
 - Create blueprints with genetic algorithms
 - Create a dataset of efficient blueprints
 
-You can use this tool to find bottlenecks in your blueprints without having to run ther in the game, or to create a mod that display the results ingame.
+You can use this tool to find bottlenecks in your blueprints without having to run them in the game, or you can use the algorithm to create a mod that will display the ingame bottleneck!
 
-## Usage
+# Usage
+
+We will use the blueprint [examples/beltFac.json](./examples/beltFac.json) of the following production line:
+![](./doc/images/blueprint_belt_fac_1.png)
 
 ```bash
-# Clone the project
-git clone https://github.com/Tomansion/factorio_blueprint_analyser.git
+# If you haven't done it, init the project
+git clone https://github.com/Tomansion/factorio_blueprint_analyser
 cd factorio_blueprint_analyser
+pip install -r requirements.txt
 
-# Start with a simple blueprint:
+# Start the algorithm:
 ./blueprint_analyser -f -i examples/beltFac.json
 ```
 
-This should open a Web browser with the results of the analysis as a node graph.
+This should open a Web browser with the results of the analysis as a graphical node graph, and a `analysed_blueprint.json` file containing the results of the analysis should be created.
 
-Given the example:
+For a complet usage guide, see the [use guide](./doc/use_guide.md)!
 
-The result is:
+## Graph output
 
-## Output
+The graph result should be:
 
+![](./doc/images/node_graph_belt_fac_1.png)
+
+We can see that the input and the output has been clearely identified.
+
+The small icon linked to each nodes is the item that the algorithm is expecting to be transported by the entity, for example, the transport belt ouput node is transporting the item `transport-belt`.
+
+## Terminal output
+
+In the terminal, you should see first a representation of the blueprint:
+
+```
+      → → → → → → → ↓
+      ↑             ▼
+      ↑   ┌ ─ ┐   ┌ ─ ┐
+    → ↑ ► │ i │ ► │ t │ ► → →
+```
+
+Then after some other logs, the expected produced items:
+
+```
+Bottleneck calculation complete!
+Produced items:
+   transport-belt: 0.84 /s
+```
+
+## How does it work?
+
+1. First, the algorithm create a 2D map of the blueprint, try to understand the link between each entities and create a node network.
+2. Then, it tries to estimate what item(s) are expected to be transported by each entity according to the assembly machines recipies.
+3. Finally, it estimates the expected usage of each entity with a flow simulation according to the entities capacity, recipe time and assembly machines speed.
+
+The algorithm expect the material input belts to be at maximum capacity with the item(s) they are supposed to transport.
 
 ## Known issues
 

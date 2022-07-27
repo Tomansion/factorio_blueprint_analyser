@@ -1,5 +1,5 @@
 
-from src import factorio, item
+from src import factorio, item, utils
 
 # -----------------------------------------------------------
 # Assembly machines recipe class
@@ -10,7 +10,7 @@ DIFFICULTY = "normal"
 def get_recipe(name):
     # Check that the recipe exists
     if name not in factorio.recipies:
-        print(f"WARNING: no recipe found for {name}")
+        utils.warning(f"No recipe found for {name}")
         return None
 
     return Recipe(name)
@@ -57,7 +57,7 @@ class Recipe:
                                   ingredient["amount"],
                                   type=ingredient["type"]))
             except KeyError:
-                print(f"WARNING: Something went wrong with the recipe {name}")
+                utils.warning(f"Something went wrong with the recipe {name}")
                 self.exists = False
                 return
 

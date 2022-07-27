@@ -198,7 +198,7 @@ class NetworkCreator:
 
             return node
 
-        utils.verbose(f"Unsupported entity type: {entity.data['type']}")
+        utils.warning(f"Unsupported entity type: {entity.data['type']}")
         return None
 
 
@@ -299,7 +299,8 @@ class Network:
                         len(node.transported_items) == 0:
                     nb_transport_nodes_with_no_purpose += 1
 
-        utils.verbose("\nBottleneck analysis complete:")
+        utils.verbose("")
+        utils.success("Entities calculation estimation complete:")
         utils.verbose(
             f"{nb_transport_nodes - nb_transport_nodes_with_no_purpose} / {nb_transport_nodes} nodes with purpose")
 
@@ -328,7 +329,8 @@ class Network:
                 acepted_amount = node.ask_flow(item_output.name, flow_capacity)
                 flow_capacity -= acepted_amount
 
-        utils.verbose("\nBottleneck calculation complete!")
+        utils.verbose("")
+        utils.success("Bottleneck calculation complete!")
         utils.verbose("Produced items:")
         for node in self.leaf_nodes():
             # TODO: fix that nothing is shown for the bp blueprints4/drillFac1

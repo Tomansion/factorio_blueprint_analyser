@@ -1,4 +1,4 @@
-import ujson as json
+import json
 
 # -----------------------------------------------------------
 # Treat the big factorio_raw Json file,

@@ -30,8 +30,7 @@ def create_entity(entity_in_blueprint, virtual=False):
 
     # Check that the entity exists in the Factorio data
     if entity_in_blueprint["name"] not in factorio.entities:
-        utils.verbose(
-            f"Warning: entity {entity_in_blueprint['name']} not found in Factorio data")
+        utils.warning(f"Entity {entity_in_blueprint['name']} not found in Factorio data")
         # sys.exit(1)
         return None
 
@@ -66,8 +65,7 @@ def create_entity(entity_in_blueprint, virtual=False):
     elif entity_data["type"] == "splitter":
         return Splitter(entity_in_blueprint, entity_data)
 
-    utils.verbose(
-        f"Warning: entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
+    utils.warning(f"entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
 
 
 # Enities interfaces
@@ -137,7 +135,7 @@ class TransportBelt(Entity):
 
         # Saving speed of the belt
         if "speed" not in entity_data:
-            utils.verbose(f"Warning: {self.name} has no speed")
+            utils.warning(f"{self.name} has no speed")
             self.tile_per_sec = 0.03125  # the tile_per_sec of the lvl1 transport belt
         else:
             self.tile_per_sec = entity_data["speed"]
@@ -226,7 +224,7 @@ class Inserter (Entity):
 
         # Saving speed of the inserter
         if "rotation_speed" not in entity_data:
-            utils.verbose(f"Warning: {self.name} has no rotation speed")
+            utils.warning(f"{self.name} has no rotation speed")
             self.rotation_speed = 0.014  # the rotation_speed of the lvl1 inserter
         else:
             self.rotation_speed = entity_data["rotation_speed"]
@@ -376,8 +374,7 @@ class AssemblingMachine (LargeEntity):
         if self.recipe is not None:
             # Saving speed of the assembling machine
             if "crafting_speed" not in entity_data:
-                utils.verbose(
-                    f"Warning: {self.name} has no crafting speed", level=1)
+                utils.warning(f"{self.name} has no crafting speed", level=1)
                 self.speed = 0.5  # the speed of the assembling-machine-1
             else:
                 self.speed = entity_data["crafting_speed"]
@@ -505,7 +502,7 @@ class UndergroundBelt (TransportBelt):
 
         # Saving speed
         if "speed" not in entity_data:
-            utils.verbose(f"Warning: {self.name} has no speed")
+            utils.warning(f"{self.name} has no speed")
             self.speed = 0.03125  # the speed of the lvl1 underground-belt
         else:
             self.speed = entity_data["speed"]
@@ -568,7 +565,7 @@ class Splitter (LargeEntity):
 
         # Saving speed
         if "speed" not in entity_data:
-            utils.verbose(f"Warning: {self.name} has no speed")
+            utils.warning(f"{self.name} has no speed")
             self.speed = 0.03125  # the speed of the lvl1 splitter
         else:
             self.speed = entity_data["speed"]

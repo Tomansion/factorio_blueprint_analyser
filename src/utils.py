@@ -2,13 +2,27 @@ import zlib
 import json
 import sys
 import base64
+from termcolor import colored
 
 from src import config
 
 
-def verbose(content, end="\n", level=1):
+def verbose(content, end="\n", level=3):
+    # Verbose level
+    # 0: no output
+    # 1: only errors
+    # 2: errors and warnings
+    # 3: errors, warnings and info
     if config.config.verbose_level >= level:
         print(content, end=end, file=sys.stderr, flush=True)
+
+
+def warning(content):
+    verbose(colored(f"WARNING: {content}", "yellow"), level=2)
+
+
+def success(content):
+    verbose(colored(f"SUCCESS: {content}", "green"), level=3)
 
 
 def decode(string):

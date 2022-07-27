@@ -1,15 +1,23 @@
 factorio:
-  difficulty: normal
-
   # Inserter_capacity_bonus
   # number between 0 and 7
   # (https://wiki.factorio.com/Inserter_capacity_bonus_(research))
   inserter_capacity_bonus: 0
 
-
+  # The facorio data generated from the game files
+  # This default data corresponds to the vanilla game
+  # To set your own data, you can follow our mod guide
+  # (Comming soon)
   data_file_path: "src/assets/factorio_raw/factorio_raw_min.json"
 
-verbose_level: 3
-
 network:
+  # The alogrithm will displat the
+  # results on a web page in a node network
+  # You can disable this feature by setting this to false
   display: true
+
+# Verbose level
+# 1: only errors
+# 2: errors and warnings
+# 3: errors, warnings and info
+verbose_level: 3

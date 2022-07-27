@@ -51,7 +51,7 @@ class Blueprint:
                 self.entities.append(new_entity)
 
         if len(self.entities) == 0:
-            utils.verbose(f"No entities in the blueprint {self.label}")
+            utils.warning(f"No entities in the blueprint {self.label}")
             return
 
         # For some reason, the blueprint does not always start at 0,0 so we set a new origin:
@@ -118,19 +118,18 @@ class Blueprint:
                                     'position': {'x': drop_coord[0], 'y': drop_coord[1]}
                                 }, virtual=True)
 
-                            utils.verbose(
-                                f"Adding temporary entity {container}")
+                            utils.verbose(f"Adding temporary entity {container}")
                             self.array[drop_coord[1]
                                        ][drop_coord[0]] = container
 
-        utils.verbose(f"Blueprint {self.label} loaded successfully")
+        utils.success(f"Blueprint {self.label} loaded successfully")
 
     def is_coord_in_boundaries(self, coord):
         return coord[0] >= 0 and coord[0] < self.width and\
             coord[1] >= 0 and coord[1] < self.heigth
 
     def display(self):
-        if config.config.verbose_level == 0:
+        if config.config.verbose_level < 3:
             return
 
         utils.verbose(
