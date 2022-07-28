@@ -85,7 +85,17 @@ The algorithm expect the material input belts to be at maximum capacity with the
 
 ## Known issues
 
+Most of the blueprints gives good results, but certain blueprints still give bad results ([#1](https://github.com/Tomansion/factorio_blueprint_analyser/issues/1)).
+
+Running the analysis many time taks more and more time ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/2))
+
+This algorithm can only process with the latest Factorio blueprint versions ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/3))
+
 ## Limitations
+
+
+
+## Next steps
 
 ## Contribution
 
