@@ -33,6 +33,7 @@ Project end:
 
 Other:
     ✔ Stack inserter capacity @done(22-07-15 13:40)
+    ✔ Deal with arms grabing quantity reseach level @done(22-07-28 08:58)
     ☐ Furnaces (no combustion items)
     ☐ Science
     ☐ Deal with game difficulty
@@ -40,9 +41,7 @@ Other:
     ☐ Filters
     ☐ Beacons
     ☐ Modules
-    ☐ Deal with arms grabing quantity reseach level
     ☐ Multy system process
-    ☐ Deal with beacons
 
 Next projects:
     ☐ Blueprint analysis dashboard

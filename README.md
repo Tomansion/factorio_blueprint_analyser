@@ -91,13 +91,22 @@ Running the analysis many time taks more and more time ([#2](https://github.com/
 
 This algorithm can only process with the latest Factorio blueprint versions ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/3))
 
-## Limitations
+## Limitations and Next steps
+    ☐ Furnaces (no combustion items)
+    ☐ Science
+    ☐ Better unsuported items display
+    ☐ Filters
+    ☐ Beacons
+    ☐ Modules
+    ☐ Multy system process
 
-
-
-## Next steps
+## Next projects
+    ☐ Blueprint analysis dashboard
+    ☐ creation of the belt factory with genetic algorithm
 
 ## Contribution
+
+Comming soon
 
 ## Credits
 
