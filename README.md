@@ -7,25 +7,23 @@
 This is a Python script that finds the bottleneck of a Factorio blueprint for you.
 
 It also predicts:
-- Witch entitie(s) are the input or the output of the blueprint
-- What item(s) each belts, inserters or any entity are excpected to transport
+- Which entities are the input or the output of the blueprint
+- What items each belts, inserters or any entities are excpected to transport
 - The excepted items/s that will be tranported by each entity
 - The excepted usage percentage of each entity
 
 ## What is a bottleneck?
 
-A bottleneck is, in a Factorio blueprint, the entity that limits the output of a production line because it is at maximum capacity. It can be a belt, an inserter or a assembly machine.
-
-It's basically the entity that you need to improve to have a more efficient production line.
+A bottleneck is, in a Factorio blueprint, the entity that limits the output of a production line because it is at maximum capacity. It can be a belt, an inserter or a assembly machine. It's the entity that you need to improve to have a more efficient production line.
 
 ## In what way is this tool useful?
 
 You can do what you want with the results of this tool, it can help programmers:
 - Create blueprints with machine learning
-- Create blueprints with genetic algorithms
+- Create blueprints with evolutionary algorithms
 - Create a dataset of efficient blueprints
 
-You can use this tool to find bottlenecks in your blueprints without having to run them in the game, or you can use the algorithm to create a mod that will display the ingame bottleneck!
+You can use this tool to find bottlenecks in your blueprints without having to run them in the game, or you can use the algorithm to create a mod that will display the in-game bottleneck!
 
 # Usage
 
@@ -42,9 +40,9 @@ pip install -r requirements.txt
 ./blueprint_analyser -f -i examples/beltFac.json
 ```
 
-This should open a Web browser with the results of the analysis as a graphical node graph, and a `analysed_blueprint.json` file containing the results of the analysis should be created.
+This should open a web browser with the results of the analysis as a graphical node graph, and a `analysed_blueprint.json` file containing the results of the analysis should be created.
 
-For a complet usage guide, see the [use guide](./doc/use_guide.md)!
+For a complete usage guide, see the [use guide](./doc/use_guide.md)!
 
 ## Graph output
 
@@ -52,7 +50,7 @@ The graph result should be:
 
 ![](./doc/images/node_graph_belt_fac_1.png)
 
-We can see that the input and the output has been clearely identified.
+We can see that the input and the output has been clearly identified.
 
 The small icon linked to each nodes is the item that the algorithm is expecting to be transported by the entity, for example, the transport belt ouput node is transporting the item `transport-belt`.
 
@@ -78,10 +76,10 @@ Produced items:
 ## How does it work?
 
 1. First, the algorithm create a 2D map of the blueprint, try to understand the link between each entities and create a node network.
-2. Then, it tries to estimate what item(s) are expected to be transported by each entity according to the assembly machines recipies.
+2. Then, it tries to estimate what items are expected to be transported by each entity according to the assembly machines recipes.
 3. Finally, it estimates the expected usage of each entity with a flow simulation according to the entities capacity, recipe time and assembly machines speed.
 
-The algorithm expect the material input belts to be at maximum capacity with the item(s) they are supposed to transport.
+The algorithm expect the material input belts to be at maximum capacity with the items they are supposed to transport.
 
 ## Known issues
 
@@ -106,13 +104,13 @@ This algorithm can only process with the latest Factorio blueprint versions ([#2
 
 ## Contribution
 
-Comming soon
+Coming soon
 
 ## Credits
 
-This tool is the result of an internship at the [Michigan State University](https://msu.edu/) and was made in collaboration with the **The factory must grow: automation in Factorio** team. You can find their first paper [here](https://arxiv.org/abs/2102.04871) and their second paper here.
+This tool is the result of an internship at the [Michigan State University](https://msu.edu/) and was made in collaboration with the **The Factory Must Grow: Automation in Factorio** team. You can find their first paper [here](https://arxiv.org/abs/2102.04871).
 
-Thanks to [DrKenReid](https://github.com/DrKenReid) and the whole **The factory must grow** team for the amaizing welcoming and for giving me the oportunity to have this wondeful experience!
+Thanks to [DrKenReid](https://github.com/DrKenReid) and the whole **The Factory Must Grow** team for the amaizing welcoming and for giving me the oportunity to have this wondeful experience!
 
 
 Factorio blueprint decode and encode code from : https://gist.github.com/click0/46b0ff88361956e430bfcf1e88b5c351
