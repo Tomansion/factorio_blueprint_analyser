@@ -67,8 +67,8 @@ verbose_level: 3
 
 ## Imported as a module
 
-Comming soon!
+Coming soon!
 
 ## Pip
 
-Comming soon!
+Coming soon!
