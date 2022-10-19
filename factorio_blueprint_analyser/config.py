@@ -30,7 +30,7 @@ config = None
 class Config:
     # Factorio
     inserter_capacity_bonus = 0
-    data_file_path = "factorio_blueprint_analyser/assets/factorio_raw/factorio_raw_min.json"
+    data_file_path = "./assets/factorio_raw/factorio_raw_min.json"
     # Network
     display_network = True
     # Verbose level
