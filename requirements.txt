@@ -1,1 +1,1 @@
-colored
+termcolor==2.0.1
