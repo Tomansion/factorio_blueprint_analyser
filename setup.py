@@ -1,13 +1,14 @@
-import json
 from setuptools import setup
 from pathlib import Path
-import json
 
 parent_dir = Path(__file__).resolve().parent
 
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 setup(
     name='factorioBlueprintAnalyser',
-    version='1.1.2',
+    version='1.1.3',
     description="A python library analyse Factorio Blueprints and find bottlenecks.",
     url="https://github.com/tomansion/factorio_blueprint_analyser_app/",
     author="Tom Mansion",
