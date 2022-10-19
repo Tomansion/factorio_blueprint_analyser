@@ -25,4 +25,4 @@ jobs:
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          pytest --cov=FacBpAnalyser tests/test_all_blueprints.py -s
+          pytest --cov=factorio_blueprint_analyser tests/test_all_blueprints.py -s
