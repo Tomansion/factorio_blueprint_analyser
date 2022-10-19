@@ -1,6 +1,10 @@
 import os
+import pathlib
 
 config = None
+
+# Finding where the assets are for when this is installed as a package
+parent_path = pathlib.Path(__file__).parent.resolve()
 
 # factorio:
 #   # Inserter_capacity_bonus
@@ -30,7 +34,8 @@ config = None
 class Config:
     # Factorio
     inserter_capacity_bonus = 0
-    data_file_path = "./assets/factorio_raw/factorio_raw_min.json"
+    data_file_path = str(parent_path) + \
+        "/assets/factorio_raw/factorio_raw_min.json"
     # Network
     display_network = True
     # Verbose level
