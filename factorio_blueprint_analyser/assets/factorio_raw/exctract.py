@@ -7,8 +7,8 @@ import json
 # It's easier to work with a more readable Json file
 # -----------------------------------------------------------
 
-data_file_path = "src/assets/factorio_raw/factorio_raw.json"
-data_file_export_path = "src/assets/factorio_raw/factorio_raw_min.json"
+data_file_path = "factorio_blueprint_analyser/assets/factorio_raw/factorio_raw.json"
+data_file_export_path = "factorio_blueprint_analyser/assets/factorio_raw/factorio_raw_min.json"
 
 key_to_keep = [
     "recipe",

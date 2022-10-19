@@ -5,6 +5,7 @@ __pycache__/
 analysed_blueprint.json
 
 # Tests coverage & profiling
+lib/
 .coverage
 .pytest_cache
 htmlcov/

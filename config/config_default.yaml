@@ -8,7 +8,7 @@ factorio:
   # This default data corresponds to the vanilla game
   # To set your own data, you can follow our mod guide
   # (Comming soon)
-  data_file_path: "src/assets/factorio_raw/factorio_raw_min.json"
+  data_file_path: "factorio_blueprint_analyser/assets/factorio_raw/factorio_raw_min.json"
 
 network:
   # The alogrithm will displat the

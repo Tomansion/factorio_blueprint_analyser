@@ -1,6 +1,6 @@
 import json
 
-from src import utils, entity, config
+from factorio_blueprint_analyser import utils, entity, config
 
 # -----------------------------------------------------------
 # Read the blueprint from the given file
@@ -118,7 +118,8 @@ class Blueprint:
                                     'position': {'x': drop_coord[0], 'y': drop_coord[1]}
                                 }, virtual=True)
 
-                            utils.verbose(f"Adding temporary entity {container}")
+                            utils.verbose(
+                                f"Adding temporary entity {container}")
                             self.array[drop_coord[1]
                                        ][drop_coord[0]] = container
 
@@ -319,17 +320,27 @@ class Blueprint:
         return {}
 
 
-def load_blueprint(file):
+def load_blueprint(blueprint_sting):
+    try:
+        # Try to read the string directly as a JSON
+        blueprint_json = json.loads(blueprint_sting)
+    except json.decoder.JSONDecodeError:
+        # If it fails, try to decode it
+        blueprint_json = utils.decode(blueprint_sting)
+
+    return Blueprint(blueprint_json)
+
+
+def load_blueprint_from_path(file_path):
     # Read the file
-    if file.endswith(".json"):
+    if file_path.endswith(".json"):
         # No need to decode the json
-        with open(file, 'r') as f:
+        with open(file_path, 'r') as f:
             bp_json = json.load(f)
 
     else:
-        with open(file, 'r') as f:
+        with open(file_path, 'r') as f:
             bp_encoded = f.read()
         bp_json = utils.decode(bp_encoded)
 
-    # Return the blueprint
     return Blueprint(bp_json)

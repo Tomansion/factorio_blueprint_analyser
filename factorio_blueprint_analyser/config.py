@@ -6,7 +6,7 @@ import os
 #   factorio:
 #     difficulty: normal
 #     inserter_capacity_bonus: 0
-#     data_file_path: "src/assets/factorio_raw/factorio_raw_min.json"
+#     data_file_path: "factorio_blueprint_analyser/assets/factorio_raw/factorio_raw_min.json"
 #   verbose_level: 3
 #   network:
 #     display: true
