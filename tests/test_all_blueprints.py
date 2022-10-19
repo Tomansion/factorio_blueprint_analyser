@@ -12,7 +12,7 @@ config_file_path = "config/config_tests.yaml"
 blueprints_path = "tests/blueprints"
 blueprints = listdir(blueprints_path)
 
-blueprint_analyser.init(config_file_path)
+blueprint_analyser.init(config_dict={"verboseLevel": 0, "displayNetwork": False})
 
 nb_tests_to_do = 20
 

@@ -11,10 +11,11 @@ import os
 input = ""
 output = ""
 force = False
+config_path = ""
 
 
 def read_options():
-    global input, output, force
+    global input, output, force, config_path
 
     # ==== Options read ====
 
@@ -34,11 +35,15 @@ def read_options():
     parser.add_argument("-f", "--force", action="store_true", dest="force",
                         help="Force overwrite of existing result file", default=False)
 
+    parser.add_argument("-c", "--config", nargs="?", dest="config",
+                        help="Analyser yaml config file path", default="config/config_default.yaml")
+
     opt = parser.parse_args()
 
     input = opt.input
     output = opt.output
     force = opt.force
+    config_path = opt.config
 
     # ==== Options validation ====
 
@@ -50,3 +55,7 @@ def read_options():
     if os.path.exists(opt.output) and not force:
         raise Exception(
             f"Output file '{opt.output}' already exists\nUse --force or -f to overwrite it")
+
+    # Check if the config file exists
+    if not os.path.exists(opt.config):
+        raise Exception(f"Config file '{opt.config}' does not exist")

@@ -6,10 +6,9 @@ from factorio_blueprint_analyser import (
     config
 )
 
-
-def init(config_path=None):
+def init(config_dict=None):
     # Init config
-    config.load_config(config_path)
+    config.load_config(config_dict)
 
     # Load the Factorio data
     factorio.load_data()
