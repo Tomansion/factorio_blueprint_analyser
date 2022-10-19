@@ -1,4 +1,4 @@
-from src import node as node_service, utils
+from factorio_blueprint_analyser import node as node_service, utils
 from pyvis.network import Network as NetworkDisplay
 
 # -----------------------------------------------------------

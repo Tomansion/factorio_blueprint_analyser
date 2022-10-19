@@ -1,11 +1,11 @@
 
 import json
 
-from src import utils, config
+from factorio_blueprint_analyser import utils, config
 
 # -----------------------------------------------------------
 # Provide for the other files Factorio data
-# from the src/assets/factorio_raw/factorio_raw_min.json file
+# from the factorio_blueprint_analyser/assets/factorio_raw/factorio_raw_min.json file
 # -----------------------------------------------------------
 
 recipies_key = "recipe"

@@ -4,7 +4,7 @@ import sys
 import base64
 from termcolor import colored
 
-from src import config
+from factorio_blueprint_analyser import config
 
 
 def verbose(content, end="\n", level=3):

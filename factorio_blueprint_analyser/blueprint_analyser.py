@@ -1,5 +1,5 @@
 
-from src import (
+from factorio_blueprint_analyser import (
     factorio,
     blueprint,
     network,
@@ -15,9 +15,17 @@ def init(config_path=None):
     factorio.load_data()
 
 
-def calculate_blueprint_bottleneck(blueprint_path):
-    # Read the input blueprint
-    bp = blueprint.load_blueprint(blueprint_path)
+def analyse_blueprint(blueprint_string):
+    bp = blueprint.load_blueprint(blueprint_string)
+    return _process_blueprint(bp)
+
+
+def analyse_blueprint_from_path(blueprint_path):
+    bp = blueprint.load_blueprint_from_path(blueprint_path)
+    return _process_blueprint(bp)
+
+
+def _process_blueprint(bp):
     bp.display()
 
     # Creade a node network from the blueprint

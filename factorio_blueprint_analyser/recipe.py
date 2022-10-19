@@ -1,5 +1,5 @@
 
-from src import factorio, item, utils
+from factorio_blueprint_analyser import factorio, item, utils
 
 # -----------------------------------------------------------
 # Assembly machines recipe class

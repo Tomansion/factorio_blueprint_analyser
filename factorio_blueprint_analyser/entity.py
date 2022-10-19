@@ -1,7 +1,7 @@
 from math import floor
 from termcolor import colored
 
-from src import factorio, recipe, utils, config
+from factorio_blueprint_analyser import factorio, recipe, utils, config
 
 # -----------------------------------------------------------
 # Base class for all entities

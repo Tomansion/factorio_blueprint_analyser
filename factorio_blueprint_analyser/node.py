@@ -1,4 +1,4 @@
-from src import utils, item
+from factorio_blueprint_analyser import utils, item
 
 # -----------------------------------------------------------
 # Network nodes properties
