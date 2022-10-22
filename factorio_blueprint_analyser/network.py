@@ -221,6 +221,13 @@ class Network:
         self.optimize()
 
     def optimize(self):
+        # We save the nodes original parents and childs
+        for node in self.nodes:
+            node.original_parents = [
+                parent.entity.number for parent in node.parents]
+            node.original_childs = [
+                child.entity.number for child in node.childs]
+
         # Network optimisation
         for node in self.nodes:
             node.optimize()

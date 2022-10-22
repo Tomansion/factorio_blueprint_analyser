@@ -18,8 +18,10 @@ class Node:
         self.entity = entity
         self.childs = []
         self.parents = []
+        self.original_parents = []
+        self.original_childs = []
         self.type = entity.data["type"]
-        # self.direct_input = False
+
         # Network optimization data
         self.removed = False
         self.compacted_nodes = []  # Contain the nodes deleted by the optimizer

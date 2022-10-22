@@ -199,6 +199,8 @@ class Blueprint:
         #             "input": True,
         #             "transpoted_items": [{"iron-plate": 1.26}],
         #             "usage_rate": 0.87,
+        #             "parents": [2],
+        #             "childrens": [3, 4]
         #         },
         #         {
         #             "entity_number": 2,
@@ -207,6 +209,8 @@ class Blueprint:
         #             "recipe": "transport-belt"
         #
         #             "usage_rate": 0.84,
+        #             "parents": [...],
+        #             "childrens": [...]
         #         },
         #         {
         #             "entity_number": 3,
@@ -216,6 +220,8 @@ class Blueprint:
         #             "output": True
         #             "transpoted_items": [{"transport-belt": 0.84}],
         #             "usage_rate": 0.52,
+        #             "parents": [...],
+        #             "childrens": [...]
         #         }
         #     ],
         #     "item": "blueprint",
@@ -232,7 +238,6 @@ class Blueprint:
         analysed_bp = self.blueprint.copy()
 
         # Pre load network input and output
-
         root_entities_number = [
             node.entity.number for node in self.network.root_nodes()]
         leaf_entities_number = [
@@ -240,6 +245,7 @@ class Blueprint:
 
         entities_bottleneck = []
 
+        # Entities related information
         for entity in analysed_bp["blueprint"]["entities"]:
             node = self.network.get_node(entity["entity_number"])
 
@@ -291,6 +297,18 @@ class Blueprint:
                     compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
                 compacted_entity["transpoted_items"] = node.flow.items
 
+            # Adding parents and childrens
+            entity["parents"] = node.original_parents
+            entity["childrens"] = node.original_childs
+
+            for compacted_node in node.compacted_nodes:
+                compacted_entity = self._get_entity(
+                    compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
+
+                compacted_entity["parents"] = compacted_node.original_parents
+                compacted_entity["childrens"] = compacted_node.original_childs
+
+        # Blueprint related information
         # Adding the total in and out flow
         items_input = []
         for root_node in self.network.root_nodes():
