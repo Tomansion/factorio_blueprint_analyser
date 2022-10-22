@@ -299,14 +299,14 @@ class Blueprint:
 
             # Adding parents and childrens
             entity["parents"] = node.original_parents
-            entity["childrens"] = node.original_childs
+            entity["children"] = node.original_childs
 
             for compacted_node in node.compacted_nodes:
                 compacted_entity = self._get_entity(
                     compacted_node.entity.number, analysed_bp["blueprint"]["entities"])
 
                 compacted_entity["parents"] = compacted_node.original_parents
-                compacted_entity["childrens"] = compacted_node.original_childs
+                compacted_entity["children"] = compacted_node.original_childs
 
         # Blueprint related information
         # Adding the total in and out flow
