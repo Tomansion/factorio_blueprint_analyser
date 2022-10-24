@@ -165,7 +165,7 @@ class TransportBelt(Entity):
             return colored("↓", color)
         elif self.direction == 6:
             return colored("←", color)
-        elif self.direction is None:
+        elif self.direction == 0 or self.direction is None:
             return colored("↑", color)
 
         return colored("?", color)
@@ -181,8 +181,11 @@ class TransportBelt(Entity):
             return [0, 1]
         elif self.direction == 6:
             return [-1, 0]
-        elif self.direction is None:
+        elif self.direction == 0 or self.direction is None:
             return [0, -1]
+        
+        utils.warning(f"Unknown direction {self.direction} for {self.name}")
+        return [0, 0]
 
     def can_connect_to(self, entity):
         if entity.data["type"] == "transport-belt":
