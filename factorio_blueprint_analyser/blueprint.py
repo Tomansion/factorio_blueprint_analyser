@@ -33,7 +33,6 @@ class Blueprint:
             self.blueprint = bp_json
             utils.warning(f"Blueprint book detected, using first blueprint")
 
-
         if "blueprint" not in bp_json:
             raise Exception("Invalid blueprint, no 'blueprint' key found")
 
@@ -322,13 +321,23 @@ class Blueprint:
 
         # Blueprint related information
         # Adding the total in and out flow
-        items_input = []
+        items_input = {}
         for root_node in self.network.root_nodes():
-            items_input.append(root_node.flow.items)
+            items = root_node.flow.items
+            for item in items:
+                if item in items_input:
+                    items_input[item] += items[item]
+                else:
+                    items_input[item] = items[item]
 
-        items_output = []
+        items_output = {}
         for leaf_node in self.network.leaf_nodes():
-            items_output.append(leaf_node.flow.items)
+            items = leaf_node.flow.items
+            for item in items:
+                if item in items_output:
+                    items_output[item] += items[item]
+                else:
+                    items_output[item] = items[item]
 
         analysed_bp["blueprint"]["items_input"] = items_input
         analysed_bp["blueprint"]["items_output"] = items_output
