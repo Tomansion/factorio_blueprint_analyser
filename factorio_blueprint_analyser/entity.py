@@ -30,7 +30,8 @@ def create_entity(entity_in_blueprint, virtual=False):
 
     # Check that the entity exists in the Factorio data
     if entity_in_blueprint["name"] not in factorio.entities:
-        utils.warning(f"Entity {entity_in_blueprint['name']} not found in Factorio data")
+        utils.warning(
+            f"Entity {entity_in_blueprint['name']} not found in Factorio data")
         # sys.exit(1)
         return None
 
@@ -65,7 +66,8 @@ def create_entity(entity_in_blueprint, virtual=False):
     elif entity_data["type"] == "splitter":
         return Splitter(entity_in_blueprint, entity_data)
 
-    utils.warning(f"entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
+    utils.warning(
+        f"entity {entity_in_blueprint['name']} of type {entity_data['type']} not supported")
 
 
 # Enities interfaces
@@ -183,7 +185,7 @@ class TransportBelt(Entity):
             return [-1, 0]
         elif self.direction == 0 or self.direction is None:
             return [0, -1]
-        
+
         utils.warning(f"Unknown direction {self.direction} for {self.name}")
         return [0, 0]
 
@@ -196,6 +198,9 @@ class TransportBelt(Entity):
                 return False
             elif self.direction == 4 and entity.direction is None or \
                     self.direction is None and entity.direction == 4:
+                return False
+            elif self.direction == 4 and entity.direction == 0 or \
+                    self.direction == 0 and entity.direction == 4:
                 return False
 
             return True
@@ -213,6 +218,9 @@ class TransportBelt(Entity):
                 return False
             elif self.direction == 4 and entity.direction is None or \
                     self.direction is None and entity.direction == 4:
+                return False
+            elif self.direction == 4 and entity.direction == 0 or \
+                    self.direction == 0 and entity.direction == 4:
                 return False
 
             # We are ignoring the complex transfers for now

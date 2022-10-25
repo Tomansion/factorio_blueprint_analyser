@@ -330,15 +330,15 @@ class Blueprint:
         for leaf_node in self.network.leaf_nodes():
             items_output.append(leaf_node.flow.items)
 
-        analysed_bp["items_input"] = items_input
-        analysed_bp["items_output"] = items_output
+        analysed_bp["blueprint"]["items_input"] = items_input
+        analysed_bp["blueprint"]["items_output"] = items_output
 
         # Adding the entities input and output
-        analysed_bp["entities_input"] = root_entities_number
-        analysed_bp["entities_output"] = leaf_entities_number
+        analysed_bp["blueprint"]["entities_input"] = root_entities_number
+        analysed_bp["blueprint"]["entities_output"] = leaf_entities_number
 
         # Adding the entities bottleneck
-        analysed_bp["entities_bottleneck"] = entities_bottleneck
+        analysed_bp["blueprint"]["entities_bottleneck"] = entities_bottleneck
 
         return analysed_bp
 
