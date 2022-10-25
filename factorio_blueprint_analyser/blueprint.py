@@ -22,6 +22,18 @@ class Blueprint:
         self.blueprint = bp_json
 
         # Check if the json is valid
+        if "blueprint_book" in bp_json:
+            if not "blueprints" in bp_json["blueprint_book"]:
+                raise Exception("Invalid blueprint book, no blueprints found")
+
+            if len(bp_json["blueprint_book"]["blueprints"]) == 0:
+                raise Exception("Invalid blueprint book, no blueprints found")
+
+            bp_json = bp_json["blueprint_book"]["blueprints"][0]
+            self.blueprint = bp_json
+            utils.warning(f"Blueprint book detected, using first blueprint")
+
+
         if "blueprint" not in bp_json:
             raise Exception("Invalid blueprint, no 'blueprint' key found")
 
