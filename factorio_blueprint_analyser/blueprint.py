@@ -21,6 +21,10 @@ class Blueprint:
     def __init__(self, bp_json):
         self.blueprint = bp_json
 
+        # For some reason, the class variables needs to be reset
+        self.entities = []
+        self.array = []
+
         # Check if the json is valid
         if "blueprint_book" in bp_json:
             if not "blueprints" in bp_json["blueprint_book"]:

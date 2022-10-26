@@ -2,6 +2,10 @@
 
 ![](./doc/images/ban.png)
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![pypi](https://img.shields.io/pypi/v/factorioBlueprintAnalyser)
+![ci](https://github.com/Tomansion/factorio_blueprint_analyser/actions/workflows/python-test.yml/badge.svg)
+![cd](https://github.com/Tomansion/factorio_blueprint_analyser/actions/workflows/python-publish.yml/badge.svg)
 # What is this tool?
 
 This is a Python script that finds the bottleneck of a Factorio blueprint for you.
@@ -42,7 +46,7 @@ pip install -r requirements.txt
 
 This should open a web browser with the results of the analysis as a graphical node graph, and a `analysed_blueprint.json` file containing the results of the analysis should be created.
 
-For a complete usage guide, see the [use guide](./doc/use_guide.md)!
+For the **PIP installation** and a complete usage guide, see the [use guide](./doc/use_guide.md)!
 
 ## Graph output
 

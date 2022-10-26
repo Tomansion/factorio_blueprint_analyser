@@ -65,10 +65,30 @@ network:
 verbose_level: 3
 ```
 
-## Imported as a module
-
-Coming soon!
-
 ## Pip
 
-Coming soon!
+You can also use the algorithm as a pip package.
+
+```bash
+pip install factorio_blueprint_analyser
+```
+
+```python
+from factorio_blueprint_analyser import blueprint_analyser
+
+blueprint_analyser.init({
+  "inserterCapacityBonus": 0, # Inserter_capacity_bonus, between 0 and 7,
+  "displayNetwork": True, # Display the results on a web page in a node network
+  "verboseLevel": 3, # Verbose level, 1: only errors, 2: errors and warnings, 3: errors, warnings and info
+})
+
+# Then analyse a blueprint from a string
+blueprint = "0eJydU9tugzAM/ZUqz6NqWLj1A/YT0zSFYHWWwKAkVEOIf5+5SGMqWmklHmzHOef4EPciL1toLJIX50Mv0NTkOHrvhcML6XKq+q4BDgR6qMTLQZCuplw7B1VeIl2CSpsvJAhCMXADUgHf3CGHD86APHqEBXfKuk9qqxzs2LMC9FaTa2rrgxxKP1I1teO7NU06RshAno4RH3RjnEXHaOQr0IJZ2hQXblnCR1nkMyyvKxYkB9Zz+f4UivE38dR+PLkHL3rQhewZE+LdorM9mpN7D27bD7XCDmfpLBznh6yLqyYDRWDQmha92GRO97sf3rKtjYo38bPnJjv9O9nmSo5bOC0vd/wuPBdLzT9/ufemzUR5BetmxjCVKsnCJIr5U+mfzZbDD5bOSCo="
+
+results = blueprint_analyser.analyse_blueprint(blueprint)
+
+# Or from a file
+results = blueprint_analyser.analyse_blueprint_from_path("path to my blueprint")
+
+# Both encoded and json blueprints are supported
+```

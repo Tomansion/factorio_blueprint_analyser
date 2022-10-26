@@ -58,8 +58,3 @@ def load_data():
                     entities[entity] = data[key][entity]
 
         utils.success(f"Factorio data successfully loaded")
-
-
-def entity_exist(entity):
-    # TODO
-    pass
