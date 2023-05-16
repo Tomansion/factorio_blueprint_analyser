@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='factorioBlueprintAnalyser',
-    version='1.3.3',
+    version='1.3.4',
     description="A python library analyse Factorio Blueprints and find bottlenecks.",
     url="https://github.com/tomansion/factorio_blueprint_analyser_app/",
     author="Tom Mansion",

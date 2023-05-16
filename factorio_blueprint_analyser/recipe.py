@@ -64,7 +64,7 @@ class Recipe:
         # Get production time
         self.time = factorio_recipe["energy_required"] \
             if "energy_required" in factorio_recipe \
-            else 1
+            else 0.5
 
     def ingredient_required(self, ingredient_name):
         for ingredient in self.ingredients:

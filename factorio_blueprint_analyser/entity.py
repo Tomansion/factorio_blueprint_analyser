@@ -400,24 +400,6 @@ class AssemblingMachine (LargeEntity):
                 self.required_items_per_second[item.name] = item.amount / \
                     time_per_item
 
-    def get_usage_ratio(self, ingredients_amount):
-        # Calculate the number of items produced per second
-        # according to an ingredients amount dictionary
-
-        if self.recipe is None or not self.recipe.all_ingredients_required(ingredients_amount.keys()):
-            return 0
-
-        lowest_ingredient_requierment_ratio = None
-        for ingredient in ingredients_amount:
-
-            completion_ratio = ingredients_amount[ingredient] / \
-                self.required_items_per_second[ingredient]
-
-            if lowest_ingredient_requierment_ratio is None or \
-                    completion_ratio < lowest_ingredient_requierment_ratio:
-                lowest_ingredient_requierment_ratio = completion_ratio
-
-        return min(1.0, lowest_ingredient_requierment_ratio)
 
     def to_char(self, coords=None):
         color = "white"

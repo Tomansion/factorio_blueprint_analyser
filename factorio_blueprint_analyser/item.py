@@ -1,4 +1,3 @@
-
 # -----------------------------------------------------------
 # Items class
 # Used to calculate bottleneck
@@ -20,7 +19,7 @@ class Item:
         # from : https://wiki.factorio.com/Category:Game_images
 
         # We need to transform the entity name to a valid url
-        entity_wiki_name = self.name.capitalize().replace('-', '_')
+        entity_wiki_name = self.name.capitalize().replace("-", "_")
 
         return f"https://wiki.factorio.com/images/{entity_wiki_name}.png"
 
@@ -50,7 +49,9 @@ class Flow:
 
     def reduce(self, item, amount):
         if item not in self.items:
-            raise Exception("Item not in flow")
+            print(f"/!\ Warning, item {item} not in flow")
+            # raise Exception("Item not in flow")
+            return
 
         self.items[item] -= amount
         if self.items[item] <= 0:
@@ -63,4 +64,8 @@ class Flow:
         return sum(self.items.values())
 
     def __str__(self) -> str:
-        return "[" + ", ".join([f"{item}: {amount}" for item, amount in self.items.items()]) + "]"
+        return (
+            "["
+            + ", ".join([f"{item}: {amount}" for item, amount in self.items.items()])
+            + "]"
+        )
