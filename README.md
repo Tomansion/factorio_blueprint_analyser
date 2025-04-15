@@ -6,14 +6,16 @@
 ![pypi](https://img.shields.io/pypi/v/factorioBlueprintAnalyser)
 ![ci](https://github.com/Tomansion/factorio_blueprint_analyser/actions/workflows/python-test.yml/badge.svg)
 ![cd](https://github.com/Tomansion/factorio_blueprint_analyser/actions/workflows/python-publish.yml/badge.svg)
+
 # What is this tool?
 
 This is a Python script that finds the bottleneck of a Factorio blueprint for you.
 
 It also predicts:
+
 - Which entities are the input or the output of the blueprint
-- What items each belts, inserters or any entities are excpected to transport
-- The excepted items/s that will be tranported by each entity
+- What items each belts, inserters or any entities are expected to transport
+- The excepted items/s that will be transported by each entity
 - The excepted usage percentage of each entity
 
 ## What is a bottleneck?
@@ -23,6 +25,7 @@ A bottleneck is, in a Factorio blueprint, the entity that limits the output of a
 ## In what way is this tool useful?
 
 You can do what you want with the results of this tool, it can help programmers:
+
 - Create blueprints with machine learning
 - Create blueprints with evolutionary algorithms
 - Create a dataset of efficient blueprints
@@ -56,7 +59,7 @@ The graph result should be:
 
 We can see that the input and the output has been clearly identified.
 
-The small icon linked to each nodes is the item that the algorithm is expecting to be transported by the entity, for example, the transport belt ouput node is transporting the item `transport-belt`.
+The small icon linked to each nodes is the item that the algorithm is expecting to be transported by the entity, for example, the transport belt output node is transporting the item `transport-belt`.
 
 ## Terminal output
 
@@ -89,33 +92,47 @@ The algorithm expect the material input belts to be at maximum capacity with the
 
 Most of the blueprints gives good results, but certain blueprints still give bad results ([#1](https://github.com/Tomansion/factorio_blueprint_analyser/issues/1)).
 
-Running the analysis many time taks more and more time ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/2))
+Running the analysis many time takes more and more time ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/2))
 
 This algorithm can only process with the latest Factorio blueprint versions ([#2](https://github.com/Tomansion/factorio_blueprint_analyser/issues/3))
 
 ## Limitations and Next steps
+
     ☐ Furnaces (no combustion items)
     ☐ Science
-    ☐ Better unsuported items display
+    ☐ Better unsupported items display
     ☐ Filters
     ☐ Beacons
     ☐ Modules
-    ☐ Multy system process
+    ☐ Multi system process
 
 ## Next projects
-    ☐ Blueprint analysis dashboard
+
+    ☑ Blueprint analysis dashboard
     ☐ creation of the belt factory with genetic algorithm
+
+## Testing
+
+The tests are done with [pytest](https://docs.pytest.org/en/latest/).
+To run the tests, you can use the following command:
+
+```bash
+pip install pytest
+pytest tests
+```
 
 ## Contribution
 
-Coming soon
+Feel free to contribute to this project! You can do it by:
+
+- Reporting bugs or suggesting new features by creating an issue
+- Fixing bugs or adding features by creating a pull request
 
 ## Credits
 
 This tool is the result of an internship at the [Michigan State University](https://msu.edu/) and was made in collaboration with the **The Factory Must Grow: Automation in Factorio** team. You can find their first paper [here](https://arxiv.org/abs/2102.04871).
 
-Thanks to [DrKenReid](https://github.com/DrKenReid) and the whole **The Factory Must Grow** team for the amaizing welcoming and for giving me the oportunity to have this wondeful experience!
-
+Thanks to [DrKenReid](https://github.com/DrKenReid) and the whole **The Factory Must Grow** team for the amazing welcoming and for giving me the opportunity to have this wonderful experience!
 
 Factorio blueprint decode and encode code from : https://gist.github.com/click0/46b0ff88361956e430bfcf1e88b5c351
 
